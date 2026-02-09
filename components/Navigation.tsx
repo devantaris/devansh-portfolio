@@ -35,21 +35,21 @@ export default function Navigation() {
             animate={{ y: 0 }}
             transition={{ duration: 0.8 }}
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-                    ? 'py-4 bg-gradient-to-r from-[#0a0a0f] via-[#1a1a2e] to-[#0a0a0f] shadow-lg border-b border-white/5 backdrop-blur-sm'
-                    : 'py-6 bg-transparent'
+                ? 'py-6 bg-gradient-to-r from-[#0a0a0f] via-[#1a1a2e] to-[#0a0a0f] shadow-lg border-b border-white/5 backdrop-blur-sm'
+                : 'py-8 bg-transparent'
                 }`}
         >
-            <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
-                {/* Logo */}
+            <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-3 items-center">
+                {/* Logo - Left */}
                 <button
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                    className="text-xl font-mono font-bold tracking-tighter text-foreground hover:text-accent transition-colors"
+                    className="text-xl font-mono font-bold tracking-tighter text-foreground hover:text-accent transition-colors justify-self-start"
                 >
                     &lt;devansh&gt;
                 </button>
 
-                {/* Desktop Nav */}
-                <div className="hidden md:flex items-center space-x-8">
+                {/* Desktop Nav - Center */}
+                <div className="hidden md:flex items-center justify-center space-x-16 col-span-1">
                     {navItems.map((item) => (
                         <button
                             key={item.name}
@@ -64,8 +64,11 @@ export default function Navigation() {
                     ))}
                 </div>
 
-                {/* Mobile Menu Button - Placeholder for responsiveness */}
-                <div className="md:hidden">
+                {/* Right spacer for grid balance */}
+                <div className="hidden md:block" />
+
+                {/* Mobile Menu Button */}
+                <div className="md:hidden col-span-2 flex justify-end">
                     {/* Add mobile menu logic later if needed */}
                 </div>
             </div>
