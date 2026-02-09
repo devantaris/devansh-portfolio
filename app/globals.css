@@ -1,26 +1,303 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Cosmic Color Palette */
+  --background: #0a0a0f;
+  --foreground: #e8e8f0;
+  --foreground-muted: #9a9aaa;
+  --accent: #7c6fb5;
+  --accent-bright: #9d8fc7;
+  --glow: rgba(124, 111, 181, 0.4);
+
+  /* Spacing & Layout */
+  --section-spacing: 160px;
+  /* Significantly increased spacing */
+  --content-max-width: 1400px;
+  /* Wider container */
 }
 
 @theme inline {
+  /* Colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-accent: var(--accent);
+  --color-accent-bright: var(--accent-bright);
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Animations */
+  --animate-fade-in: fade-in 0.8s ease-out;
+  --animate-slide-up: slide-up 1s ease-out;
+  --animate-glow: glow 3s ease-in-out infinite;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+  /* Account for fixed header */
+}
+
+/* Enhanced smooth scrolling with easing */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  * {
+    scroll-behavior: smooth;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  line-height: 1.8;
+  /* Increased line height */
+  cursor: none;
+  /* Hide default cursor */
+}
+
+/* Typography improvements */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  font-weight: 600;
+}
+
+/* 3D Depth Utilities */
+.perspective-container {
+  perspective: 1500px;
+  transform-style: preserve-3d;
+}
+
+.depth-layer {
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.depth-lift {
+  transform: translateZ(30px) scale(1.01);
+}
+
+.depth-lift-high {
+  transform: translateZ(60px) scale(1.02);
+}
+
+/* Glassmorphism Utilities */
+.glass-panel {
+  background: rgba(10, 10, 15, 0.4);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Cosmic Glow Effects */
+.cosmic-glow {
+  box-shadow:
+    0 0 30px rgba(124, 111, 181, 0.15),
+    0 0 60px rgba(124, 111, 181, 0.05);
+}
+
+/* Semantic Color System (Code Editor Style) */
+/* Base text colors */
+.text-base {
+  color: #e0e0e8;
+  /* Soft off-white for paragraphs */
+}
+
+.text-heading {
+  color: #f0f0f5;
+  /* Slightly brighter for headings */
+}
+
+.text-metadata {
+  color: #6b7280;
+  /* Muted gray for labels/metadata */
+  opacity: 0.7;
+}
+
+/* Semantic keyword colors - like syntax highlighting */
+.keyword-systems {
+  color: #60a5fa;
+  /* Cool blue - for Systems, OS, Architecture */
+  font-weight: 500;
+}
+
+.keyword-backend {
+  color: #c084fc;
+  /* Violet/purple - for Backend, Logic, Engineering */
+  font-weight: 500;
+}
+
+.keyword-tech {
+  color: #34d399;
+  /* Muted cyan/green - for Languages, Tools, Tech */
+  font-weight: 500;
+}
+
+.keyword-focus {
+  color: var(--accent-bright);
+  /* Accent - for focus words */
+  font-weight: 600;
+}
+
+/* Inline semantic span (no block behavior) */
+.semantic {
+  display: inline;
+  transition: opacity 0.2s;
+}
+
+.semantic:hover {
+  opacity: 0.8;
+}
+
+.cosmic-glow-strong {
+  box-shadow:
+    0 0 30px rgba(124, 111, 181, 0.4),
+    0 0 60px rgba(124, 111, 181, 0.2),
+    0 0 90px rgba(124, 111, 181, 0.1);
+}
+
+.cosmic-glow-hover {
+  transition: box-shadow 0.3s ease;
+}
+
+.cosmic-glow-hover:hover {
+  box-shadow:
+    0 0 25px rgba(124, 111, 181, 0.35),
+    0 0 50px rgba(124, 111, 181, 0.2),
+    0 0 75px rgba(124, 111, 181, 0.1);
+}
+
+/* Proximity glow - dynamically controlled */
+.proximity-glow {
+  transition: box-shadow 0.2s ease-out, transform 0.3s ease-out;
+}
+
+/* Custom Animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px var(--glow), 0 0 40px var(--glow);
+  }
+
+  50% {
+    box-shadow: 0 0 30px var(--glow), 0 0 60px var(--glow);
+  }
+}
+
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+/* Selection */
+::selection {
+  background: var(--accent);
+  color: var(--background);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-bright);
+}
+
+/* Cursor interactions */
+a,
+button,
+[role="button"] {
+  cursor: none;
+  /* Force custom cursor */
+}
+
+/* Reduce section padding globally */
+section {
+  padding: var(--section-spacing) 0;
+}
+
+/* Space-themed card enhancements */
+.space-card {
+  position: relative;
+  background: rgba(10, 10, 15, 0.5);
+  border: 1px solid rgba(124, 111, 181, 0.2);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.space-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(124, 111, 181, 0.3), rgba(74, 95, 199, 0.1));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.space-card:hover::before {
+  opacity: 1;
 }
