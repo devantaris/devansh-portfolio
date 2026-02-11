@@ -2,25 +2,28 @@
 
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
+import { SplineScene } from '@/components/ui/splite';
 import { useTypewriter } from '@/hooks/useTypewriter';
 
 export default function Hero() {
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-    // Scroll-based image fade effect
+    // Scroll-based fade effect for 3D scene
     const { scrollY } = useScroll();
-    const imageOpacity = useTransform(scrollY, [0, 400], [1, 0]);
-    const imageY = useTransform(scrollY, [0, 400], [0, 100]);
+    const sceneOpacity = useTransform(scrollY, [0, 400], [1, 0]);
+    const sceneY = useTransform(scrollY, [0, 400], [0, 100]);
 
     const typewriterPhrases = [
-        'do programming.',
+        'program.',
         'learn system architecture.',
         'make fintech projects.',
         'like making projects.',
         'love reading.',
         'explore.',
-        'write.'
+        'write.',
+        'build.',
+        'design.',
+        'am INTJ.'
     ];
 
     const currentPhrase = useTypewriter(typewriterPhrases, 100, 50, 2000);
@@ -51,33 +54,29 @@ export default function Hero() {
                 }}
             />
 
-            {/* Full-screen image overlay that dissolves on scroll */}
+            {/* 3D ASTRONAUT on RIGHT SIDE - dissolves on scroll - INTERACTIVE */}
             <motion.div
-                className="fixed inset-0 z-20 pointer-events-none"
+                className="fixed right-0 top-0 bottom-0 w-1/2 md:w-1/2 lg:w-1/2 z-20"
                 style={{
-                    opacity: imageOpacity,
-                    y: imageY,
+                    opacity: sceneOpacity,
+                    y: sceneY,
                 }}
             >
-                <Image
-                    src="/images/image1.png"
-                    alt="Devansh Kumar"
-                    fill
-                    className="object-cover"
-                    priority
-                    unoptimized
+                <SplineScene
+                    scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+                    className="w-full h-full"
                 />
             </motion.div>
 
-            {/* Main Content Container with SUBSTANTIAL left padding */}
-            <div className="relative z-30 w-full max-w-7xl mx-auto px-[12vw] md:px-[15vw] lg:px-[20vw] pl-[15vw] md:pl-[18vw] lg:pl-[22vw]">
-                <div className="grid grid-cols-12 gap-8 items-center">
-                    {/* Text Block - Substantial gap from left edge */}
-                    <div className="col-span-12 md:col-span-10 lg:col-span-8 pl-8 md:pl-12 lg:pl-16">
+            {/* Main Content Container */}
+            <div className="relative z-30 w-full max-w-7xl mx-auto px-24 pl-32">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    {/* Text Block - Left Column */}
+                    <div className="space-y-6 max-w-[600px]">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
                         >
                             <h1 className="text-5xl md:text-6xl lg:text-7xl font-medium tracking-tight leading-[1.15] mb-2 text-foreground-muted">
                                 Hey, I am
@@ -118,6 +117,6 @@ export default function Hero() {
                     Based in India
                 </div>
             </motion.div>
-        </section>
+        </section >
     );
 }

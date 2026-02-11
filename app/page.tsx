@@ -4,7 +4,7 @@ import CustomCursor from '@/components/CustomCursor';
 import Navigation from '@/components/Navigation';
 import Hero from '@/components/Hero';
 import AboutSection from '@/components/sections/AboutSection';
-import ProjectsSection from '@/components/sections/ProjectsSection';
+import Projects from '@/components/Projects';
 import WritingSection from '@/components/sections/WritingSection';
 import SystemsSection from '@/components/sections/SystemsSection';
 import ContactSection from '@/components/sections/ContactSection';
@@ -18,7 +18,7 @@ export default function Home() {
       <Navigation />
       <Hero />
       <AboutSection />
-      <ProjectsSection />
+      <Projects />
       <SystemsSection />
       <WritingSection />
       <ContactSection />

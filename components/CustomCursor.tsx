@@ -35,7 +35,7 @@ export default function CustomCursor() {
 
     return (
         <>
-            {/* Custom cursor */}
+            {/* Custom cursor - SHINY & BOLD */}
             <div
                 ref={cursorRef}
                 className="fixed pointer-events-none z-[9999] mix-blend-screen"
@@ -45,15 +45,25 @@ export default function CustomCursor() {
                     transform: 'translate(-50%, -50%)',
                 }}
             >
-                {/* Glow halo */}
-                <div className="absolute inset-0 w-12 h-12 -translate-x-1/2 -translate-y-1/2">
-                    <div className="absolute inset-0 rounded-full bg-accent blur-xl opacity-30 animate-pulse" />
+                {/* Outer glow halo - LARGER & BRIGHTER */}
+                <div className="absolute inset-0 w-24 h-24 -translate-x-1/2 -translate-y-1/2">
+                    <div className="absolute inset-0 rounded-full bg-accent blur-3xl opacity-70 animate-pulse" />
+                    <div className="absolute inset-0 rounded-full bg-white blur-2xl opacity-40" />
                 </div>
 
-                {/* Cursor dot */}
-                <div className="relative w-2 h-2 -translate-x-1/2 -translate-y-1/2">
-                    <div className="absolute inset-0 rounded-full bg-accent-bright opacity-90" />
-                    <div className="absolute inset-0 rounded-full bg-white opacity-60 animate-ping" style={{ animationDuration: '2s' }} />
+                {/* Middle glow layer */}
+                <div className="absolute inset-0 w-16 h-16 -translate-x-1/2 -translate-y-1/2">
+                    <div className="absolute inset-0 rounded-full bg-accent blur-xl opacity-80" />
+                </div>
+
+                {/* Cursor dot - LARGER & SHINIER */}
+                <div className="relative w-4 h-4 -translate-x-1/2 -translate-y-1/2">
+                    {/* Core white shine */}
+                    <div className="absolute inset-0 rounded-full bg-white opacity-100 shadow-lg shadow-white/50" />
+                    {/* Accent ring */}
+                    <div className="absolute inset-0 rounded-full bg-accent opacity-70 blur-sm" />
+                    {/* Pulsing ring */}
+                    <div className="absolute inset-0 rounded-full bg-white opacity-60 animate-ping" style={{ animationDuration: '1.5s' }} />
                 </div>
             </div>
         </>

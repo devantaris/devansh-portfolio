@@ -6,10 +6,15 @@ import { motion } from 'framer-motion';
 export default function Navigation() {
     const [activeSection, setActiveSection] = useState('home');
     const [isScrolled, setIsScrolled] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 50);
+            // Close menu when scrolling
+            if (window.scrollY > 50) {
+                setIsMenuOpen(false);
+            }
         };
 
         window.addEventListener('scroll', handleScroll);
@@ -27,51 +32,127 @@ export default function Navigation() {
         const element = document.querySelector(href);
         element?.scrollIntoView({ behavior: 'smooth' });
         setActiveSection(href.slice(1));
+        setIsMenuOpen(false);
     };
 
     return (
-        <motion.nav
-            initial={{ y: -100 }}
-            animate={{ y: 0 }}
-            transition={{ duration: 0.8 }}
-            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-                ? 'py-6 bg-gradient-to-r from-[#0a0a0f] via-[#1a1a2e] to-[#0a0a0f] shadow-lg border-b border-white/5 backdrop-blur-sm'
-                : 'py-8 bg-transparent'
-                }`}
-        >
-            <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-3 items-center">
-                {/* Logo - Left */}
+        <>
+            {/* Logo - Top Left Corner */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8 }}
+                className="fixed top-8 left-8 md:left-12 z-50"
+            >
                 <button
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                    className="text-xl font-mono font-bold tracking-tighter text-foreground hover:text-accent transition-colors justify-self-start"
+                    className="text-2xl md:text-3xl font-sans font-bold tracking-tighter text-foreground hover:text-accent transition-colors"
                 >
                     &lt;devansh&gt;
                 </button>
+            </motion.div>
 
-                {/* Desktop Nav - Center */}
-                <div className="hidden md:flex items-center justify-center space-x-16 col-span-1">
-                    {navItems.map((item) => (
-                        <button
+            {/* Vertical Navigation - Right Side - Shifts up when scrolled */}
+            <motion.nav
+                initial={{ x: 100, opacity: 0 }}
+                animate={{
+                    x: 0,
+                    opacity: isScrolled ? 0 : 1,
+                    pointerEvents: isScrolled ? 'none' : 'auto'
+                }}
+                transition={{ duration: 0.3 }}
+                className="fixed right-8 md:right-12 top-[15%] z-50"
+            >
+                <div className="flex flex-col items-end space-y-8">
+                    {navItems.map((item, index) => (
+                        <motion.button
                             key={item.name}
+                            initial={{ x: 50, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
                             onClick={() => scrollToSection(item.href)}
-                            className={`text-sm font-medium transition-colors hover:text-accent relative group ${activeSection === item.href.slice(1) ? 'text-accent' : 'text-foreground-muted'
+                            className={`text-sm md:text-base font-medium uppercase tracking-widest transition-all duration-300 hover:text-accent relative group ${activeSection === item.href.slice(1) ? 'text-accent' : 'text-foreground-muted'
                                 }`}
                         >
                             {item.name}
-                            <span className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full ${activeSection === item.href.slice(1) ? 'w-full' : ''
-                                }`} />
-                        </button>
+                            <span
+                                className={`absolute -right-6 top-1/2 -translate-y-1/2 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-4 ${activeSection === item.href.slice(1) ? 'w-4' : ''
+                                    }`}
+                            />
+                        </motion.button>
                     ))}
                 </div>
+            </motion.nav>
 
-                {/* Right spacer for grid balance */}
-                <div className="hidden md:block" />
+            {/* Hamburger Menu - Appears on Scroll - ROUND GLASS BUTTON */}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{
+                    opacity: isScrolled ? 1 : 0,
+                    scale: isScrolled ? 1 : 0.8
+                }}
+                transition={{ duration: 0.3 }}
+                className={`fixed top-8 right-8 md:right-12 z-50 ${isScrolled ? 'pointer-events-auto' : 'pointer-events-none'}`}
+            >
+                {/* Round Glass Hamburger Button */}
+                <button
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    className="relative p-5 w-16 h-16 rounded-full bg-background/50 backdrop-blur-xl border border-white/20 shadow-2xl hover:bg-background/70 hover:border-accent/40 hover:scale-110 transition-all duration-300 group flex items-center justify-center"
+                    aria-label="Toggle menu"
+                >
+                    <div className="flex flex-col items-center justify-center space-y-1.5 w-6">
+                        <motion.span
+                            animate={{
+                                rotate: isMenuOpen ? 45 : 0,
+                                y: isMenuOpen ? 7 : 0,
+                                width: isMenuOpen ? '24px' : '24px'
+                            }}
+                            className="block h-0.5 w-6 bg-foreground group-hover:bg-accent transition-colors"
+                        />
+                        <motion.span
+                            animate={{ opacity: isMenuOpen ? 0 : 1 }}
+                            className="block h-0.5 w-6 bg-foreground group-hover:bg-accent transition-colors"
+                        />
+                        <motion.span
+                            animate={{
+                                rotate: isMenuOpen ? -45 : 0,
+                                y: isMenuOpen ? -7 : 0,
+                                width: isMenuOpen ? '24px' : '24px'
+                            }}
+                            className="block h-0.5 w-6 bg-foreground group-hover:bg-accent transition-colors"
+                        />
+                    </div>
+                </button>
 
-                {/* Mobile Menu Button */}
-                <div className="md:hidden col-span-2 flex justify-end">
-                    {/* Add mobile menu logic later if needed */}
-                </div>
-            </div>
-        </motion.nav>
+                {/* Dropdown Menu */}
+                <motion.div
+                    initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                    animate={{
+                        opacity: isMenuOpen ? 1 : 0,
+                        y: isMenuOpen ? 0 : -20,
+                        scale: isMenuOpen ? 1 : 0.95
+                    }}
+                    transition={{ duration: 0.2 }}
+                    className={`absolute top-20 right-0 bg-background/95 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl p-6 min-w-[200px] ${isMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
+                >
+                    <div className="flex flex-col items-end space-y-4">
+                        {navItems.map((item) => (
+                            <button
+                                key={item.name}
+                                onClick={() => scrollToSection(item.href)}
+                                className={`text-sm md:text-base font-medium uppercase tracking-widest transition-all duration-300 hover:text-accent relative group ${activeSection === item.href.slice(1) ? 'text-accent' : 'text-foreground-muted'
+                                    }`}
+                            >
+                                {item.name}
+                                <span
+                                    className={`absolute -right-6 top-1/2 -translate-y-1/2 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-4 ${activeSection === item.href.slice(1) ? 'w-4' : ''
+                                        }`}
+                                />
+                            </button>
+                        ))}
+                    </div>
+                </motion.div>
+            </motion.div>
+        </>
     );
 }

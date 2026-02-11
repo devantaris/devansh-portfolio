@@ -2,6 +2,7 @@
 
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
+import EnergyBeam from '@/components/ui/energy-beam';
 
 export default function ContactSection() {
     const ref = useRef(null);
@@ -11,9 +12,15 @@ export default function ContactSection() {
         <section
             id="contact"
             ref={ref}
-            className="min-h-screen flex items-center justify-center px-6 py-32"
+            className="relative min-h-screen flex items-center justify-center px-6 py-32 overflow-hidden"
         >
-            <div className="max-w-3xl w-full text-center">
+            {/* EnergyBeam Background */}
+            <div className="absolute inset-0 z-0">
+                <EnergyBeam className="opacity-40" />
+            </div>
+
+            {/* Content Layer */}
+            <div className="relative z-10 max-w-3xl w-full text-center">
                 <motion.h2
                     initial={{ opacity: 0, y: 30 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
