@@ -14,9 +14,9 @@ export default function MultiLayerStarfield() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // ── Scene ──
+    // ── Scene ── pure black, no fog tint
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x000000, 0.00025);
+    scene.fog = new THREE.FogExp2(0x000000, 0.00015);
 
     // ── Camera ──
     const camera = new THREE.PerspectiveCamera(
@@ -27,26 +27,27 @@ export default function MultiLayerStarfield() {
     );
     camera.position.set(0, 20, 100);
 
-    // ── Renderer ──
+    // ── Renderer ── pure black clear color
     const renderer = new THREE.WebGLRenderer({
       canvas,
       antialias: true,
-      alpha: true,
+      alpha: false,
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 1); // Pure black
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 0.8;
+    renderer.toneMappingExposure = 1.0;
 
-    // ── Post-processing (bloom) ──
+    // ── Post-processing — bloom only on bright stars ──
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
     composer.addPass(
       new UnrealBloomPass(
         new THREE.Vector2(window.innerWidth, window.innerHeight),
-        0.5,  // strength — subtle glow
-        0.4,  // radius
-        0.6   // threshold
+        0.4,  // strength — gentle glow on stars only
+        0.3,  // radius
+        0.85  // threshold — high so only bright stars bloom
       )
     );
 
@@ -69,15 +70,15 @@ export default function MultiLayerStarfield() {
         positions[j * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
         positions[j * 3 + 2] = radius * Math.cos(phi);
 
-        // Color variation: mostly white, some warm, some blue
+        // Color: mostly pure white, some warm, some cool blue tint
         const color = new THREE.Color();
         const r = Math.random();
-        if (r < 0.7) {
-          color.setHSL(0, 0, 0.8 + Math.random() * 0.2);
+        if (r < 0.75) {
+          color.setHSL(0, 0, 0.85 + Math.random() * 0.15); // white
         } else if (r < 0.9) {
-          color.setHSL(0.08, 0.5, 0.8);
+          color.setHSL(0.08, 0.3, 0.85); // warm white
         } else {
-          color.setHSL(0.6, 0.5, 0.8);
+          color.setHSL(0.6, 0.2, 0.85); // cool white (subtle)
         }
         colors[j * 3] = color.r;
         colors[j * 3 + 1] = color.g;
@@ -138,34 +139,7 @@ export default function MultiLayerStarfield() {
       starLayers.push(points);
     }
 
-    // ── Subtle atmosphere sphere (glow) ──
-    const atmosphereGeo = new THREE.SphereGeometry(600, 32, 32);
-    const atmosphereMat = new THREE.ShaderMaterial({
-      uniforms: { time: { value: 0 } },
-      vertexShader: `
-        varying vec3 vNormal;
-        void main() {
-          vNormal = normalize(normalMatrix * normal);
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        varying vec3 vNormal;
-        uniform float time;
-        void main() {
-          float intensity = pow(0.7 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.0);
-          vec3 atmosphere = vec3(0.3, 0.6, 1.0) * intensity;
-          float pulse = sin(time * 2.0) * 0.1 + 0.9;
-          atmosphere *= pulse;
-          gl_FragColor = vec4(atmosphere, intensity * 0.03); // Reduced atmosphere glow
-        }
-      `,
-      side: THREE.BackSide,
-      blending: THREE.AdditiveBlending,
-      transparent: true,
-    });
-    const atmosphere = new THREE.Mesh(atmosphereGeo, atmosphereMat);
-    scene.add(atmosphere);
+    // NO atmosphere sphere — pure black space
 
     // ── Scroll state ──
     let scrollY = 0;
@@ -197,11 +171,6 @@ export default function MultiLayerStarfield() {
         }
       });
 
-      // Update atmosphere
-      if (atmosphereMat.uniforms) {
-        atmosphereMat.uniforms.time.value = time;
-      }
-
       // Calculate scroll-based camera target
       const docHeight = Math.max(
         document.documentElement.scrollHeight - window.innerHeight,
@@ -212,7 +181,7 @@ export default function MultiLayerStarfield() {
       // Camera moves deeper into the starfield as user scrolls
       const targetX = mouseX * 8;
       const targetY = 30 - progress * 20 + mouseY * 5;
-      const targetZ = 100 - progress * 150; // zoom into the stars
+      const targetZ = 100 - progress * 150;
 
       // Smooth camera movement
       const smooth = 0.04;
@@ -220,7 +189,7 @@ export default function MultiLayerStarfield() {
       smoothCameraPos.current.y += (targetY - smoothCameraPos.current.y) * smooth;
       smoothCameraPos.current.z += (targetZ - smoothCameraPos.current.z) * smooth;
 
-      // Add subtle floating
+      // Subtle floating
       const floatX = Math.sin(time * 0.1) * 2;
       const floatY = Math.cos(time * 0.15) * 1;
 
@@ -254,8 +223,6 @@ export default function MultiLayerStarfield() {
         s.geometry.dispose();
         (s.material as THREE.ShaderMaterial).dispose();
       });
-      atmosphereGeo.dispose();
-      atmosphereMat.dispose();
       renderer.dispose();
     };
   }, []);
@@ -264,7 +231,7 @@ export default function MultiLayerStarfield() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 -z-20 pointer-events-none"
-      style={{ background: '#030014' }}
+      style={{ background: '#000000' }}
     />
   );
 }

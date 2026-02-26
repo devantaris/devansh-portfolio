@@ -1,6 +1,7 @@
 import Navigation from '@/components/Navigation';
 import Hero from '@/components/Hero';
 import MultiLayerStarfield from '@/components/StarfieldBackground';
+import CustomCursor from '@/components/CustomCursor';
 import AboutBento from '@/components/sections/AboutBento';
 import TechStack from '@/components/sections/TechStack';
 import Projects from '@/components/Projects';
@@ -12,6 +13,7 @@ export default function Home() {
   return (
     <main className="relative min-h-screen">
       <MultiLayerStarfield />
+      <CustomCursor />
       <Navigation />
       <Hero />
       <AboutBento />
