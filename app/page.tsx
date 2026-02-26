@@ -1,5 +1,6 @@
 import Navigation from '@/components/Navigation';
 import Hero from '@/components/Hero';
+import MultiLayerStarfield from '@/components/StarfieldBackground';
 import AboutBento from '@/components/sections/AboutBento';
 import TechStack from '@/components/sections/TechStack';
 import Projects from '@/components/Projects';
@@ -9,7 +10,8 @@ import ContactSection from '@/components/sections/ContactSection';
 
 export default function Home() {
   return (
-    <main className="relative bg-background min-h-screen">
+    <main className="relative min-h-screen">
+      <MultiLayerStarfield />
       <Navigation />
       <Hero />
       <AboutBento />

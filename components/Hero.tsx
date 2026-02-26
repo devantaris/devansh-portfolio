@@ -1,60 +1,97 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 
-/* ─── Particle Background ─── */
-function ParticleBackground() {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+/* ─── Swimming Avatar ─── */
+function SwimmingAvatar() {
+    const avatarRef = useRef<HTMLDivElement>(null);
+    const [scrollProgress, setScrollProgress] = useState(0);
 
     useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        const resize = () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+        const handleScroll = () => {
+            const scrollY = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = docHeight > 0 ? scrollY / docHeight : 0;
+            setScrollProgress(progress);
         };
-        resize();
-        window.addEventListener('resize', resize);
 
-        const particles: { x: number; y: number; r: number; speed: number; opacity: number; phase: number }[] = [];
-        for (let i = 0; i < 120; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                r: Math.random() * 1.5 + 0.3,
-                speed: Math.random() * 0.3 + 0.05,
-                opacity: Math.random() * 0.5 + 0.1,
-                phase: Math.random() * Math.PI * 2,
-            });
-        }
-
-        let animId: number;
-        let t = 0;
-        const draw = () => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            t += 0.01;
-            particles.forEach((p) => {
-                const currentOpacity = p.opacity * (0.5 + 0.5 * Math.sin(t * p.speed + p.phase));
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255,255,255,${currentOpacity})`;
-                ctx.fill();
-            });
-            animId = requestAnimationFrame(draw);
-        };
-        draw();
-
-        return () => {
-            window.removeEventListener('resize', resize);
-            cancelAnimationFrame(animId);
-        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    return <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }} />;
+    // Fish-like swimming motion calculations based on scroll
+    // The avatar undulates with sinusoidal curves — bobbing, swaying, rotating
+    const scrollFactor = scrollProgress * 30; // amplify for more oscillation cycles
+
+    // Vertical bob — gentle up/down like breathing through water
+    const translateY = Math.sin(scrollFactor * 1.2) * 25 - scrollProgress * 120;
+
+    // Horizontal sway — side-to-side fish movement
+    const translateX = Math.sin(scrollFactor * 0.8) * 35 + Math.sin(scrollFactor * 2.1) * 12;
+
+    // Rotation — gentle tilt like a fish changing direction
+    const rotate = Math.sin(scrollFactor * 0.9) * 8 + Math.sin(scrollFactor * 2.5) * 3;
+
+    // Scale — subtle breathing/pulsing
+    const scale = 1 + Math.sin(scrollFactor * 1.5) * 0.03;
+
+    return (
+        <motion.div
+            ref={avatarRef}
+            initial={{ opacity: 0, y: 120, x: 80, scale: 0.7, rotate: 15 }}
+            animate={{ opacity: 1, y: 0, x: 0, scale: 1, rotate: 0 }}
+            transition={{
+                duration: 1.2,
+                ease: [0.25, 0.46, 0.45, 0.94],
+                delay: 0.4,
+            }}
+            style={{
+                position: 'relative',
+                zIndex: 5,
+                willChange: 'transform',
+            }}
+        >
+            <motion.div
+                style={{
+                    transform: `translateY(${translateY}px) translateX(${translateX}px) rotate(${rotate}deg) scale(${scale})`,
+                    transition: 'transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                }}
+            >
+                {/* Glow effect behind avatar */}
+                <div
+                    style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: '120%',
+                        height: '120%',
+                        background: 'radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, rgba(124, 111, 181, 0.06) 40%, transparent 70%)',
+                        borderRadius: '50%',
+                        filter: 'blur(30px)',
+                        pointerEvents: 'none',
+                    }}
+                />
+                <Image
+                    src="/images/image1.png"
+                    alt="Devansh Kumar Avatar"
+                    width={360}
+                    height={360}
+                    priority
+                    style={{
+                        width: 'clamp(220px, 22vw, 360px)',
+                        height: 'auto',
+                        objectFit: 'contain',
+                        filter: 'drop-shadow(0 20px 60px rgba(59, 130, 246, 0.15)) drop-shadow(0 4px 20px rgba(0,0,0,0.4))',
+                        pointerEvents: 'none',
+                        userSelect: 'none',
+                    }}
+                />
+            </motion.div>
+        </motion.div>
+    );
 }
 
 /* ─── Social Icons ─── */
@@ -84,8 +121,6 @@ export default function Hero() {
             className="relative overflow-hidden"
             style={{ minHeight: '100vh', display: 'flex', alignItems: 'center' }}
         >
-            <ParticleBackground />
-
             {/* Blue edge glow - left */}
             <div
                 className="absolute left-0 top-0 bottom-0 pointer-events-none"
@@ -99,111 +134,128 @@ export default function Hero() {
 
             <div
                 className="relative z-10 w-full"
-                style={{ maxWidth: '1100px', margin: '0 auto', padding: '120px 48px 80px 48px' }}
+                style={{
+                    maxWidth: '1100px',
+                    margin: '0 auto',
+                    padding: '120px 48px 80px 48px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '40px',
+                    flexWrap: 'wrap',
+                }}
             >
-                {/* Main heading */}
-                <motion.h1
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, ease: 'easeOut' }}
-                    style={{
-                        fontSize: 'clamp(48px, 6vw, 80px)',
-                        fontWeight: 700,
-                        letterSpacing: '-0.03em',
-                        color: '#fff',
-                        marginBottom: '20px',
-                        lineHeight: 1.1,
-                    }}
-                >
-                    Devansh Kumar
-                </motion.h1>
-
-                {/* Subtext */}
-                <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: 0.15, ease: 'easeOut' }}
-                    style={{
-                        fontSize: '16px',
-                        color: '#a1a1aa',
-                        maxWidth: '520px',
-                        marginBottom: '40px',
-                        lineHeight: 1.7,
-                    }}
-                >
-                    Building systems that think — from risk intelligence engines to mobile apps.
-                    I write code that solves real problems, reads well, and scales.
-                </motion.p>
-
-                {/* CTA Row */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
-                    style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}
-                >
-                    <a
-                        href="mailto:work.devanshkumar@gmail.com"
+                {/* Left: Text content */}
+                <div style={{ flex: '1 1 400px', minWidth: '320px' }}>
+                    {/* Main heading */}
+                    <motion.h1
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.7, ease: 'easeOut' }}
                         style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            padding: '10px 20px',
-                            background: '#fff',
-                            color: '#000',
-                            fontSize: '14px',
-                            fontWeight: 600,
-                            borderRadius: '8px',
-                            textDecoration: 'none',
-                            transition: 'background 0.2s',
+                            fontSize: 'clamp(48px, 6vw, 80px)',
+                            fontWeight: 700,
+                            letterSpacing: '-0.03em',
+                            color: '#fff',
+                            marginBottom: '20px',
+                            lineHeight: 1.1,
                         }}
                     >
-                        <MailIcon />
-                        Hire me
-                    </a>
+                        Devansh Kumar
+                    </motion.h1>
 
-                    <a
-                        href="https://github.com/devantaris"
-                        target="_blank"
-                        rel="noopener noreferrer"
+                    {/* Subtext */}
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.7, delay: 0.15, ease: 'easeOut' }}
                         style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: '40px',
-                            height: '40px',
-                            border: '1px solid #3f3f46',
-                            borderRadius: '8px',
-                            color: '#d4d4d8',
-                            textDecoration: 'none',
-                            transition: 'border-color 0.2s, color 0.2s',
+                            fontSize: '16px',
+                            color: '#a1a1aa',
+                            maxWidth: '520px',
+                            marginBottom: '40px',
+                            lineHeight: 1.7,
                         }}
-                        aria-label="GitHub"
                     >
-                        <GithubIcon />
-                    </a>
+                        Building systems that think — from risk intelligence engines to mobile apps.
+                        I write code that solves real problems, reads well, and scales.
+                    </motion.p>
 
-                    <a
-                        href="https://www.linkedin.com/in/devansh-kumar-3b3701217/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: '40px',
-                            height: '40px',
-                            border: '1px solid #3f3f46',
-                            borderRadius: '8px',
-                            color: '#d4d4d8',
-                            textDecoration: 'none',
-                            transition: 'border-color 0.2s, color 0.2s',
-                        }}
-                        aria-label="LinkedIn"
+                    {/* CTA Row */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
+                        style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}
                     >
-                        <LinkedInIcon />
-                    </a>
-                </motion.div>
+                        <a
+                            href="mailto:work.devanshkumar@gmail.com"
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                padding: '10px 20px',
+                                background: '#fff',
+                                color: '#000',
+                                fontSize: '14px',
+                                fontWeight: 600,
+                                borderRadius: '8px',
+                                textDecoration: 'none',
+                                transition: 'background 0.2s',
+                            }}
+                        >
+                            <MailIcon />
+                            Hire me
+                        </a>
+
+                        <a
+                            href="https://github.com/devantaris"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '40px',
+                                height: '40px',
+                                border: '1px solid #3f3f46',
+                                borderRadius: '8px',
+                                color: '#d4d4d8',
+                                textDecoration: 'none',
+                                transition: 'border-color 0.2s, color 0.2s',
+                            }}
+                            aria-label="GitHub"
+                        >
+                            <GithubIcon />
+                        </a>
+
+                        <a
+                            href="https://www.linkedin.com/in/devansh-kumar-3b3701217/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '40px',
+                                height: '40px',
+                                border: '1px solid #3f3f46',
+                                borderRadius: '8px',
+                                color: '#d4d4d8',
+                                textDecoration: 'none',
+                                transition: 'border-color 0.2s, color 0.2s',
+                            }}
+                            aria-label="LinkedIn"
+                        >
+                            <LinkedInIcon />
+                        </a>
+                    </motion.div>
+                </div>
+
+                {/* Right: Swimming Avatar */}
+                <div style={{ flex: '0 1 auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <SwimmingAvatar />
+                </div>
             </div>
         </section>
     );

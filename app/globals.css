@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #09090b;
+  --background: #07060d;
   --foreground: #ffffff;
   --foreground-muted: #a1a1aa;
   --accent: #3b82f6;
@@ -32,7 +32,7 @@ html {
 }
 
 body {
-  background: var(--background);
+  background: transparent;
   color: var(--foreground);
   font-family: var(--font-sans);
   overflow-x: hidden;

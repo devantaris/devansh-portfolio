@@ -1,163 +1,262 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import * as THREE from 'three';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 export default function MultiLayerStarfield() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const smoothCameraPos = useRef({ x: 0, y: 30, z: 100 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    // ── Scene ──
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x000000, 0.00025);
 
-    // Set canvas size
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    resize();
-    window.addEventListener('resize', resize);
+    // ── Camera ──
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      2000
+    );
+    camera.position.set(0, 20, 100);
 
-    // Star layers with different depths
-    interface Star {
-      x: number;
-      y: number;
-      z: number; // depth layer (1 = far, 3 = near)
-      size: number;
-      opacity: number;
-      speedX: number;
-      speedY: number;
+    // ── Renderer ──
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: true,
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.8;
+
+    // ── Post-processing (bloom) ──
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    composer.addPass(
+      new UnrealBloomPass(
+        new THREE.Vector2(window.innerWidth, window.innerHeight),
+        0.5,  // strength — subtle glow
+        0.4,  // radius
+        0.6   // threshold
+      )
+    );
+
+    // ── Stars ──
+    const starLayers: THREE.Points[] = [];
+    const STAR_COUNT = 5000;
+
+    for (let layerIdx = 0; layerIdx < 3; layerIdx++) {
+      const positions = new Float32Array(STAR_COUNT * 3);
+      const colors = new Float32Array(STAR_COUNT * 3);
+      const sizes = new Float32Array(STAR_COUNT);
+
+      for (let j = 0; j < STAR_COUNT; j++) {
+        // Spherically distributed
+        const radius = 200 + Math.random() * 800;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(Math.random() * 2 - 1);
+
+        positions[j * 3] = radius * Math.sin(phi) * Math.cos(theta);
+        positions[j * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+        positions[j * 3 + 2] = radius * Math.cos(phi);
+
+        // Color variation: mostly white, some warm, some blue
+        const color = new THREE.Color();
+        const r = Math.random();
+        if (r < 0.7) {
+          color.setHSL(0, 0, 0.8 + Math.random() * 0.2);
+        } else if (r < 0.9) {
+          color.setHSL(0.08, 0.5, 0.8);
+        } else {
+          color.setHSL(0.6, 0.5, 0.8);
+        }
+        colors[j * 3] = color.r;
+        colors[j * 3 + 1] = color.g;
+        colors[j * 3 + 2] = color.b;
+
+        sizes[j] = Math.random() * 3 + 1;
+      }
+
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+      geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+      const material = new THREE.ShaderMaterial({
+        uniforms: {
+          time: { value: 0 },
+          depth: { value: layerIdx },
+        },
+        vertexShader: `
+          attribute float size;
+          attribute vec3 color;
+          varying vec3 vColor;
+          uniform float time;
+          uniform float depth;
+
+          void main() {
+            vColor = color;
+            vec3 pos = position;
+
+            // Slow rotation per layer
+            float angle = time * 0.05 * (1.0 - depth * 0.3);
+            mat2 rot = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
+            pos.xy = rot * pos.xy;
+
+            vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+            gl_PointSize = size * (300.0 / -mvPosition.z);
+            gl_Position = projectionMatrix * mvPosition;
+          }
+        `,
+        fragmentShader: `
+          varying vec3 vColor;
+
+          void main() {
+            float dist = length(gl_PointCoord - vec2(0.5));
+            if (dist > 0.5) discard;
+
+            float opacity = 1.0 - smoothstep(0.0, 0.5, dist);
+            gl_FragColor = vec4(vColor, opacity);
+          }
+        `,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      });
+
+      const points = new THREE.Points(geometry, material);
+      scene.add(points);
+      starLayers.push(points);
     }
 
-    const stars: Star[] = [];
-    const starCounts = { far: 150, mid: 80, near: 40 }; // Reduced density for cleaner look
+    // ── Subtle atmosphere sphere (glow) ──
+    const atmosphereGeo = new THREE.SphereGeometry(600, 32, 32);
+    const atmosphereMat = new THREE.ShaderMaterial({
+      uniforms: { time: { value: 0 } },
+      vertexShader: `
+        varying vec3 vNormal;
+        void main() {
+          vNormal = normalize(normalMatrix * normal);
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vNormal;
+        uniform float time;
+        void main() {
+          float intensity = pow(0.7 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.0);
+          vec3 atmosphere = vec3(0.3, 0.6, 1.0) * intensity;
+          float pulse = sin(time * 2.0) * 0.1 + 0.9;
+          atmosphere *= pulse;
+          gl_FragColor = vec4(atmosphere, intensity * 0.03); // Reduced atmosphere glow
+        }
+      `,
+      side: THREE.BackSide,
+      blending: THREE.AdditiveBlending,
+      transparent: true,
+    });
+    const atmosphere = new THREE.Mesh(atmosphereGeo, atmosphereMat);
+    scene.add(atmosphere);
 
-    // Initialize stars
-    const initStars = () => {
-      stars.length = 0;
-
-      // Far stars (background) - very subtle
-      for (let i = 0; i < starCounts.far; i++) {
-        stars.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          z: 1,
-          size: Math.random() * 0.5 + 0.5,
-          opacity: Math.random() * 0.3 + 0.2,
-          speedX: (Math.random() - 0.5) * 0.01, // Reduced from 0.02
-          speedY: (Math.random() - 0.5) * 0.01,
-        });
-      }
-
-      // Mid-ground stars - subtle
-      for (let i = 0; i < starCounts.mid; i++) {
-        stars.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          z: 2,
-          size: Math.random() * 1 + 0.8,
-          opacity: Math.random() * 0.4 + 0.3,
-          speedX: (Math.random() - 0.5) * 0.025, // Reduced from 0.05
-          speedY: (Math.random() - 0.5) * 0.025,
-        });
-      }
-
-      // Foreground stars - still subtle
-      for (let i = 0; i < starCounts.near; i++) {
-        stars.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          z: 3,
-          size: Math.random() * 1.5 + 1,
-          opacity: Math.random() * 0.5 + 0.4,
-          speedX: (Math.random() - 0.5) * 0.05, // Reduced from 0.1
-          speedY: (Math.random() - 0.5) * 0.05,
-        });
-      }
+    // ── Scroll state ──
+    let scrollY = 0;
+    const handleScroll = () => {
+      scrollY = window.scrollY;
     };
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
-    initStars();
-
-    // Mouse position for parallax
+    // ── Mouse parallax ──
     let mouseX = 0;
     let mouseY = 0;
-    let scrollY = 0;
-
     const handleMouseMove = (e: MouseEvent) => {
       mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
       mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
     };
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
-    const handleScroll = () => {
-      scrollY = window.scrollY;
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('scroll', handleScroll);
-
-    // Animation loop
+    // ── Animation loop ──
     let animationId: number;
+
     const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      animationId = requestAnimationFrame(animate);
+      const time = Date.now() * 0.001;
 
-      stars.forEach((star) => {
-        // Apply VERY SUBTLE parallax (matching edwinle.com intensity)
-        const parallaxX = mouseX * star.z * 3; // Reduced from 10 to 3
-        const parallaxY = (mouseY * star.z * 3) + (scrollY * star.z * 0.05); // Reduced multipliers
-
-        // Drift over time (very slow)
-        star.x += star.speedX;
-        star.y += star.speedY;
-
-        // Wrap around edges
-        if (star.x < 0) star.x = canvas.width;
-        if (star.x > canvas.width) star.x = 0;
-        if (star.y < 0) star.y = canvas.height;
-        if (star.y > canvas.height) star.y = 0;
-
-        // Calculate render position
-        const renderX = star.x + parallaxX;
-        const renderY = star.y + parallaxY;
-
-        // Draw star with glow
-        ctx.beginPath();
-
-        // Outer glow (violet tint)
-        const gradient = ctx.createRadialGradient(
-          renderX, renderY, 0,
-          renderX, renderY, star.size * 3
-        );
-        gradient.addColorStop(0, `rgba(200, 180, 220, ${star.opacity * 0.8})`);
-        gradient.addColorStop(0.5, `rgba(124, 111, 181, ${star.opacity * 0.3})`);
-        gradient.addColorStop(1, 'rgba(124, 111, 181, 0)');
-
-        ctx.fillStyle = gradient;
-        ctx.fillRect(
-          renderX - star.size * 3,
-          renderY - star.size * 3,
-          star.size * 6,
-          star.size * 6
-        );
-
-        // Core star
-        ctx.beginPath();
-        ctx.arc(renderX, renderY, star.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
-        ctx.fill();
+      // Update star shader time
+      starLayers.forEach((layer) => {
+        if (layer.material instanceof THREE.ShaderMaterial) {
+          layer.material.uniforms.time.value = time;
+        }
       });
 
-      animationId = requestAnimationFrame(animate);
+      // Update atmosphere
+      if (atmosphereMat.uniforms) {
+        atmosphereMat.uniforms.time.value = time;
+      }
+
+      // Calculate scroll-based camera target
+      const docHeight = Math.max(
+        document.documentElement.scrollHeight - window.innerHeight,
+        1
+      );
+      const progress = Math.min(scrollY / docHeight, 1);
+
+      // Camera moves deeper into the starfield as user scrolls
+      const targetX = mouseX * 8;
+      const targetY = 30 - progress * 20 + mouseY * 5;
+      const targetZ = 100 - progress * 150; // zoom into the stars
+
+      // Smooth camera movement
+      const smooth = 0.04;
+      smoothCameraPos.current.x += (targetX - smoothCameraPos.current.x) * smooth;
+      smoothCameraPos.current.y += (targetY - smoothCameraPos.current.y) * smooth;
+      smoothCameraPos.current.z += (targetZ - smoothCameraPos.current.z) * smooth;
+
+      // Add subtle floating
+      const floatX = Math.sin(time * 0.1) * 2;
+      const floatY = Math.cos(time * 0.15) * 1;
+
+      camera.position.x = smoothCameraPos.current.x + floatX;
+      camera.position.y = smoothCameraPos.current.y + floatY;
+      camera.position.z = smoothCameraPos.current.z;
+      camera.lookAt(0, 10, -600);
+
+      composer.render();
     };
 
     animate();
 
+    // ── Resize ──
+    const handleResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      composer.setSize(window.innerWidth, window.innerHeight);
+    };
+    window.addEventListener('resize', handleResize);
+
+    // ── Cleanup ──
     return () => {
-      window.removeEventListener('resize', resize);
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('scroll', handleScroll);
       cancelAnimationFrame(animationId);
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('mousemove', handleMouseMove);
+
+      starLayers.forEach((s) => {
+        s.geometry.dispose();
+        (s.material as THREE.ShaderMaterial).dispose();
+      });
+      atmosphereGeo.dispose();
+      atmosphereMat.dispose();
+      renderer.dispose();
     };
   }, []);
 
@@ -165,7 +264,7 @@ export default function MultiLayerStarfield() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 -z-20 pointer-events-none"
-      style={{ background: '#0a0a0f' }}
+      style={{ background: '#030014' }}
     />
   );
 }

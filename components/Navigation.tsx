@@ -34,7 +34,7 @@ export default function Navigation() {
             className="fixed top-0 left-0 right-0 z-50"
             style={{ padding: isScrolled ? '12px 0' : '16px 0' }}
         >
-            <div className="max-w-[1100px] mx-auto" style={{ padding: '0 24px' }}>
+            <div className="mx-auto" style={{ padding: '0 24px', maxWidth: '100%' }}>
                 <div
                     className="flex items-center justify-between glass"
                     style={{

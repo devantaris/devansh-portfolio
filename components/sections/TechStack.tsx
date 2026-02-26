@@ -1,28 +1,89 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 const techStack = [
-    { name: 'Python', icon: '🐍' },
-    { name: 'FastAPI', icon: '⚡' },
-    { name: 'PostgreSQL', icon: '🐘' },
-    { name: 'Redis', icon: '🔴' },
-    { name: 'Docker', icon: '🐳' },
-    { name: 'Next.js', icon: '▲' },
-    { name: 'TypeScript', icon: '🔷' },
-    { name: 'React', icon: '⚛️' },
-    { name: 'Tailwind CSS', icon: '🎨' },
-    { name: 'Git', icon: '🌿' },
-    { name: 'Flutter', icon: '💙' },
-    { name: 'Dart', icon: '🎯' },
-    { name: 'Scikit-learn', icon: '🤖' },
-    { name: 'Pandas', icon: '🐼' },
-    { name: 'Railway', icon: '🚂' },
-    { name: 'Vercel', icon: '▲' },
-    { name: 'C++', icon: '⚙️' },
-    { name: 'SQLite', icon: '🗃️' },
-    { name: 'REST APIs', icon: '🔗' },
-    { name: 'Linux', icon: '🐧' },
+    {
+        name: 'Python',
+        logoUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
+    },
+    {
+        name: 'FastAPI',
+        logoUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fastapi/fastapi-original.svg',
+    },
+    {
+        name: 'PostgreSQL',
+        logoUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg',
+    },
+    {
+        name: 'Redis',
+        logoUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redis/redis-original.svg',
+    },
+    {
+        name: 'Docker',
+        logoUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg',
+    },
+    {
+        name: 'Next.js',
+        logoUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg',
+    },
+    {
+        name: 'TypeScript',
+        logoUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg',
+    },
+    {
+        name: 'React',
+        logoUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg',
+    },
+    {
+        name: 'Tailwind CSS',
+        logoUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg',
+    },
+    {
+        name: 'Git',
+        logoUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg',
+    },
+    {
+        name: 'Flutter',
+        logoUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flutter/flutter-original.svg',
+    },
+    {
+        name: 'Dart',
+        logoUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/dart/dart-original.svg',
+    },
+    {
+        name: 'Scikit-learn',
+        logoUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/scikitlearn/scikitlearn-original.svg',
+    },
+    {
+        name: 'Pandas',
+        logoUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pandas/pandas-original.svg',
+    },
+    {
+        name: 'Railway',
+        logoUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/railway/railway-original.svg',
+    },
+    {
+        name: 'Vercel',
+        logoUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vercel/vercel-original.svg',
+    },
+    {
+        name: 'C++',
+        logoUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg',
+    },
+    {
+        name: 'SQLite',
+        logoUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sqlite/sqlite-original.svg',
+    },
+    {
+        name: 'REST APIs',
+        logoUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/openapi/openapi-original.svg',
+    },
+    {
+        name: 'Linux',
+        logoUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg',
+    },
 ];
 
 const row1 = [...techStack, ...techStack];
@@ -38,7 +99,7 @@ export default function TechStack() {
                     transition={{ duration: 0.5 }}
                     style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 700, color: '#fff' }}
                 >
-                    Technology Stack
+                    Tech Stack
                 </motion.h2>
             </div>
 
@@ -47,12 +108,12 @@ export default function TechStack() {
                 {/* Left fade */}
                 <div style={{
                     position: 'absolute', left: 0, top: 0, bottom: 0, width: '80px', zIndex: 10, pointerEvents: 'none',
-                    background: 'linear-gradient(to right, #09090b, transparent)',
+                    background: 'linear-gradient(to right, #07060d, transparent)',
                 }} />
                 {/* Right fade */}
                 <div style={{
                     position: 'absolute', right: 0, top: 0, bottom: 0, width: '80px', zIndex: 10, pointerEvents: 'none',
-                    background: 'linear-gradient(to left, #09090b, transparent)',
+                    background: 'linear-gradient(to left, #07060d, transparent)',
                 }} />
 
                 <div className="marquee" style={{ display: 'flex', gap: '16px' }}>
@@ -70,7 +131,19 @@ export default function TechStack() {
                                 width: '110px',
                             }}
                         >
-                            <span style={{ fontSize: '28px' }}>{tech.icon}</span>
+                            <Image
+                                src={tech.logoUrl}
+                                alt={tech.name}
+                                width={32}
+                                height={32}
+                                unoptimized
+                                style={{
+                                    width: '32px',
+                                    height: '32px',
+                                    objectFit: 'contain',
+                                    filter: 'brightness(0.95)',
+                                }}
+                            />
                             <span style={{ fontSize: '11px', color: '#a1a1aa', fontWeight: 500, textAlign: 'center', lineHeight: 1.3 }}>
                                 {tech.name}
                             </span>
