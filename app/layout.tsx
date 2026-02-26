@@ -9,9 +9,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Portfolio | Backend Engineer & Systems Thinker",
-  description: "Backend-oriented engineer focused on systems thinking, analytical depth, and turning ideas into working products.",
-  keywords: ["Backend Engineer", "Systems Thinking", "Software Engineering", "Portfolio"],
+  title: "Devansh Kumar | Builder & Systems Thinker",
+  description: "Devansh Kumar — building systems that think, from risk intelligence engines to mobile apps. Software engineer based in India.",
+  keywords: ["Devansh Kumar", "Portfolio", "Backend Engineer", "Systems Engineer", "Fintech", "Flutter", "Python", "Next.js"],
 };
 
 export default function RootLayout({

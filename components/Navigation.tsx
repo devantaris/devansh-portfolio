@@ -1,22 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Navigation() {
-    const [activeSection, setActiveSection] = useState('home');
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 50);
-            // Close menu when scrolling
-            if (window.scrollY > 50) {
-                setIsMenuOpen(false);
-            }
-        };
-
+        const handleScroll = () => setIsScrolled(window.scrollY > 20);
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
@@ -24,135 +16,174 @@ export default function Navigation() {
     const navItems = [
         { name: 'About', href: '#about' },
         { name: 'Projects', href: '#projects' },
-        { name: 'Writing', href: '#writing' },
-        { name: 'Contact', href: '#contact' },
+        { name: 'Stats', href: '#stats' },
+        { name: 'Blog', href: '#blog' },
     ];
 
     const scrollToSection = (href: string) => {
         const element = document.querySelector(href);
         element?.scrollIntoView({ behavior: 'smooth' });
-        setActiveSection(href.slice(1));
         setIsMenuOpen(false);
     };
 
     return (
-        <>
-            {/* Logo - Top Left Corner */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.8 }}
-                className="fixed top-8 left-8 md:left-12 z-50"
-            >
-                <button
-                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                    className="text-2xl md:text-3xl font-sans font-bold tracking-tighter text-foreground hover:text-accent transition-colors"
-                >
-                    &lt;devansh&gt;
-                </button>
-            </motion.div>
-
-            {/* Vertical Navigation - Right Side - Shifts up when scrolled */}
-            <motion.nav
-                initial={{ x: 100, opacity: 0 }}
-                animate={{
-                    x: 0,
-                    opacity: isScrolled ? 0 : 1,
-                    pointerEvents: isScrolled ? 'none' : 'auto'
-                }}
-                transition={{ duration: 0.3 }}
-                className="fixed right-8 md:right-12 top-[15%] z-50"
-            >
-                <div className="flex flex-col items-end space-y-8">
-                    {navItems.map((item, index) => (
-                        <motion.button
-                            key={item.name}
-                            initial={{ x: 50, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
-                            onClick={() => scrollToSection(item.href)}
-                            className={`text-sm md:text-base font-medium uppercase tracking-widest transition-all duration-300 hover:text-accent relative group ${activeSection === item.href.slice(1) ? 'text-accent' : 'text-foreground-muted'
-                                }`}
-                        >
-                            {item.name}
-                            <span
-                                className={`absolute -right-6 top-1/2 -translate-y-1/2 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-4 ${activeSection === item.href.slice(1) ? 'w-4' : ''
-                                    }`}
-                            />
-                        </motion.button>
-                    ))}
-                </div>
-            </motion.nav>
-
-            {/* Hamburger Menu - Appears on Scroll - ROUND GLASS BUTTON */}
-            <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{
-                    opacity: isScrolled ? 1 : 0,
-                    scale: isScrolled ? 1 : 0.8
-                }}
-                transition={{ duration: 0.3 }}
-                className={`fixed top-8 right-8 md:right-12 z-50 ${isScrolled ? 'pointer-events-auto' : 'pointer-events-none'}`}
-            >
-                {/* Round Glass Hamburger Button */}
-                <button
-                    onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    className="relative p-5 w-16 h-16 rounded-full bg-background/50 backdrop-blur-xl border border-white/20 shadow-2xl hover:bg-background/70 hover:border-accent/40 hover:scale-110 transition-all duration-300 group flex items-center justify-center"
-                    aria-label="Toggle menu"
-                >
-                    <div className="flex flex-col items-center justify-center space-y-1.5 w-6">
-                        <motion.span
-                            animate={{
-                                rotate: isMenuOpen ? 45 : 0,
-                                y: isMenuOpen ? 7 : 0,
-                                width: isMenuOpen ? '24px' : '24px'
-                            }}
-                            className="block h-0.5 w-6 bg-foreground group-hover:bg-accent transition-colors"
-                        />
-                        <motion.span
-                            animate={{ opacity: isMenuOpen ? 0 : 1 }}
-                            className="block h-0.5 w-6 bg-foreground group-hover:bg-accent transition-colors"
-                        />
-                        <motion.span
-                            animate={{
-                                rotate: isMenuOpen ? -45 : 0,
-                                y: isMenuOpen ? -7 : 0,
-                                width: isMenuOpen ? '24px' : '24px'
-                            }}
-                            className="block h-0.5 w-6 bg-foreground group-hover:bg-accent transition-colors"
-                        />
-                    </div>
-                </button>
-
-                {/* Dropdown Menu */}
-                <motion.div
-                    initial={{ opacity: 0, y: -20, scale: 0.95 }}
-                    animate={{
-                        opacity: isMenuOpen ? 1 : 0,
-                        y: isMenuOpen ? 0 : -20,
-                        scale: isMenuOpen ? 1 : 0.95
+        <motion.header
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed top-0 left-0 right-0 z-50"
+            style={{ padding: isScrolled ? '12px 0' : '16px 0' }}
+        >
+            <div className="max-w-[1100px] mx-auto" style={{ padding: '0 24px' }}>
+                <div
+                    className="flex items-center justify-between glass"
+                    style={{
+                        borderRadius: '9999px',
+                        padding: '10px 20px',
+                        border: '1px solid rgba(255,255,255,0.07)',
+                        boxShadow: isScrolled ? '0 8px 30px rgba(0,0,0,0.4)' : 'none',
+                        transition: 'box-shadow 0.3s ease',
                     }}
-                    transition={{ duration: 0.2 }}
-                    className={`absolute top-20 right-0 bg-background/95 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl p-6 min-w-[200px] ${isMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
                 >
-                    <div className="flex flex-col items-end space-y-4">
+                    {/* Logo */}
+                    <button
+                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                        style={{
+                            fontSize: '13px',
+                            fontWeight: 600,
+                            color: '#fff',
+                            border: '1px solid #3f3f46',
+                            borderRadius: '9999px',
+                            padding: '6px 16px',
+                            background: 'transparent',
+                            cursor: 'pointer',
+                            transition: 'border-color 0.2s',
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#71717a')}
+                        onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#3f3f46')}
+                    >
+                        Devansh Kumar
+                    </button>
+
+                    {/* Desktop Nav Links */}
+                    <nav className="hidden md:flex items-center" style={{ gap: '32px' }}>
                         {navItems.map((item) => (
                             <button
                                 key={item.name}
                                 onClick={() => scrollToSection(item.href)}
-                                className={`text-sm md:text-base font-medium uppercase tracking-widest transition-all duration-300 hover:text-accent relative group ${activeSection === item.href.slice(1) ? 'text-accent' : 'text-foreground-muted'
-                                    }`}
+                                style={{
+                                    fontSize: '13px',
+                                    fontWeight: 500,
+                                    color: '#a1a1aa',
+                                    background: 'none',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    transition: 'color 0.2s',
+                                }}
+                                onMouseEnter={(e) => (e.currentTarget.style.color = '#fff')}
+                                onMouseLeave={(e) => (e.currentTarget.style.color = '#a1a1aa')}
                             >
                                 {item.name}
-                                <span
-                                    className={`absolute -right-6 top-1/2 -translate-y-1/2 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-4 ${activeSection === item.href.slice(1) ? 'w-4' : ''
-                                        }`}
-                                />
                             </button>
                         ))}
+                    </nav>
+
+                    {/* Right: Contact + Mobile hamburger */}
+                    <div className="flex items-center" style={{ gap: '12px' }}>
+                        <a
+                            href="mailto:work.devanshkumar@gmail.com"
+                            className="hidden md:flex"
+                            style={{
+                                fontSize: '12px',
+                                fontWeight: 600,
+                                color: '#fff',
+                                border: '1px solid #3f3f46',
+                                borderRadius: '9999px',
+                                padding: '6px 16px',
+                                textDecoration: 'none',
+                                letterSpacing: '0.05em',
+                                transition: 'border-color 0.2s',
+                            }}
+                            onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#3b82f6')}
+                            onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#3f3f46')}
+                        >
+                            CONTACT
+                        </a>
+
+                        {/* Mobile hamburger */}
+                        <button
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            className="md:hidden"
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '5px',
+                                padding: '8px',
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                            }}
+                            aria-label="Toggle menu"
+                        >
+                            <span style={{
+                                display: 'block', width: '20px', height: '2px', background: '#fff',
+                                transition: 'all 0.2s',
+                                transform: isMenuOpen ? 'rotate(45deg) translateY(7px)' : 'none',
+                            }} />
+                            <span style={{
+                                display: 'block', width: '20px', height: '2px', background: '#fff',
+                                transition: 'all 0.2s',
+                                opacity: isMenuOpen ? 0 : 1,
+                            }} />
+                            <span style={{
+                                display: 'block', width: '20px', height: '2px', background: '#fff',
+                                transition: 'all 0.2s',
+                                transform: isMenuOpen ? 'rotate(-45deg) translateY(-7px)' : 'none',
+                            }} />
+                        </button>
                     </div>
-                </motion.div>
-            </motion.div>
-        </>
+                </div>
+
+                {/* Mobile Menu */}
+                <AnimatePresence>
+                    {isMenuOpen && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -10, scale: 0.97 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -10, scale: 0.97 }}
+                            transition={{ duration: 0.2 }}
+                            className="glass"
+                            style={{
+                                marginTop: '8px',
+                                borderRadius: '16px',
+                                border: '1px solid rgba(255,255,255,0.07)',
+                                padding: '16px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '12px',
+                            }}
+                        >
+                            {navItems.map((item) => (
+                                <button
+                                    key={item.name}
+                                    onClick={() => scrollToSection(item.href)}
+                                    style={{
+                                        fontSize: '14px',
+                                        color: '#d4d4d8',
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        textAlign: 'left',
+                                        padding: '4px 0',
+                                    }}
+                                >
+                                    {item.name}
+                                </button>
+                            ))}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+        </motion.header>
     );
 }

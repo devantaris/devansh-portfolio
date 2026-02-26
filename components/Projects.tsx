@@ -1,402 +1,217 @@
 'use client';
 
-import { useState } from 'react';
-import { Tilt } from './ui/tilt';
-import { Spotlight } from './ui/spotlight';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
-import Link from 'next/link';
+import { motion } from 'framer-motion';
 
-interface Project {
-    id: number;
-    title: string;
-    description: string;
-    tech: string[];
-    image: string;
-    gallery: string[];
-    fullDescription: string;
-}
+const projects = [
+    {
+        emoji: '🛡️',
+        name: 'Risk-Aware Fraud Decision System',
+        description:
+            'A multi-axis risk intelligence engine that evaluates financial transactions using behavioral, network, and temporal risk signals to produce explainable fraud decisions.',
+        features: [
+            'Multi-layered risk scoring with 12+ risk signals',
+            'Explainable AI — every decision has a breakdown',
+            'Real-time decision API with sub-100ms latency',
+            'Adaptive rules engine with manual override support',
+        ],
+        tech: ['Python', 'FastAPI', 'Scikit-learn', 'PostgreSQL', 'Redis', 'Railway'],
+        demo: 'https://mari-alpha.vercel.app',
+        code: 'https://github.com/devantaris/mari',
+    },
+    {
+        emoji: '🎬',
+        name: 'Flutter OTT Streaming App',
+        description:
+            'A Flutter-based OTT streaming-style application with local authentication, content rentals, and a rich cinematic UI.',
+        features: [
+            'Local auth with secure session management',
+            'Content catalog with rental & purchase flow',
+            'Rich cinematic UI with smooth page transitions',
+            'Cross-platform: iOS, Android & Web',
+        ],
+        tech: ['Flutter', 'Dart', 'SQLite', 'BLoC'],
+        demo: null,
+        code: 'https://github.com/devantaris/flutter-ott-app',
+    },
+    {
+        emoji: '🌐',
+        name: 'Portfolio — This Site',
+        description:
+            'A clean, minimal, and high-performance portfolio website with particle animations, bento grid layout, and GitHub stats integration.',
+        features: [
+            'Particle canvas background in hero section',
+            'Bento grid about section',
+            'Tech stack infinite marquee',
+            'GitHub stats integration',
+        ],
+        tech: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Framer Motion'],
+        demo: null,
+        code: 'https://github.com/devantaris/devansh-portfolio',
+    },
+];
+
+const ProjectPlaceholder = ({ name }: { name: string }) => (
+    <div
+        style={{
+            width: '100%', height: '100%', borderRadius: '16px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'linear-gradient(135deg, #18181b, #09090b)',
+            border: '1px solid #27272a',
+        }}
+    >
+        <div style={{ textAlign: 'center', padding: '24px' }}>
+            <div style={{ fontSize: '40px', marginBottom: '12px' }}>🖥️</div>
+            <p style={{ fontSize: '12px', color: '#52525b' }}>{name}</p>
+        </div>
+    </div>
+);
+
+const ExternalLinkIcon = () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+        <polyline points="15,3 21,3 21,9" />
+        <line x1="10" y1="14" x2="21" y2="3" />
+    </svg>
+);
+
+const GithubIcon = () => (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+    </svg>
+);
 
 export default function Projects() {
-    const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-
-    const projects: Project[] = [
-        {
-            id: 1,
-            title: 'FinTech Platform',
-            description: 'High-performance backend system for processing millions of transactions',
-            tech: ['Go', 'PostgreSQL', 'Redis', 'Kubernetes'],
-            image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop',
-            gallery: [
-                'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop',
-                'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop',
-                'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=800&h=600&fit=crop',
-            ],
-            fullDescription: 'A scalable fintech platform built to handle millions of daily transactions with sub-second latency. Implements distributed caching, real-time processing, and comprehensive audit logging for regulatory compliance.',
-        },
-        {
-            id: 2,
-            title: 'Distributed Cache',
-            description: 'Custom distributed caching solution with automatic sharding',
-            tech: ['Rust', 'Docker', 'Kubernetes', 'gRPC'],
-            image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=600&fit=crop',
-            gallery: [
-                'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=600&fit=crop',
-                'https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=800&h=600&fit=crop',
-                'https://images.unsplash.com/photo-1639322537228-f710d846310a?w=800&h=600&fit=crop',
-            ],
-            fullDescription: 'High-performance distributed caching system with automatic sharding and replication. Features consistent hashing, automatic failover, and real-time monitoring dashboards.',
-        },
-        {
-            id: 3,
-            title: 'API Gateway',
-            description: 'Scalable API gateway handling 10K+ requests per second',
-            tech: ['Node.js', 'MongoDB', 'AWS', 'Redis'],
-            image: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800&h=600&fit=crop',
-            gallery: [
-                'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800&h=600&fit=crop',
-                'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=600&fit=crop',
-                'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=800&h=600&fit=crop',
-            ],
-            fullDescription: 'Enterprise API gateway with rate limiting, authentication, and comprehensive analytics. Supports multiple protocols including REST, GraphQL, and WebSocket.',
-        },
-        {
-            id: 4,
-            title: 'System Monitor',
-            description: 'Real-time infrastructure monitoring and alerting platform',
-            tech: ['Python', 'Grafana', 'Prometheus', 'Kafka'],
-            image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop',
-            gallery: [
-                'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop',
-                'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&h=600&fit=crop',
-                'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop',
-            ],
-            fullDescription: 'Comprehensive monitoring solution for large-scale infrastructure. Includes custom metrics collection, anomaly detection, and intelligent alerting with PagerDuty integration.',
-        },
-    ];
-
     return (
-        <section
-            id="projects"
-            className="relative"
-            style={{
-                background: 'radial-gradient(ellipse at center, rgba(139, 92, 246, 0.05) 0%, transparent 70%), #0B0F1A',
-                paddingTop: '96px',
-                paddingBottom: '96px',
-            }}
-        >
-            {/* Max-width container: 1280px - 12 column grid */}
-            <div
-                className="mx-auto"
-                style={{
-                    maxWidth: '1280px',
-                    paddingLeft: '96px',
-                    paddingRight: '96px',
-                }}
-            >
-                {/* Section Header - Aligned to grid column 1 */}
-                <div style={{ marginBottom: '64px' }}>
-                    <h2
-                        className="font-bold tracking-tight"
-                        style={{
-                            fontSize: '56px',
-                            lineHeight: '1.1',
-                            letterSpacing: '-0.02em',
-                            marginBottom: '16px',
-                            color: '#FFFFFF',
-                        }}
-                    >
-                        Featured Projects
-                    </h2>
-                    <p
-                        style={{
-                            fontSize: '18px',
-                            lineHeight: '1.6',
-                            color: 'rgba(255, 255, 255, 0.6)',
-                            maxWidth: '600px',
-                        }}
-                    >
-                        Building systems that scale, perform, and solve real problems.
-                    </p>
-                </div>
-
-                {/* Strict 2x2 Grid - Equal dimensions */}
-                <div
-                    className="grid"
-                    style={{
-                        gridTemplateColumns: 'repeat(2, 1fr)',
-                        gap: '32px',
-                        marginBottom: '64px',
-                    }}
+        <section id="projects" style={{ padding: '120px 0' }}>
+            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 48px' }}>
+                {/* Section heading */}
+                <motion.h2
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5 }}
+                    style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 700, color: '#fff', marginBottom: '64px' }}
                 >
-                    {projects.map((project) => (
-                        <div
-                            key={project.id}
-                            style={{
-                                aspectRatio: '16/9',
-                            }}
-                        >
-                            <Tilt
-                                rotationFactor={6}
-                                isRevese
-                                style={{
-                                    transformOrigin: 'center center',
-                                    height: '100%',
-                                }}
-                                springOptions={{
-                                    stiffness: 26.7,
-                                    damping: 4.1,
-                                    mass: 0.2,
-                                }}
-                                className="group relative cursor-pointer"
-                                onClick={() => setSelectedProject(project)}
-                            >
-                                <Spotlight
-                                    className="z-10 from-violet-500/30 via-violet-500/10 to-transparent blur-3xl"
-                                    size={248}
-                                    springOptions={{
-                                        stiffness: 26.7,
-                                        damping: 4.1,
-                                        mass: 0.2,
-                                    }}
-                                />
-                                <div
-                                    className="relative h-full overflow-hidden"
-                                    style={{
-                                        borderRadius: '16px',
-                                        border: '1px solid rgba(255, 255, 255, 0.08)',
-                                        background: 'rgba(15, 23, 42, 0.5)',
-                                        backdropFilter: 'blur(8px)',
-                                        boxShadow: '0 0 40px rgba(139, 92, 246, 0.1)',
-                                    }}
-                                >
-                                    {/* Image - Full width */}
-                                    <img
-                                        src={project.image}
-                                        alt={project.title}
-                                        className="w-full object-cover grayscale duration-700 group-hover:grayscale-0"
-                                        style={{
-                                            height: '192px',
-                                        }}
-                                    />
+                    Latest Projects
+                </motion.h2>
 
-                                    {/* Text block - Equal padding */}
-                                    <div style={{ padding: '32px' }}>
-                                        {/* Title - Semi-bold */}
-                                        <h3
-                                            className="font-semibold"
-                                            style={{
-                                                fontSize: '24px',
-                                                lineHeight: '1.3',
-                                                marginBottom: '8px',
-                                                color: '#FFFFFF',
-                                            }}
-                                        >
-                                            {project.title}
-                                        </h3>
-
-                                        {/* Description - Regular */}
-                                        <p
-                                            className="line-clamp-2"
-                                            style={{
-                                                fontSize: '15px',
-                                                lineHeight: '1.6',
-                                                marginBottom: '16px',
-                                                color: 'rgba(255, 255, 255, 0.6)',
-                                            }}
-                                        >
-                                            {project.description}
-                                        </p>
-
-                                        {/* Tech tags - Single horizontal row */}
-                                        <div
-                                            className="flex flex-wrap"
-                                            style={{ gap: '8px' }}
-                                        >
-                                            {project.tech.slice(0, 3).map((tech, idx) => (
-                                                <span
-                                                    key={idx}
-                                                    style={{
-                                                        padding: '6px 12px',
-                                                        borderRadius: '12px',
-                                                        background: 'rgba(139, 92, 246, 0.15)',
-                                                        color: 'rgba(167, 139, 250, 1)',
-                                                        fontSize: '12px',
-                                                        fontWeight: '500',
-                                                    }}
-                                                >
-                                                    {tech}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                            </Tilt>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Button - Centered, equal spacing */}
-                <div
-                    className="flex justify-center"
-                    style={{
-                        marginTop: '64px',
-                    }}
-                >
-                    <Link
-                        href="/projects"
-                        className="group inline-flex items-center"
-                        style={{
-                            padding: '16px 32px',
-                            borderRadius: '9999px',
-                            background: 'rgba(139, 92, 246, 0.1)',
-                            border: '1px solid rgba(139, 92, 246, 0.3)',
-                            color: 'rgba(167, 139, 250, 1)',
-                            fontSize: '16px',
-                            fontWeight: '500',
-                            transition: 'all 0.3s',
-                            gap: '8px',
-                        }}
-                    >
-                        <span>See All Projects</span>
-                        <span className="group-hover:translate-x-1 transition-transform">→</span>
-                    </Link>
-                </div>
-            </div>
-
-            {/* Project Detail Modal */}
-            <AnimatePresence>
-                {selectedProject && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[100] flex items-center justify-center p-8 bg-black/80 backdrop-blur-xl"
-                        onClick={() => setSelectedProject(null)}
-                    >
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '96px' }}>
+                    {projects.map((project, idx) => (
                         <motion.div
-                            initial={{ scale: 0.95, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.95, opacity: 0 }}
-                            className="relative w-full max-h-[90vh] overflow-y-auto"
+                            key={project.name}
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: '-80px' }}
+                            transition={{ duration: 0.6, ease: 'easeOut' }}
                             style={{
-                                maxWidth: '1024px',
-                                background: 'rgba(15, 23, 42, 0.95)',
-                                backdropFilter: 'blur(20px)',
-                                border: '1px solid rgba(255, 255, 255, 0.08)',
-                                borderRadius: '24px',
-                                padding: '48px',
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+                                gap: '40px',
+                                alignItems: 'center',
                             }}
-                            onClick={(e) => e.stopPropagation()}
                         >
-                            {/* Close Button */}
-                            <button
-                                onClick={() => setSelectedProject(null)}
-                                className="absolute top-6 right-6 p-3 rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors"
-                            >
-                                <X className="w-6 h-6" />
-                            </button>
-
-                            {/* Title */}
-                            <h2
-                                className="font-bold"
-                                style={{
-                                    fontSize: '40px',
-                                    lineHeight: '1.2',
-                                    marginBottom: '32px',
-                                    color: '#FFFFFF',
-                                }}
-                            >
-                                {selectedProject.title}
-                            </h2>
-
-                            {/* Gallery */}
+                            {/* Image side */}
                             <div
-                                className="grid grid-cols-3"
                                 style={{
-                                    gap: '16px',
-                                    marginBottom: '32px',
+                                    height: '320px',
+                                    borderRadius: '16px',
+                                    overflow: 'hidden',
+                                    boxShadow: '0 0 40px rgba(59, 130, 246, 0.12), 0 0 80px rgba(59, 130, 246, 0.04)',
+                                    border: '1px solid rgba(59, 130, 246, 0.15)',
+                                    order: idx % 2 === 1 ? 2 : 1,
                                 }}
                             >
-                                {selectedProject.gallery.map((img, idx) => (
-                                    <img
-                                        key={idx}
-                                        src={img}
-                                        alt={`${selectedProject.title} ${idx + 1}`}
-                                        className="w-full object-cover"
-                                        style={{
-                                            height: '160px',
-                                            borderRadius: '12px',
-                                        }}
-                                    />
-                                ))}
+                                <ProjectPlaceholder name={project.name} />
                             </div>
 
-                            {/* Description */}
-                            <p
-                                style={{
-                                    fontSize: '18px',
-                                    lineHeight: '1.7',
-                                    color: 'rgba(255, 255, 255, 0.7)',
-                                    marginBottom: '32px',
-                                }}
-                            >
-                                {selectedProject.fullDescription}
-                            </p>
+                            {/* Info side */}
+                            <div style={{ order: idx % 2 === 1 ? 1 : 2 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                                    <span style={{ fontSize: '24px' }}>{project.emoji}</span>
+                                    <h3 style={{ fontSize: '22px', fontWeight: 700, color: '#fff' }}>{project.name}</h3>
+                                </div>
 
-                            {/* Tech Stack */}
-                            <div>
-                                <h3
-                                    className="font-semibold"
-                                    style={{
-                                        fontSize: '20px',
-                                        marginBottom: '16px',
-                                        color: '#FFFFFF',
-                                    }}
-                                >
-                                    Tech Stack
-                                </h3>
-                                <div
-                                    className="flex flex-wrap"
-                                    style={{ gap: '8px' }}
-                                >
-                                    {selectedProject.tech.map((tech, idx) => (
+                                <p style={{ fontSize: '14px', color: '#a1a1aa', lineHeight: 1.7, marginBottom: '20px' }}>
+                                    {project.description}
+                                </p>
+
+                                {/* Features */}
+                                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    {project.features.map((f) => (
+                                        <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '13px', color: '#a1a1aa' }}>
+                                            <span style={{ fontSize: '14px', flexShrink: 0, lineHeight: '1.4' }}>✨</span>
+                                            <span>{f}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                {/* Tech pills */}
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '24px' }}>
+                                    {project.tech.map((t) => (
                                         <span
-                                            key={idx}
+                                            key={t}
                                             style={{
-                                                padding: '10px 20px',
-                                                borderRadius: '12px',
-                                                background: 'rgba(139, 92, 246, 0.15)',
-                                                color: 'rgba(167, 139, 250, 1)',
-                                                fontSize: '14px',
-                                                fontWeight: '500',
+                                                fontSize: '12px',
+                                                padding: '6px 14px',
+                                                border: '1px solid #3f3f46',
+                                                borderRadius: '6px',
+                                                color: '#d4d4d8',
+                                                background: '#18181b',
                                             }}
                                         >
-                                            {tech}
+                                            {t}
                                         </span>
                                     ))}
                                 </div>
+
+                                {/* Buttons */}
+                                <div style={{ display: 'flex', gap: '12px' }}>
+                                    {project.demo && (
+                                        <a
+                                            href={project.demo}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{
+                                                display: 'flex', alignItems: 'center', gap: '8px',
+                                                padding: '8px 16px',
+                                                border: '1px solid #52525b',
+                                                borderRadius: '6px',
+                                                fontSize: '13px',
+                                                color: '#fff',
+                                                textDecoration: 'none',
+                                                transition: 'border-color 0.2s',
+                                            }}
+                                        >
+                                            <ExternalLinkIcon />
+                                            Live Demo
+                                        </a>
+                                    )}
+                                    {project.code && (
+                                        <a
+                                            href={project.code}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{
+                                                display: 'flex', alignItems: 'center', gap: '8px',
+                                                padding: '8px 16px',
+                                                border: '1px solid #52525b',
+                                                borderRadius: '6px',
+                                                fontSize: '13px',
+                                                color: '#fff',
+                                                textDecoration: 'none',
+                                                transition: 'border-color 0.2s',
+                                            }}
+                                        >
+                                            <GithubIcon />
+                                            View Code
+                                        </a>
+                                    )}
+                                </div>
                             </div>
                         </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* Responsive mobile styles */}
-            <style jsx>{`
-                @media (max-width: 768px) {
-                    section > div {
-                        padding-left: 24px !important;
-                        padding-right: 24px !important;
-                    }
-                    section > div > div:first-child h2 {
-                        font-size: 36px !important;
-                    }
-                    section > div > div:nth-child(2) {
-                        grid-template-columns: 1fr !important;
-                    }
-                }
-            `}</style>
+                    ))}
+                </div>
+            </div>
         </section>
     );
 }
