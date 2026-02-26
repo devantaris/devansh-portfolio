@@ -75,7 +75,7 @@ function SwimmingAvatar() {
                     }}
                 />
                 <Image
-                    src="/images/image1.png"
+                    src="/images/image3.png"
                     alt="Devansh Kumar Avatar"
                     width={360}
                     height={360}

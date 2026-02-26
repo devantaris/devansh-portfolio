@@ -53,16 +53,24 @@ export default function MultiLayerStarfield() {
 
     // ── Stars ──
     const starLayers: THREE.Points[] = [];
-    const STAR_COUNT = 5000;
+
+    // Reduce overall star count to half, heavily reducing slower moving stars (higher depth)
+    const getLayerStarCount = (layerIdx: number) => {
+      if (layerIdx === 0) return 4000; // Fastest moving (front)
+      if (layerIdx === 1) return 2000; // Medium speed
+      if (layerIdx === 2) return 1500; // Slowest moving (back)
+      return 1500;
+    };
 
     for (let layerIdx = 0; layerIdx < 3; layerIdx++) {
+      const STAR_COUNT = getLayerStarCount(layerIdx);
       const positions = new Float32Array(STAR_COUNT * 3);
       const colors = new Float32Array(STAR_COUNT * 3);
       const sizes = new Float32Array(STAR_COUNT);
 
       for (let j = 0; j < STAR_COUNT; j++) {
-        // Spherically distributed
-        const radius = 200 + Math.random() * 800;
+        // Spherically distributed. Using a power function pushes more stars outward, reducing center density.
+        const radius = 100 + Math.pow(Math.random(), 0.5) * 800;
         const theta = Math.random() * Math.PI * 2;
         const phi = Math.acos(Math.random() * 2 - 1);
 
@@ -96,13 +104,18 @@ export default function MultiLayerStarfield() {
         uniforms: {
           time: { value: 0 },
           depth: { value: layerIdx },
+          uMouse: { value: new THREE.Vector2(-1000, -1000) },
+          uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
         },
         vertexShader: `
           attribute float size;
           attribute vec3 color;
           varying vec3 vColor;
+          varying float vBlurAmount;
           uniform float time;
           uniform float depth;
+          uniform vec2 uMouse;
+          uniform vec2 uResolution;
 
           void main() {
             vColor = color;
@@ -114,18 +127,38 @@ export default function MultiLayerStarfield() {
             pos.xy = rot * pos.xy;
 
             vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-            gl_PointSize = size * (300.0 / -mvPosition.z);
-            gl_Position = projectionMatrix * mvPosition;
+            vec4 projectedPos = projectionMatrix * mvPosition;
+            
+            // Calculate blur amount based on distance to mouse
+            vec2 ndcPos = projectedPos.xy / projectedPos.w;
+            vec2 screenPos = vec2(
+              (ndcPos.x * 0.5 + 0.5) * uResolution.x,
+              (1.0 - (ndcPos.y * 0.5 + 0.5)) * uResolution.y
+            );
+            
+            float distToMouse = length(screenPos - uMouse);
+            // Radius of 120px clear, blurring out to 300px
+            vBlurAmount = smoothstep(120.0, 300.0, distToMouse);
+
+            float baseSize = size * (300.0 / -mvPosition.z);
+            // Increase size for blurred stars up to 2.5x, making them look out of focus
+            gl_PointSize = baseSize * (1.0 + vBlurAmount * 1.5);
+            
+            gl_Position = projectedPos;
           }
         `,
         fragmentShader: `
           varying vec3 vColor;
+          varying float vBlurAmount;
 
           void main() {
             float dist = length(gl_PointCoord - vec2(0.5));
             if (dist > 0.5) discard;
 
             float opacity = 1.0 - smoothstep(0.0, 0.5, dist);
+            // Faint down the blurred stars to keep brightness balanced
+            opacity *= mix(1.0, 0.25, vBlurAmount);
+            
             gl_FragColor = vec4(vColor, opacity);
           }
         `,
@@ -151,9 +184,13 @@ export default function MultiLayerStarfield() {
     // ── Mouse parallax ──
     let mouseX = 0;
     let mouseY = 0;
+    let clientX = -1000;
+    let clientY = -1000;
     const handleMouseMove = (e: MouseEvent) => {
       mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
       mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+      clientX = e.clientX;
+      clientY = e.clientY;
     };
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
@@ -164,10 +201,12 @@ export default function MultiLayerStarfield() {
       animationId = requestAnimationFrame(animate);
       const time = Date.now() * 0.001;
 
-      // Update star shader time
+      // Update star shader uniforms
       starLayers.forEach((layer) => {
         if (layer.material instanceof THREE.ShaderMaterial) {
           layer.material.uniforms.time.value = time;
+          layer.material.uniforms.uMouse.value.set(clientX, clientY);
+          layer.material.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
         }
       });
 
