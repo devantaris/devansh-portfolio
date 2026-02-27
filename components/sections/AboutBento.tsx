@@ -10,14 +10,14 @@ const fadeUp = (delay: number) => ({
 });
 
 const principles = [
-    'Write Modular Code',
-    'Use Comments Wisely',
-    'Handle Errors Properly',
-    'Optimize for Readability',
-    'Avoid Premature Optimization',
-    'Test Early, Test Often',
-    'Keep Functions Small',
-    'Meaningful Variable Names',
+    'Risk-aware fraud architecture',
+    'Cost-sensitive modeling',
+    'Consequence-weighted thresholding',
+    'EDA-driven reasoning',
+    'Layered decision architecture',
+    'The Extremity Principle',
+    'SIMPLY UNIVERSE - published book',
+    'IEEE Chairperson - IEEE Student Branch Bennett University',
 ];
 
 export default function AboutBento() {
@@ -33,11 +33,11 @@ export default function AboutBento() {
                         marginBottom: '16px',
                     }}
                 >
-                    {/* Services Card */}
+                    {/* About me Card */}
                     <motion.div {...fadeUp(0)} className="zinc-card" style={{ padding: '28px' }}>
-                        <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '12px' }}>Services</h3>
+                        <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '12px' }}>About Me</h3>
                         <p style={{ fontSize: '14px', color: '#a1a1aa', lineHeight: 1.7 }}>
-                            Building scalable backend systems, risk intelligence engines, and full-stack web applications with clean architecture.
+                            I build scalable backend systems, risk intelligence engines, and full-stack web applications with clean architecture.
                         </p>
                     </motion.div>
 
@@ -66,12 +66,27 @@ export default function AboutBento() {
                         </div>
                     </motion.div>
 
-                    {/* Clean Code Card */}
+                    {/* Engineering Philosophy Card */}
                     <motion.div {...fadeUp(0.2)} className="zinc-card" style={{ padding: '28px' }}>
-                        <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '12px' }}>Clean Code</h3>
-                        <p style={{ fontSize: '14px', color: '#a1a1aa', lineHeight: 1.7 }}>
-                            Writing maintainable, efficient, and scalable code following best practices and proven engineering principles.
-                        </p>
+                        <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '12px' }}>Engineering Philosophy</h3>
+                        <ul
+                            style={{
+                                fontSize: '14px',
+                                color: '#a1a1aa',
+                                lineHeight: 1.7,
+                                paddingLeft: '20px',
+                                margin: 0,
+                                listStyleType: 'disc',
+                                listStylePosition: 'outside',
+                            }}
+                        >
+                            <li>Decisions matter more than predictions</li>
+                            <li>Architecture before implementation</li>
+                            <li>Design for failure, not ideal cases</li>
+                            <li>Clarity over cleverness</li>
+                            <li>Measure trade-offs explicitly</li>
+                            <li>Systems over scripts</li>
+                        </ul>
                     </motion.div>
                 </div>
 
@@ -108,10 +123,10 @@ export default function AboutBento() {
                         </div>
                     </motion.div>
 
-                    {/* Code Principles Card */}
+                    {/* Proof of Thinking Card */}
                     <motion.div {...fadeUp(0.4)} className="zinc-card" style={{ padding: '28px' }}>
-                        <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '16px' }}>Code Principles</h3>
-                        <div
+                        <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '16px' }}>Proof of Thinking</h3>
+                        <ol
                             style={{
                                 display: 'grid',
                                 gridTemplateColumns: '1fr 1fr',
@@ -124,7 +139,7 @@ export default function AboutBento() {
                                     {p}
                                 </p>
                             ))}
-                        </div>
+                        </ol>
                     </motion.div>
                 </div>
             </div>
