@@ -9,8 +9,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Devansh Kumar | Builder & Systems Thinker",
-  description: "Devansh Kumar — building systems that think, from risk intelligence engines to mobile apps. Software engineer based in India.",
+  title: "Devansh Kumar",
+  description: "Devansh Kumar - building systems that think, from risk intelligence engines to mobile apps. Software engineer based in India.",
   keywords: ["Devansh Kumar", "Portfolio", "Backend Engineer", "Systems Engineer", "Fintech", "Flutter", "Python", "Next.js"],
 };
 
