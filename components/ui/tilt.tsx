@@ -18,6 +18,7 @@ type TiltProps = {
     rotationFactor?: number;
     isRevese?: boolean;
     springOptions?: SpringOptions;
+    onClick?: React.MouseEventHandler<HTMLDivElement>;
 };
 
 export function Tilt({
@@ -27,6 +28,7 @@ export function Tilt({
     rotationFactor = 15,
     isRevese = false,
     springOptions,
+    onClick,
 }: TiltProps) {
     const ref = useRef<HTMLDivElement>(null);
 
@@ -85,6 +87,7 @@ export function Tilt({
             }}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
+            onClick={onClick}
         >
             {children}
         </motion.div>
