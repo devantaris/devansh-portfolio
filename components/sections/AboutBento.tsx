@@ -23,7 +23,7 @@ const principles = [
 export default function AboutBento() {
     return (
         <section id="about" style={{ padding: '80px 0 80px 0' }}>
-            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 48px' }}>
+            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 clamp(24px, 5vw, 48px)' }}>
                 {/* 3-column top row */}
                 <div
                     style={{
@@ -94,7 +94,7 @@ export default function AboutBento() {
                 <div
                     style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
                         gap: '16px',
                     }}
                 >

@@ -25,8 +25,8 @@ const blogPlaceholders = [
 
 export default function Blog() {
     return (
-        <section id="blog" style={{ padding: '120px 0' }}>
-            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 48px' }}>
+        <section id="blog" style={{ padding: 'clamp(60px, 10vw, 120px) 0' }}>
+            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 clamp(24px, 5vw, 48px)' }}>
                 <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '48px' }}>
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}
@@ -56,7 +56,7 @@ export default function Blog() {
                 <div
                     style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
                         gap: '16px',
                     }}
                 >

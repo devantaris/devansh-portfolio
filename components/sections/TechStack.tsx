@@ -46,7 +46,7 @@ const row2 = [...techStack.slice(half), ...techStack.slice(half)];
 export default function TechStack() {
     return (
         <section id="stack" style={{ padding: '80px 0', overflow: 'hidden' }}>
-            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 48px', marginBottom: '48px' }}>
+            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 clamp(24px, 5vw, 48px)', marginBottom: '48px' }}>
                 <motion.h2
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}

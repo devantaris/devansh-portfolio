@@ -17,8 +17,8 @@ const LinkedInIcon = () => (
 export default function ContactSection() {
     return (
         <footer id="contact" style={{ padding: '48px 0', borderTop: '1px solid rgba(39, 39, 42, 0.5)' }}>
-            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 48px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 clamp(24px, 5vw, 48px)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '24px' }}>
                     {/* Get In Touch pill */}
                     <motion.a
                         href="mailto:work.devanshkumar@gmail.com"

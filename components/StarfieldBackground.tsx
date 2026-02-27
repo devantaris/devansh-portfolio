@@ -28,19 +28,25 @@ export default function MultiLayerStarfield() {
     camera.position.set(0, 20, 100);
 
     // ── Renderer ── pure black clear color
+    const isMobile = window.innerWidth <= 768;
+    // Cap pixel ratio to 1.5 on desktop to keep post-processing fast, 1 on mobile
+    const pixelRatio = isMobile ? 1 : Math.min(window.devicePixelRatio, 1.5);
+
     const renderer = new THREE.WebGLRenderer({
       canvas,
-      antialias: true,
+      antialias: false, // Antialiasing is expensive and unnecessary for Points
       alpha: false,
+      powerPreference: 'high-performance',
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(pixelRatio);
     renderer.setClearColor(0x000000, 1); // Pure black
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.0;
 
     // ── Post-processing — bloom only on bright stars ──
     const composer = new EffectComposer(renderer);
+    composer.setPixelRatio(pixelRatio); // Prevents default scaling on heavy high-DPI displays
     composer.addPass(new RenderPass(scene, camera));
     composer.addPass(
       new UnrealBloomPass(
@@ -101,6 +107,7 @@ export default function MultiLayerStarfield() {
       geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
       const material = new THREE.ShaderMaterial({
+        precision: isMobile ? 'mediump' : 'highp',
         uniforms: {
           time: { value: 0 },
           depth: { value: layerIdx },
@@ -165,6 +172,7 @@ export default function MultiLayerStarfield() {
         transparent: true,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
+        depthTest: false, // Disabling depth test skips Z-buffer reading for performance
       });
 
       const points = new THREE.Points(geometry, material);
@@ -175,7 +183,7 @@ export default function MultiLayerStarfield() {
     // NO atmosphere sphere — pure black space
 
     // ── Scroll state ──
-    let scrollY = 0;
+    let scrollY = window.scrollY;
     const handleScroll = () => {
       scrollY = window.scrollY;
     };

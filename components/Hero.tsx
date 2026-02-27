@@ -137,7 +137,7 @@ export default function Hero() {
                 style={{
                     maxWidth: '1100px',
                     margin: '0 auto',
-                    padding: '120px 48px 80px 48px',
+                    padding: 'clamp(80px, 15vh, 120px) clamp(24px, 5vw, 48px) 80px clamp(24px, 5vw, 48px)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
@@ -146,7 +146,7 @@ export default function Hero() {
                 }}
             >
                 {/* Left: Text content */}
-                <div style={{ flex: '1 1 400px', minWidth: '320px' }}>
+                <div style={{ flex: '1 1 400px', minWidth: 'min(100%, 320px)' }}>
                     {/* Main heading */}
                     <motion.h1
                         initial={{ opacity: 0, y: 30 }}

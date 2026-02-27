@@ -82,8 +82,8 @@ const GithubIcon = () => (
 
 export default function Projects() {
     return (
-        <section id="projects" style={{ padding: '120px 0' }}>
-            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 48px' }}>
+        <section id="projects" style={{ padding: 'clamp(60px, 10vw, 120px) 0' }}>
+            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 clamp(24px, 5vw, 48px)' }}>
                 {/* Section heading */}
                 <motion.h2
                     initial={{ opacity: 0, y: 20 }}
@@ -105,7 +105,7 @@ export default function Projects() {
                             transition={{ duration: 0.6, ease: 'easeOut' }}
                             style={{
                                 display: 'grid',
-                                gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+                                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))',
                                 gap: '40px',
                                 alignItems: 'center',
                             }}

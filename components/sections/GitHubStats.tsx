@@ -19,8 +19,8 @@ const languages = [
 
 export default function GitHubStats() {
     return (
-        <section id="stats" style={{ padding: '120px 0' }}>
-            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 48px' }}>
+        <section id="stats" style={{ padding: 'clamp(60px, 10vw, 120px) 0' }}>
+            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 clamp(24px, 5vw, 48px)' }}>
                 <motion.h2
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -40,7 +40,7 @@ export default function GitHubStats() {
                     A snapshot of my open-source activity.
                 </motion.p>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '16px' }}>
                     {/* Stats overview */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
