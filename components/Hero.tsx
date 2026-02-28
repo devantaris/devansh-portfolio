@@ -1,41 +1,45 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import Image from 'next/image';
 
 /* ─── Swimming Avatar ─── */
 function SwimmingAvatar() {
     const avatarRef = useRef<HTMLDivElement>(null);
-    const [scrollProgress, setScrollProgress] = useState(0);
 
-    useEffect(() => {
-        const handleScroll = () => {
-            const scrollY = window.scrollY;
-            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const progress = docHeight > 0 ? scrollY / docHeight : 0;
-            setScrollProgress(progress);
-        };
+    // Use framer-motion's highly-optimized scroll tracking instead of native React state
+    // This prevents massive re-renders on every pixel of scroll
+    const { scrollYProgress } = useScroll({
+        offset: ["start start", "end end"]
+    });
 
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    // We pass our scroll logic into useTransform to keep all calculations
+    // on Framer Motion's internal animation thread, off the main React thread.
 
-    // Fish-like swimming motion calculations based on scroll
-    // The avatar undulates with sinusoidal curves — bobbing, swaying, rotating
-    const scrollFactor = scrollProgress * 30; // amplify for more oscillation cycles
+    // Vertical bob
+    const translateY = useTransform(scrollYProgress, (progress) => {
+        const factor = progress * 30;
+        return Math.sin(factor * 1.2) * 25 - progress * 120;
+    });
 
-    // Vertical bob — gentle up/down like breathing through water
-    const translateY = Math.sin(scrollFactor * 1.2) * 25 - scrollProgress * 120;
+    // Horizontal sway
+    const translateX = useTransform(scrollYProgress, (progress) => {
+        const factor = progress * 30;
+        return Math.sin(factor * 0.8) * 35 + Math.sin(factor * 2.1) * 12;
+    });
 
-    // Horizontal sway — side-to-side fish movement
-    const translateX = Math.sin(scrollFactor * 0.8) * 35 + Math.sin(scrollFactor * 2.1) * 12;
+    // Rotation
+    const rotate = useTransform(scrollYProgress, (progress) => {
+        const factor = progress * 30;
+        return Math.sin(factor * 0.9) * 8 + Math.sin(factor * 2.5) * 3;
+    });
 
-    // Rotation — gentle tilt like a fish changing direction
-    const rotate = Math.sin(scrollFactor * 0.9) * 8 + Math.sin(scrollFactor * 2.5) * 3;
-
-    // Scale — subtle breathing/pulsing
-    const scale = 1 + Math.sin(scrollFactor * 1.5) * 0.03;
+    // Scale
+    const scale = useTransform(scrollYProgress, (progress) => {
+        const factor = progress * 30;
+        return 1 + Math.sin(factor * 1.5) * 0.03;
+    });
 
     return (
         <motion.div
@@ -50,13 +54,15 @@ function SwimmingAvatar() {
             style={{
                 position: 'relative',
                 zIndex: 5,
-                willChange: 'transform',
             }}
         >
             <motion.div
                 style={{
-                    transform: `translateY(${translateY}px) translateX(${translateX}px) rotate(${rotate}deg) scale(${scale})`,
-                    transition: 'transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                    y: translateY,
+                    x: translateX,
+                    rotate: rotate,
+                    scale: scale,
+                    willChange: 'transform',
                 }}
             >
                 {/* Glow effect behind avatar */}

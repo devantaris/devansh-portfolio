@@ -44,28 +44,35 @@ export default function MultiLayerStarfield() {
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.0;
 
-    // ── Post-processing — bloom only on bright stars ──
+    // ── Post-processing — bloom only on bright stars (DISABLED ON MOBILE) ──
     const composer = new EffectComposer(renderer);
     composer.setPixelRatio(pixelRatio); // Prevents default scaling on heavy high-DPI displays
     composer.addPass(new RenderPass(scene, camera));
-    composer.addPass(
-      new UnrealBloomPass(
-        new THREE.Vector2(window.innerWidth, window.innerHeight),
-        0.4,  // strength — gentle glow on stars only
-        0.3,  // radius
-        0.85  // threshold — high so only bright stars bloom
-      )
-    );
+
+    // Only add the expensive Bloom pass on Desktop
+    if (!isMobile) {
+      composer.addPass(
+        new UnrealBloomPass(
+          new THREE.Vector2(window.innerWidth, window.innerHeight),
+          0.4,  // strength — gentle glow on stars only
+          0.3,  // radius
+          0.85  // threshold — high so only bright stars bloom
+        )
+      );
+    }
 
     // ── Stars ──
     const starLayers: THREE.Points[] = [];
 
     // Reduce overall star count to half, heavily reducing slower moving stars (higher depth)
     const getLayerStarCount = (layerIdx: number) => {
-      if (layerIdx === 0) return 4000; // Fastest moving (front)
-      if (layerIdx === 1) return 2000; // Medium speed
-      if (layerIdx === 2) return 1500; // Slowest moving (back)
-      return 1500;
+      // Drastically reduce star count on mobile to prevent crashes
+      const base = isMobile ? 0.25 : 1;
+
+      if (layerIdx === 0) return Math.floor(4000 * base); // Fastest moving (front)
+      if (layerIdx === 1) return Math.floor(2000 * base); // Medium speed
+      if (layerIdx === 2) return Math.floor(1500 * base); // Slowest moving (back)
+      return Math.floor(1500 * base);
     };
 
     for (let layerIdx = 0; layerIdx < 3; layerIdx++) {

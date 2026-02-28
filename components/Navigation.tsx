@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ContactModal from '@/components/ui/contact-modal';
 
 export default function Navigation() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -90,8 +92,8 @@ export default function Navigation() {
 
                     {/* Right: Contact + Mobile hamburger */}
                     <div className="flex items-center" style={{ gap: '12px' }}>
-                        <a
-                            href="mailto:work.devanshkumar@gmail.com"
+                        <button
+                            onClick={() => setIsContactModalOpen(true)}
                             className="hidden md:flex"
                             style={{
                                 fontSize: '12px',
@@ -100,7 +102,8 @@ export default function Navigation() {
                                 border: '1px solid #3f3f46',
                                 borderRadius: '9999px',
                                 padding: '6px 16px',
-                                textDecoration: 'none',
+                                background: 'transparent',
+                                cursor: 'pointer',
                                 letterSpacing: '0.05em',
                                 transition: 'border-color 0.2s',
                             }}
@@ -108,7 +111,7 @@ export default function Navigation() {
                             onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#3f3f46')}
                         >
                             CONTACT
-                        </a>
+                        </button>
 
                         {/* Mobile hamburger */}
                         <button
@@ -144,6 +147,8 @@ export default function Navigation() {
                     </div>
                 </div>
 
+                <ContactModal isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} />
+
                 {/* Mobile Menu */}
                 <AnimatePresence>
                     {isMenuOpen && (
@@ -152,7 +157,7 @@ export default function Navigation() {
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: -10, scale: 0.97 }}
                             transition={{ duration: 0.2 }}
-                            className="glass"
+                            className="glass md:hidden"
                             style={{
                                 marginTop: '8px',
                                 borderRadius: '16px',
@@ -180,6 +185,29 @@ export default function Navigation() {
                                     {item.name}
                                 </button>
                             ))}
+
+                            {/* Mobile Contact Options */}
+                            <div className="pt-4 mt-2 border-t border-white/10">
+                                <button
+                                    onClick={() => {
+                                        setIsContactModalOpen(true);
+                                        setIsMenuOpen(false);
+                                    }}
+                                    style={{
+                                        width: '100%',
+                                        fontSize: '14px',
+                                        fontWeight: 600,
+                                        color: '#000',
+                                        background: '#fff',
+                                        border: 'none',
+                                        borderRadius: '8px',
+                                        padding: '10px 0',
+                                        cursor: 'pointer',
+                                    }}
+                                >
+                                    Connect
+                                </button>
+                            </div>
                         </motion.div>
                     )}
                 </AnimatePresence>
