@@ -114,7 +114,7 @@ export default function MultiLayerStarfield() {
       geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
       const material = new THREE.ShaderMaterial({
-        precision: isMobile ? 'mediump' : 'highp',
+        precision: 'highp',
         uniforms: {
           time: { value: 0 },
           depth: { value: layerIdx },
@@ -214,7 +214,7 @@ export default function MultiLayerStarfield() {
 
     const animate = () => {
       animationId = requestAnimationFrame(animate);
-      const time = Date.now() * 0.001;
+      const time = performance.now() * 0.001;
 
       // Update star shader uniforms
       starLayers.forEach((layer) => {
