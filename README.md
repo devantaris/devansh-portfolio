@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Devansh Kumar - Cosmic Portfolio 🌌
 
-## Getting Started
+Welcome to the source code for my interactive, hardware-accelerated personal portfolio. 
 
-First, run the development server:
+This project goes beyond a standard static site—it is designed as a dynamic, "cosmic terminal" experience. It heavily utilizes WebGL shaders, particle systems, and hardware-accelerated scroll animations to create a deeply immersive interface that performs flawlessly from high-end desktops down to aging mobile hardware.
+
+## ✨ Features
+
+- **Hardware-Accelerated WebGL Backgrounds:** Features a highly optimized `StarfieldBackground` utilizing pure Three.js buffer geometries and custom shader materials (running at forced `highp` precision on mobile to prevent Unix timestamp float overflows).
+- **GSAP & Framer Motion Integration:** Scroll events bypass React's standard thread using Framer Motion's `useScroll` hooks for zero-latency DOM manipulation.
+- **Glassmorphic UI Elements:** Custom Modals, Navigations, and Bento Grids layered with backdrop filters and precise negative space design.
+- **Dynamic 3D Spline Routing:** Integrated `@splinetool/react-spline` for interactive 3D assets.
+- **Mobile-First Hardware Tiering:** The application detects processing capabilities and gracefully degrades extreme visual effects (like WebGL `UnrealBloomPass` layers and high star counts) on mobile to maintain 60 FPS without crashing.
+
+## 🛠 Tech Stack
+
+- **Framework:** Next.js 16.1.6 (App Router)
+- **Library:** React 19.2.3 & TypeScript 5+
+- **Styling:** Tailwind CSS v4
+- **3D & Canvas:** Three.js, React-Three-Fiber, React-Three-Drei
+- **Animation:** Framer Motion, GSAP
+- **Agent Orchestration:** [GSD](https://github.com/gsd-build/get-shit-done) context tools configured. 
+
+## 🚀 Getting Started
+
+First, install dependencies:
+
+```bash
+npm install
+```
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the live Cosmic Terminal.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🧹 Project Architecture & GSD Context
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This repository utilizes the **GSD Meta-Prompting System**. Dedicated `.planning/codebase` documents exist to provide context maps for Orchestrator Agents (like Claude Code or Gemini). 
 
-## Learn More
+*See `.planning/codebase/ARCHITECTURE.md` for full component layering logic.*
 
-To learn more about Next.js, take a look at the following resources:
+## 📬 Contact
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Website:** [devansh.qzz.io](https://devansh.qzz.io)
+- **LinkedIn:** [Devansh Kumar](https://www.linkedin.com/in/devansh-kumar-3b3701217/)
+- **GitHub:** [@devantaris](https://github.com/devantaris)
