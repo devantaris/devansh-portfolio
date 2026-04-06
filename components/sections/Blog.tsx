@@ -4,16 +4,16 @@ import { motion } from 'framer-motion';
 
 const blogPlaceholders = [
     {
-        title: 'Building a Risk-Aware Fraud Decision Engine',
-        description: 'How I designed a multi-axis scoring system that explains every decision it makes — and why explainability matters more than accuracy.',
+        title: 'Designing Biome: Gamification That Actually Works',
+        description: 'How I turned Pomodoro sessions into a world-building game with rarity systems, territory expansion, and real-time leaderboards — and why most productivity apps get gamification wrong.',
         date: 'Coming soon',
-        emoji: '🛡️',
+        emoji: '🌿',
     },
     {
-        title: 'Why Flutter is Underrated for Rapid Prototyping',
-        description: "From zero to OTT app in 48 hours — how Flutter's widget system and hot reload change the way you think about building UIs.",
+        title: 'Building a Peer Economy from Scratch with SkillSync',
+        description: 'Credit systems, AI content validation, and the challenge of designing a marketplace where knowledge is currency — lessons from building a full-stack peer learning platform.',
         date: 'Coming soon',
-        emoji: '💙',
+        emoji: '🔄',
     },
     {
         title: 'INTJ Notes: On Systems Thinking in Software',

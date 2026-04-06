@@ -4,15 +4,45 @@ import { motion } from 'framer-motion';
 
 const projects = [
     {
-        emoji: '🛡️',
-        name: 'Risk-Aware Fraud Decision System',
+        emoji: '🌿',
+        name: 'Biome — Focus Forest Desktop App',
         description:
-            'A multi-axis risk intelligence engine that evaluates financial transactions using behavioral, network, and temporal risk signals to produce explainable fraud decisions.',
+            'A world-building productivity app for desktop. Complete Pomodoro focus sessions to earn trees, flowers, and rare items — then place them on your personal grid to grow a living ecosystem. Your deep work leaves a tangible, beautiful trace.',
+        features: [
+            'Gamified focus timer with item rarity system (Common → Legendary)',
+            'Interactive world grid with manual placement & territory expansion',
+            'Real-time leaderboard, XP levels, streaks & 30+ achievements',
+            'Cross-device sync via Firebase with Electron desktop & PWA support',
+        ],
+        tech: ['TypeScript', 'React', 'Electron', 'Firebase', 'Vite'],
+        demo: null,
+        code: 'https://github.com/devantaris/Biome',
+    },
+    {
+        emoji: '🔄',
+        name: 'SkillSync — Peer Skill Economy',
+        description:
+            'A full-stack platform where users share knowledge through courses, earn credits for every enrollment, and spend credits to learn new skills — no money needed, just knowledge. Features AI-powered course validation and a built-in credit economy.',
+        features: [
+            'Credit economy — earn by teaching, spend to learn (15% platform fee)',
+            'AI content validator scores every course for quality (0–100)',
+            'Multi-step course upload wizard with live AI review',
+            'Dashboard with skill radar charts, wallet, and Razorpay integration',
+        ],
+        tech: ['React', 'Vite', 'Express', 'Supabase', 'Zustand', 'Razorpay'],
+        demo: 'https://skill-sync-steel-rho.vercel.app',
+        code: 'https://github.com/devantaris/SkillSync',
+    },
+    {
+        emoji: '🛡️',
+        name: 'MARI — Risk-Aware Fraud Decision Engine',
+        description:
+            'A multi-axis risk intelligence engine that evaluates financial transactions using behavioral, network, and temporal risk signals to produce explainable fraud decisions with uncertainty quantification.',
         features: [
             'Multi-layered risk scoring with 12+ risk signals',
-            'Explainable AI — every decision has a breakdown',
+            'Explainable AI — every decision has a human-readable breakdown',
             'Real-time decision API with sub-100ms latency',
-            'Adaptive rules engine with manual override support',
+            'Adaptive rules engine with cost-sensitive thresholding',
         ],
         tech: ['Python', 'FastAPI', 'Scikit-learn', 'PostgreSQL', 'Redis', 'Railway'],
         demo: 'https://mari-alpha.vercel.app',
@@ -22,7 +52,7 @@ const projects = [
         emoji: '🎬',
         name: 'Flutter OTT Streaming App',
         description:
-            'A Flutter-based OTT streaming-style application with local authentication, content rentals, and a rich cinematic UI.',
+            'A Flutter-based OTT streaming-style application with local authentication, content rentals, and a rich cinematic UI — built in 48 hours as a rapid prototyping exercise.',
         features: [
             'Local auth with secure session management',
             'Content catalog with rental & purchase flow',
@@ -37,12 +67,12 @@ const projects = [
         emoji: '🌐',
         name: 'Portfolio — This Site',
         description:
-            'A clean, minimal, and high-performance portfolio website with particle animations, bento grid layout, and GitHub stats integration.',
+            'A minimal, high-performance portfolio with a swimming avatar, starfield background, bento grid layout, and live GitHub stats — all built with zero template dependencies.',
         features: [
-            'Particle canvas background in hero section',
-            'Bento grid about section',
-            'Tech stack infinite marquee',
-            'GitHub stats integration',
+            'Multi-layer starfield canvas with parallax scrolling',
+            'Swimming avatar that reacts to scroll position',
+            'Bento grid about section with engineering philosophy',
+            'GitHub contribution graph & stats integration',
         ],
         tech: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Framer Motion'],
         demo: null,

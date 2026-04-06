@@ -183,8 +183,8 @@ export default function Hero() {
                             lineHeight: 1.7,
                         }}
                     >
-                        Building systems that think — from risk intelligence engines to mobile apps.
-                        I write code that solves real problems, reads well, and scales.
+                        Building systems that think — from risk intelligence engines and peer economies
+                        to gamified desktop apps. I write code that solves real problems, reads well, and ships.
                     </motion.p>
 
                     {/* CTA Row */}

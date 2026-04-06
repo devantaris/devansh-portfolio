@@ -11,13 +11,13 @@ const fadeUp = (delay: number) => ({
 
 const principles = [
     'Risk-aware fraud architecture',
-    'Cost-sensitive modeling',
-    'Consequence-weighted thresholding',
+    'Gamified productivity systems',
+    'Peer-to-peer credit economies',
     'EDA-driven reasoning',
     'Layered decision architecture',
     'The Extremity Principle',
-    'SIMPLY UNIVERSE - published book',
-    'IEEE Chairperson - IEEE Student Branch Bennett University',
+    'SIMPLY UNIVERSE — published book',
+    'IEEE Chairperson — Bennett University',
 ];
 
 export default function AboutBento() {
@@ -37,7 +37,7 @@ export default function AboutBento() {
                     <motion.div {...fadeUp(0)} className="zinc-card" style={{ padding: '28px' }}>
                         <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '12px' }}>About Me</h3>
                         <p style={{ fontSize: '14px', color: '#a1a1aa', lineHeight: 1.7 }}>
-                            I build scalable backend systems, risk intelligence engines, and full-stack web applications with clean architecture.
+                            I build full-stack platforms, risk intelligence engines, gamified desktop apps, and peer economies — all with clean architecture and real users in mind.
                         </p>
                     </motion.div>
 
@@ -103,8 +103,8 @@ export default function AboutBento() {
                         <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '16px' }}>Systems I Build</h3>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                             {[
-                                'Risk Engines', 'REST APIs', 'ML Pipelines', 'Auth Systems',
-                                'Data Dashboards', 'Mobile Apps', 'ETL Pipelines', 'Fraud Detection',
+                                'Risk Engines', 'Desktop Apps', 'Credit Economies', 'Auth Systems',
+                                'Data Dashboards', 'Mobile Apps', 'REST APIs', 'Fraud Detection',
                             ].map((tag) => (
                                 <span
                                     key={tag}
