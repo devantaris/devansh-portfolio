@@ -3,18 +3,19 @@
 import { motion } from 'framer-motion';
 
 const stats = [
-    { label: 'Public Repos', value: '6', icon: '📁' },
+    { label: 'Public Repos', value: '7', icon: '📁' },  /* Biome, SkillSync, MARI, Flutter OTT, Portfolio, etc. */
     { label: 'Followers', value: '1', icon: '👥' },
     { label: 'Following', value: '2', icon: '➡️' },
     { label: 'Member Since', value: '2024', icon: '📅' },
 ];
 
 const languages = [
-    { name: 'TypeScript', color: '#3178c6', pct: 38 },
-    { name: 'Python', color: '#3572A5', pct: 28 },
-    { name: 'Dart', color: '#00B4AB', pct: 18 },
-    { name: 'C++', color: '#f34b7d', pct: 10 },
-    { name: 'HTML', color: '#e34c26', pct: 6 },
+    { name: 'JavaScript', color: '#f1e05a', pct: 30 },
+    { name: 'TypeScript', color: '#3178c6', pct: 28 },
+    { name: 'Python', color: '#3572A5', pct: 22 },
+    { name: 'Dart', color: '#00B4AB', pct: 12 },
+    { name: 'C++', color: '#f34b7d', pct: 5 },
+    { name: 'HTML', color: '#e34c26', pct: 3 },
 ];
 
 export default function GitHubStats() {

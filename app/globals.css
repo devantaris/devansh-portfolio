@@ -37,11 +37,17 @@ body {
   font-family: var(--font-sans);
   overflow-x: hidden;
   line-height: 1.7;
-  cursor: none;
 }
 
-body * {
-  cursor: none !important;
+/* Hide native cursor only on devices with a fine pointer (mouse) */
+@media (pointer: fine) {
+  body {
+    cursor: none;
+  }
+
+  body * {
+    cursor: none !important;
+  }
 }
 
 h1,
@@ -139,4 +145,15 @@ h6 {
 
 .marquee-reverse:hover {
   animation-play-state: paused;
+}
+
+/* Mobile: reset project card order so image always comes first */
+@media (max-width: 768px) {
+  .project-image-side {
+    order: 1 !important;
+  }
+
+  .project-info-side {
+    order: 2 !important;
+  }
 }

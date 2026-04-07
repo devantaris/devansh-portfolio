@@ -37,7 +37,10 @@ export default function Blog() {
                     >
                         Recent Blog
                     </motion.h2>
-                    <motion.div
+                    <motion.a
+                        href="https://www.linkedin.com/in/devansh-kumar-3b3701217/"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true }}
@@ -47,10 +50,12 @@ export default function Blog() {
                             border: '1px solid #27272a',
                             borderRadius: '9999px',
                             padding: '4px 14px',
+                            textDecoration: 'none',
+                            transition: 'border-color 0.2s, color 0.2s',
                         }}
                     >
-                        Coming soon
-                    </motion.div>
+                        Follow on LinkedIn for updates →
+                    </motion.a>
                 </div>
 
                 <div

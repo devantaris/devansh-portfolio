@@ -80,7 +80,7 @@ const projects = [
     },
 ];
 
-const ProjectPlaceholder = ({ name }: { name: string }) => (
+const ProjectPlaceholder = ({ name, emoji }: { name: string; emoji: string }) => (
     <div
         style={{
             width: '100%', height: '100%', borderRadius: '16px',
@@ -90,7 +90,7 @@ const ProjectPlaceholder = ({ name }: { name: string }) => (
         }}
     >
         <div style={{ textAlign: 'center', padding: '24px' }}>
-            <div style={{ fontSize: '40px', marginBottom: '12px' }}>🖥️</div>
+            <div style={{ fontSize: '40px', marginBottom: '12px' }}>{emoji}</div>
             <p style={{ fontSize: '12px', color: '#52525b' }}>{name}</p>
         </div>
     </div>
@@ -142,6 +142,7 @@ export default function Projects() {
                         >
                             {/* Image side */}
                             <div
+                                className="project-image-side"
                                 style={{
                                     height: '320px',
                                     borderRadius: '16px',
@@ -151,11 +152,11 @@ export default function Projects() {
                                     order: idx % 2 === 1 ? 2 : 1,
                                 }}
                             >
-                                <ProjectPlaceholder name={project.name} />
+                                <ProjectPlaceholder name={project.name} emoji={project.emoji} />
                             </div>
 
                             {/* Info side */}
-                            <div style={{ order: idx % 2 === 1 ? 1 : 2 }}>
+                            <div className="project-info-side" style={{ order: idx % 2 === 1 ? 1 : 2 }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
                                     <span style={{ fontSize: '24px' }}>{project.emoji}</span>
                                     <h3 style={{ fontSize: '22px', fontWeight: 700, color: '#fff' }}>{project.name}</h3>

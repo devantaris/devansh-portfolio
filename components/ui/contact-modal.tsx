@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Mail, Instagram, MessageCircle, Copy, Check, ArrowUpRight } from 'lucide-react';
+import { X, Mail, Instagram, MessageCircle, Copy, Check, ArrowUpRight, Linkedin } from 'lucide-react';
 
 interface ContactModalProps {
     isOpen: boolean;
@@ -117,6 +117,30 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                                             </div>
                                             <div className="flex flex-col items-center gap-1 text-center">
                                                 <p className="text-[15px] font-medium text-white/90">WhatsApp</p>
+                                            </div>
+                                            <div className="mt-auto">
+                                                <span className="flex items-center gap-1.5 text-[12px] font-medium text-zinc-400 group-hover:text-white transition-colors bg-white/5 px-4 py-2 rounded-full border border-white/10 group-hover:border-white/20 whitespace-nowrap">
+                                                    Connect <ArrowUpRight size={14} />
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </a>
+
+                                    {/* LinkedIn */}
+                                    <a
+                                        href="https://www.linkedin.com/in/devansh-kumar-3b3701217/"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="group relative flex flex-col items-center justify-center p-6 py-10 w-full md:w-[160px] rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all overflow-hidden aspect-square"
+                                    >
+                                        <div className="absolute inset-0 bg-gradient-to-b from-blue-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+
+                                        <div className="flex flex-col items-center justify-center gap-5 relative z-10 w-full h-full">
+                                            <div className="flex items-center justify-center w-14 h-14 rounded-full bg-blue-600/10 text-blue-400">
+                                                <Linkedin size={24} strokeWidth={1.5} />
+                                            </div>
+                                            <div className="flex flex-col items-center gap-1 text-center">
+                                                <p className="text-[15px] font-medium text-white/90">LinkedIn</p>
                                             </div>
                                             <div className="mt-auto">
                                                 <span className="flex items-center gap-1.5 text-[12px] font-medium text-zinc-400 group-hover:text-white transition-colors bg-white/5 px-4 py-2 rounded-full border border-white/10 group-hover:border-white/20 whitespace-nowrap">
