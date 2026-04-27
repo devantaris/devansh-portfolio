@@ -61,34 +61,6 @@ const projects = [
         demo: 'https://skill-sync-steel-rho.vercel.app',
         code: 'https://github.com/devantaris/SkillSync',
     },
-    {
-        emoji: '🧠',
-        name: 'Nexus RAG Engine',
-        description:
-            'A Retrieval-Augmented Generation system that semantic-searches personal knowledge graphs to answer complex queries.',
-        features: [
-            'Pinecone embeddings for fast similarity search',
-            'Context-aware LLM generation with LangChain',
-            'Conversational interface built with Next.js',
-        ],
-        tech: ['TypeScript', 'LangChain', 'Pinecone', 'Next.js'],
-        demo: null,
-        code: 'https://github.com/devantaris/nexus',
-    },
-    {
-        emoji: '📊',
-        name: 'Aura Analytics',
-        description:
-            'High-performance e-commerce dashboard for tracking realtime sales velocity and geographic customer hotspots.',
-        features: [
-            'WebSocket data ingestion at 1000+ events/sec',
-            'Interactive geospatial mapping with Mapbox GL',
-            'Redis caching layer for instant metric loading',
-        ],
-        tech: ['React', 'Node.js', 'Redis', 'Mapbox'],
-        demo: null,
-        code: 'https://github.com/devantaris/aura',
-    },
 ];
 
 const ProjectPlaceholder = ({ name, emoji }: { name: string; emoji: string }) => (
