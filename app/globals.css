@@ -28,12 +28,7 @@
   --color-accent-blue: var(--accent-blue);
   --color-border: var(--border);
   --color-card-bg: var(--card-bg);
-  --font-ibm: var(--font-ibm);
-  --font-syne: var(--font-syne);
-  --font-jetbrains: var(--font-jetbrains);
-  --font-literata: var(--font-literata);
-  --font-space: var(--font-space);
-  --font-courier: var(--font-courier);
+  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
   
   /* Extend animations */
   --animate-float: float 6s ease-in-out infinite;
@@ -59,7 +54,7 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-syne), sans-serif;
+  font-family: var(--font-sans);
   overflow-x: hidden;
   line-height: 1.7;
 }
@@ -206,11 +201,3 @@ h1, h2, h3, h4, h5, h6 {
   }
 
 }
-
-/* Typography Utilities */
-.font-ibm { font-family: var(--font-ibm), monospace; }
-.font-syne { font-family: var(--font-syne), sans-serif; }
-.font-jetbrains { font-family: var(--font-jetbrains), monospace; }
-.font-literata { font-family: var(--font-literata), serif; }
-.font-space { font-family: var(--font-space), sans-serif; }
-.font-courier { font-family: var(--font-courier), monospace; }

@@ -87,7 +87,7 @@ const ProjectPlaceholder = ({ name, emoji }: { name: string; emoji: string }) =>
         
         <div style={{ textAlign: 'center', padding: '24px', zIndex: 1 }}>
             <div style={{ fontSize: '80px', marginBottom: '24px', filter: 'drop-shadow(0 0 30px rgba(255,255,255,0.2))' }}>{emoji}</div>
-            <p className="text-gradient font-ibm" style={{ fontSize: '16px', fontWeight: 800 }}>{name.split('—')[0]}</p>
+            <p className="text-gradient" style={{ fontSize: '16px', fontWeight: 800 }}>{name.split('—')[0]}</p>
         </div>
     </div>
 );
@@ -113,7 +113,6 @@ export default function Projects() {
     });
 
     const x = useTransform(scrollYProgress, [0, 1], ["0%", "-75%"]);
-    const dynamicPadding = 'max(clamp(24px, 5vw, 48px), calc(50vw - 550px))';
 
     return (
         <section id="projects" ref={targetRef} style={{ height: '400vh', position: 'relative', background: 'transparent' }}>
@@ -131,11 +130,11 @@ export default function Projects() {
                     opacity: 0.05, filter: 'blur(80px)', pointerEvents: 'none', zIndex: 0
                 }} />
 
-                {/* Title aligned dynamically */}
+                {/* Left Column: Fixed Title Area (40% width) - Prevents Overlap */}
                 <div style={{ 
-                    position: 'absolute', top: '12vh', left: '0', right: '0', 
-                    paddingLeft: dynamicPadding, paddingRight: dynamicPadding, 
-                    zIndex: 10, pointerEvents: 'none' 
+                    flex: '0 0 35%',
+                    paddingLeft: 'clamp(24px, 5vw, 48px)',
+                    zIndex: 10,
                 }}>
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -143,161 +142,159 @@ export default function Projects() {
                         viewport={{ once: true }}
                         transition={{ duration: 0.7 }}
                     >
-                        <h2 className="font-ibm" style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+                        <h2 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
                             Featured <br/><span className="text-gradient">Projects</span>
                         </h2>
-                        <p className="text-gradient-subtle font-space" style={{ fontSize: '15px', marginTop: '16px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                        <p className="text-gradient-subtle" style={{ fontSize: '15px', marginTop: '16px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                             Scroll to explore →
                         </p>
                     </motion.div>
                 </div>
 
-                {/* Horizontal Scroll Container */}
-                <motion.div 
-                    style={{ x, display: 'flex', gap: '5vw', paddingLeft: dynamicPadding, paddingRight: '10vw', zIndex: 5 }}
-                    className="projects-slider"
-                >
-                    {projects.map((project, idx) => (
-                        <div 
-                            key={project.name}
-                            style={{ 
-                                width: 'min(90vw, 1000px)', 
-                                flexShrink: 0,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                position: 'relative'
-                            }}
-                        >
-                            {/* Artistic Background Number */}
-                            <div style={{
-                                position: 'absolute',
-                                top: '-80px',
-                                right: '20px',
-                                fontSize: '240px',
-                                fontWeight: 900,
-                                fontFamily: 'var(--font-ibm)',
-                                color: 'rgba(255,255,255,0.02)',
-                                zIndex: 0,
-                                userSelect: 'none',
-                                pointerEvents: 'none',
-                                lineHeight: 1
-                            }}>
-                                0{idx + 1}
-                            </div>
-
+                {/* Right Column: Horizontal Scroll Container (65% width) */}
+                <div style={{ flex: '0 0 65%', height: '100vh', position: 'relative' }}>
+                    <motion.div 
+                        style={{ x, display: 'flex', gap: '4vw', paddingLeft: '2vw', paddingRight: '10vw', height: '100%', alignItems: 'center', zIndex: 5 }}
+                        className="projects-slider"
+                    >
+                        {projects.map((project, idx) => (
                             <div 
-                                className="premium-card glass"
-                                style={{
-                                    display: 'grid',
-                                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))',
-                                    gap: '40px',
+                                key={project.name}
+                                style={{ 
+                                    width: 'min(90vw, 850px)', 
+                                    flexShrink: 0,
+                                    display: 'flex',
                                     alignItems: 'center',
-                                    padding: '40px',
-                                    width: '100%',
-                                    zIndex: 1
+                                    justifyContent: 'center',
+                                    position: 'relative'
                                 }}
                             >
-                                {/* Image side */}
-                                <div style={{ height: '380px', padding: '8px', position: 'relative' }}>
-                                    <ProjectPlaceholder name={project.name} emoji={project.emoji} />
+                                {/* Artistic Background Number */}
+                                <div style={{
+                                    position: 'absolute',
+                                    top: '-60px',
+                                    right: '20px',
+                                    fontSize: '240px',
+                                    fontWeight: 900,
+                                    color: 'rgba(255,255,255,0.02)',
+                                    zIndex: 0,
+                                    userSelect: 'none',
+                                    pointerEvents: 'none',
+                                    lineHeight: 1
+                                }}>
+                                    0{idx + 1}
                                 </div>
 
-                                {/* Info side */}
-                                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                    <h3 className="font-ibm" style={{ fontSize: '26px', fontWeight: 800, color: '#fff', letterSpacing: '-0.01em', marginBottom: '16px' }}>{project.name}</h3>
-                                    
-                                    <p className="text-gradient-subtle font-syne" style={{ fontSize: '15px', lineHeight: 1.7, marginBottom: '24px' }}>
-                                        {project.description}
-                                    </p>
-
-                                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px 0', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                        {project.features.map((f) => (
-                                            <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', fontSize: '14px', color: '#8b8b99', lineHeight: '1.6' }}>
-                                                <span style={{ color: 'var(--accent-cyan)', marginTop: '2px' }}>
-                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                                                    </svg>
-                                                </span>
-                                                <span className="font-syne">{f}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '32px' }}>
-                                        {project.tech.map((t) => (
-                                            <span
-                                                key={t}
-                                                className="font-jetbrains"
-                                                style={{
-                                                    fontSize: '12px',
-                                                    padding: '6px 14px',
-                                                    background: 'rgba(255,255,255,0.03)',
-                                                    border: '1px solid rgba(255,255,255,0.08)',
-                                                    borderRadius: '20px',
-                                                    color: '#d4d4d8',
-                                                    fontWeight: 500
-                                                }}
-                                            >
-                                                {t}
-                                            </span>
-                                        ))}
+                                <div 
+                                    className="premium-card glass"
+                                    style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 350px), 1fr))',
+                                        gap: '40px',
+                                        alignItems: 'center',
+                                        padding: '40px',
+                                        width: '100%',
+                                        zIndex: 1
+                                    }}
+                                >
+                                    {/* Image side */}
+                                    <div style={{ height: '350px', padding: '8px', position: 'relative' }}>
+                                        <ProjectPlaceholder name={project.name} emoji={project.emoji} />
                                     </div>
 
-                                    <div style={{ display: 'flex', gap: '16px' }}>
-                                        {project.demo && (
-                                            <motion.a
-                                                whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(0,240,255,0.2)' }}
-                                                whileTap={{ scale: 0.95 }}
-                                                href={project.demo}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="font-space"
-                                                style={{
-                                                    display: 'flex', alignItems: 'center', gap: '8px',
-                                                    padding: '12px 24px',
-                                                    background: 'linear-gradient(135deg, var(--accent-cyan), var(--accent-blue))',
-                                                    borderRadius: '12px',
-                                                    fontSize: '14px',
-                                                    fontWeight: 700,
-                                                    color: '#000',
-                                                    textDecoration: 'none',
-                                                }}
-                                            >
-                                                <ExternalLinkIcon />
-                                                Live Demo
-                                            </motion.a>
-                                        )}
-                                        {project.code && (
-                                            <motion.a
-                                                whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.1)' }}
-                                                whileTap={{ scale: 0.95 }}
-                                                href={project.code}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="font-space"
-                                                style={{
-                                                    display: 'flex', alignItems: 'center', gap: '8px',
-                                                    padding: '12px 24px',
-                                                    borderRadius: '12px',
-                                                    border: '1px solid rgba(255,255,255,0.1)',
-                                                    fontSize: '14px',
-                                                    fontWeight: 600,
-                                                    color: '#fff',
-                                                    textDecoration: 'none',
-                                                }}
-                                            >
-                                                <GithubIcon />
-                                                View Code
-                                            </motion.a>
-                                        )}
+                                    {/* Info side */}
+                                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                        <h3 style={{ fontSize: '26px', fontWeight: 800, color: '#fff', letterSpacing: '-0.01em', marginBottom: '16px' }}>{project.name}</h3>
+                                        
+                                        <p className="text-gradient-subtle" style={{ fontSize: '15px', lineHeight: 1.7, marginBottom: '24px' }}>
+                                            {project.description}
+                                        </p>
+
+                                        <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px 0', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                            {project.features.map((f) => (
+                                                <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', fontSize: '14px', color: '#8b8b99', lineHeight: '1.6' }}>
+                                                    <span style={{ color: 'var(--accent-cyan)', marginTop: '2px' }}>
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                                        </svg>
+                                                    </span>
+                                                    <span>{f}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '32px' }}>
+                                            {project.tech.map((t) => (
+                                                <span
+                                                    key={t}
+                                                    style={{
+                                                        fontSize: '12px',
+                                                        padding: '6px 14px',
+                                                        background: 'rgba(255,255,255,0.03)',
+                                                        border: '1px solid rgba(255,255,255,0.08)',
+                                                        borderRadius: '20px',
+                                                        color: '#d4d4d8',
+                                                        fontWeight: 500
+                                                    }}
+                                                >
+                                                    {t}
+                                                </span>
+                                            ))}
+                                        </div>
+
+                                        <div style={{ display: 'flex', gap: '16px' }}>
+                                            {project.demo && (
+                                                <motion.a
+                                                    whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(0,240,255,0.2)' }}
+                                                    whileTap={{ scale: 0.95 }}
+                                                    href={project.demo}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    style={{
+                                                        display: 'flex', alignItems: 'center', gap: '8px',
+                                                        padding: '12px 24px',
+                                                        background: 'linear-gradient(135deg, var(--accent-cyan), var(--accent-blue))',
+                                                        borderRadius: '12px',
+                                                        fontSize: '14px',
+                                                        fontWeight: 700,
+                                                        color: '#000',
+                                                        textDecoration: 'none',
+                                                    }}
+                                                >
+                                                    <ExternalLinkIcon />
+                                                    Live Demo
+                                                </motion.a>
+                                            )}
+                                            {project.code && (
+                                                <motion.a
+                                                    whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.1)' }}
+                                                    whileTap={{ scale: 0.95 }}
+                                                    href={project.code}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    style={{
+                                                        display: 'flex', alignItems: 'center', gap: '8px',
+                                                        padding: '12px 24px',
+                                                        borderRadius: '12px',
+                                                        border: '1px solid rgba(255,255,255,0.1)',
+                                                        fontSize: '14px',
+                                                        fontWeight: 600,
+                                                        color: '#fff',
+                                                        textDecoration: 'none',
+                                                    }}
+                                                >
+                                                    <GithubIcon />
+                                                    View Code
+                                                </motion.a>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
-                </motion.div>
+                        ))}
+                    </motion.div>
+                </div>
             </div>
         </section>
     );

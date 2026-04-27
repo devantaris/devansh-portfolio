@@ -67,7 +67,6 @@ export default function Experience() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5 }}
-                    className="font-ibm"
                     style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800, color: '#fff', marginBottom: '60px', letterSpacing: '-0.02em' }}
                 >
                     Experience
@@ -128,10 +127,10 @@ export default function Experience() {
                                             }}
                                         />
                                     )}
-                                    <span className="font-space" style={{ fontSize: '15px', fontWeight: 700, color: isActive ? '#fff' : '#a1a1aa', transition: 'color 0.3s ease' }}>
+                                    <span style={{ fontSize: '15px', fontWeight: 700, color: isActive ? '#fff' : '#a1a1aa', transition: 'color 0.3s ease' }}>
                                         {exp.company}
                                     </span>
-                                    <span className="font-syne" style={{ fontSize: '13px', color: isActive ? 'var(--accent-purple)' : '#52525b', fontWeight: 500, transition: 'color 0.3s ease', marginTop: '4px' }}>
+                                    <span style={{ fontSize: '13px', color: isActive ? 'var(--accent-purple)' : '#52525b', fontWeight: 500, transition: 'color 0.3s ease', marginTop: '4px' }}>
                                         {exp.role.split(' ')[0]} {exp.role.split(' ').length > 1 ? '...' : ''}
                                     </span>
                                 </button>
@@ -161,14 +160,14 @@ export default function Experience() {
                             >
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '32px' }}>
                                     <div>
-                                        <h3 className="font-space" style={{ fontSize: '24px', fontWeight: 800, color: '#fff', letterSpacing: '-0.01em', marginBottom: '8px' }}>
+                                        <h3 style={{ fontSize: '24px', fontWeight: 800, color: '#fff', letterSpacing: '-0.01em', marginBottom: '8px' }}>
                                             {experiences[activeIdx].role} <span className="text-gradient">@ {experiences[activeIdx].company}</span>
                                         </h3>
-                                        <div className="font-syne" style={{ fontSize: '14px', color: '#8b8b99', fontWeight: 500 }}>
+                                        <div style={{ fontSize: '14px', color: '#8b8b99', fontWeight: 500 }}>
                                             {experiences[activeIdx].location}
                                         </div>
                                     </div>
-                                    <div className="font-courier" style={{ fontSize: '14px', color: '#fff', fontWeight: 600, background: 'rgba(255,255,255,0.05)', padding: '6px 16px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                    <div style={{ fontSize: '14px', color: '#fff', fontWeight: 600, background: 'rgba(255,255,255,0.05)', padding: '6px 16px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.1)' }}>
                                         {experiences[activeIdx].date}
                                     </div>
                                 </div>
@@ -187,7 +186,7 @@ export default function Experience() {
                                                     <polyline points="9 18 15 12 9 6"></polyline>
                                                 </svg>
                                             </span>
-                                            <span className="font-syne">{p}</span>
+                                            <span>{p}</span>
                                         </motion.li>
                                     ))}
                                 </ul>
