@@ -79,12 +79,15 @@ const OrbitalConstellation = () => {
                 @keyframes spin { 100% { transform: rotate(360deg); } }
                 @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
                 .orbit-ring { position: absolute; border-radius: 50%; border: 1px dashed rgba(255,255,255,0.1); }
+                
                 .orbit-animate-1 { animation: spin 40s linear infinite; }
+                .orbit-counter-1 { animation: spin-reverse 40s linear infinite; }
+                
                 .orbit-animate-2 { animation: spin-reverse 50s linear infinite; }
+                .orbit-counter-2 { animation: spin 50s linear infinite; }
+                
                 .orbit-animate-3 { animation: spin 60s linear infinite; }
-                .orbit-item { position: absolute; transform-origin: center; animation: spin-reverse 40s linear infinite; }
-                .orbit-item-2 { position: absolute; transform-origin: center; animation: spin 50s linear infinite; }
-                .orbit-item-3 { position: absolute; transform-origin: center; animation: spin-reverse 60s linear infinite; }
+                .orbit-counter-3 { animation: spin-reverse 60s linear infinite; }
             `}} />
 
             {/* Core */}
@@ -97,13 +100,18 @@ const OrbitalConstellation = () => {
                 {ring1.map((skill, i) => {
                     const angle = (i / ring1.length) * 360;
                     return (
-                        <div key={skill.name} className="orbit-item" style={{ 
-                            top: '50%', left: '50%', 
-                            marginTop: '-20px', marginLeft: '-20px',
-                            transform: `rotate(${angle}deg) translateX(125px) rotate(-${angle}deg)` 
-                        }}>
-                            <div className="glass" style={{ width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px' }} title={skill.name}>
-                                <Image src={skill.logoUrl} alt={skill.name} width={24} height={24} unoptimized style={{ filter: 'brightness(1.2)' }} />
+                        <div key={skill.name} style={{ position: 'absolute', top: '50%', left: '50%', transform: `rotate(${angle}deg) translateX(125px)` }}>
+                            <div className="orbit-counter-1" style={{ position: 'absolute', marginTop: '-20px', marginLeft: '-20px' }}>
+                                <div style={{ transform: `rotate(-${angle}deg)` }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                                        <div className="glass" style={{ width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px' }} title={skill.name}>
+                                            <Image src={skill.logoUrl} alt={skill.name} width={24} height={24} unoptimized style={{ filter: 'brightness(1.2)' }} />
+                                        </div>
+                                        <span style={{ fontSize: '10px', fontWeight: 700, color: '#e4e4e7', background: 'rgba(0,0,0,0.6)', padding: '2px 8px', borderRadius: '10px', backdropFilter: 'blur(4px)', whiteSpace: 'nowrap' }}>
+                                            {skill.name}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     );
@@ -115,13 +123,18 @@ const OrbitalConstellation = () => {
                 {ring2.map((skill, i) => {
                     const angle = (i / ring2.length) * 360;
                     return (
-                        <div key={skill.name} className="orbit-item-2" style={{ 
-                            top: '50%', left: '50%', 
-                            marginTop: '-20px', marginLeft: '-20px',
-                            transform: `rotate(${angle}deg) translateX(200px) rotate(-${angle}deg)` 
-                        }}>
-                            <div className="glass" style={{ width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px' }} title={skill.name}>
-                                <Image src={skill.logoUrl} alt={skill.name} width={24} height={24} unoptimized style={{ filter: 'brightness(1.2)' }} />
+                        <div key={skill.name} style={{ position: 'absolute', top: '50%', left: '50%', transform: `rotate(${angle}deg) translateX(200px)` }}>
+                            <div className="orbit-counter-2" style={{ position: 'absolute', marginTop: '-20px', marginLeft: '-20px' }}>
+                                <div style={{ transform: `rotate(-${angle}deg)` }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                                        <div className="glass" style={{ width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px' }} title={skill.name}>
+                                            <Image src={skill.logoUrl} alt={skill.name} width={24} height={24} unoptimized style={{ filter: 'brightness(1.2)' }} />
+                                        </div>
+                                        <span style={{ fontSize: '10px', fontWeight: 700, color: '#e4e4e7', background: 'rgba(0,0,0,0.6)', padding: '2px 8px', borderRadius: '10px', backdropFilter: 'blur(4px)', whiteSpace: 'nowrap' }}>
+                                            {skill.name}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     );
@@ -133,13 +146,18 @@ const OrbitalConstellation = () => {
                 {ring3.map((skill, i) => {
                     const angle = (i / ring3.length) * 360;
                     return (
-                        <div key={skill.name} className="orbit-item-3" style={{ 
-                            top: '50%', left: '50%', 
-                            marginTop: '-20px', marginLeft: '-20px',
-                            transform: `rotate(${angle}deg) translateX(275px) rotate(-${angle}deg)` 
-                        }}>
-                            <div className="glass" style={{ width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px' }} title={skill.name}>
-                                <Image src={skill.logoUrl} alt={skill.name} width={24} height={24} unoptimized style={{ filter: 'brightness(1.2)' }} />
+                        <div key={skill.name} style={{ position: 'absolute', top: '50%', left: '50%', transform: `rotate(${angle}deg) translateX(275px)` }}>
+                            <div className="orbit-counter-3" style={{ position: 'absolute', marginTop: '-20px', marginLeft: '-20px' }}>
+                                <div style={{ transform: `rotate(-${angle}deg)` }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                                        <div className="glass" style={{ width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px' }} title={skill.name}>
+                                            <Image src={skill.logoUrl} alt={skill.name} width={24} height={24} unoptimized style={{ filter: 'brightness(1.2)' }} />
+                                        </div>
+                                        <span style={{ fontSize: '10px', fontWeight: 700, color: '#e4e4e7', background: 'rgba(0,0,0,0.6)', padding: '2px 8px', borderRadius: '10px', backdropFilter: 'blur(4px)', whiteSpace: 'nowrap' }}>
+                                            {skill.name}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     );

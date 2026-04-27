@@ -60,6 +60,34 @@ const projects = [
         demo: 'https://skill-sync-steel-rho.vercel.app',
         code: 'https://github.com/devantaris/SkillSync',
     },
+    {
+        emoji: '🧠',
+        name: 'Nexus — RAG Knowledge Engine',
+        description:
+            'A Retrieval-Augmented Generation (RAG) system that connects to Notion and local markdown files, semantic-searching through personal knowledge graphs to answer complex queries.',
+        features: [
+            'Vector embeddings stored in Pinecone for ultra-fast cosine similarity search',
+            'Context-aware LLM generation using LangChain and OpenAI gpt-4o-mini',
+            'Sleek conversational UI built with Next.js and Tailwind CSS',
+        ],
+        tech: ['TypeScript', 'LangChain', 'Pinecone', 'Next.js'],
+        demo: null,
+        code: 'https://github.com/devantaris/nexus',
+    },
+    {
+        emoji: '📊',
+        name: 'Aura — E-Commerce Analytics Dashboard',
+        description:
+            'A high-performance analytics dashboard designed for e-commerce vendors to track realtime sales velocity, inventory depletion rates, and geographic customer hotspots.',
+        features: [
+            'Real-time WebSocket data ingestion handling 1000+ events/sec',
+            'Interactive geospatial mapping using Mapbox GL JS',
+            'Cached Redis layer for instant aggregated metrics loading',
+        ],
+        tech: ['React', 'Node.js', 'Redis', 'Mapbox'],
+        demo: null,
+        code: 'https://github.com/devantaris/aura',
+    },
 ];
 
 const ProjectPlaceholder = ({ name, emoji }: { name: string; emoji: string }) => (
@@ -112,7 +140,7 @@ export default function Projects() {
         target: targetRef,
     });
 
-    const x = useTransform(scrollYProgress, [0, 1], ["0%", "-75%"]);
+    const x = useTransform(scrollYProgress, [0, 1], ["0%", "-85%"]);
 
     return (
         <section id="projects" ref={targetRef} style={{ height: '400vh', position: 'relative', background: 'transparent' }}>
