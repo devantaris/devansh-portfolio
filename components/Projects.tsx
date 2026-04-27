@@ -68,10 +68,24 @@ const ProjectPlaceholder = ({ name, emoji }: { name: string; emoji: string }) =>
             width: '100%', height: '100%', borderRadius: '20px',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             background: 'linear-gradient(135deg, rgba(255,255,255,0.05), rgba(0,0,0,0.8))',
-            boxShadow: 'inset 0 0 50px rgba(0,0,0,0.8)'
+            boxShadow: 'inset 0 0 50px rgba(0,0,0,0.8)',
+            position: 'relative',
+            overflow: 'hidden'
         }}
     >
-        <div style={{ textAlign: 'center', padding: '24px' }}>
+        {/* Artistic glowing orb inside the placeholder */}
+        <div style={{
+            position: 'absolute',
+            top: '50%', left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '200px', height: '200px',
+            background: 'radial-gradient(circle, var(--accent-cyan) 0%, transparent 70%)',
+            opacity: 0.1,
+            filter: 'blur(30px)',
+            pointerEvents: 'none'
+        }} />
+        
+        <div style={{ textAlign: 'center', padding: '24px', zIndex: 1 }}>
             <div style={{ fontSize: '80px', marginBottom: '24px', filter: 'drop-shadow(0 0 30px rgba(255,255,255,0.2))' }}>{emoji}</div>
             <p className="text-gradient" style={{ fontSize: '16px', fontWeight: 800 }}>{name.split('—')[0]}</p>
         </div>
@@ -98,29 +112,49 @@ export default function Projects() {
         target: targetRef,
     });
 
-    // Translate the cards horizontally from 0% to -75% based on scroll progress
-    // We have 4 cards. We need to shift so the last card is visible.
-    // Each card takes up 100vw, so total width is 400vw.
-    // To show the last card, we need to translate by -300vw.
-    const x = useTransform(scrollYProgress, [0, 1], ["1%", "-75%"]);
+    const x = useTransform(scrollYProgress, [0, 1], ["0%", "-75%"]);
+    const dynamicPadding = 'max(clamp(24px, 5vw, 48px), calc(50vw - 550px))';
 
     return (
-        <section id="projects" ref={targetRef} style={{ height: '400vh', position: 'relative', background: 'var(--background)' }}>
+        <section id="projects" ref={targetRef} style={{ height: '400vh', position: 'relative', background: 'transparent' }}>
             <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
                 
-                {/* Title */}
-                <div style={{ position: 'absolute', top: '100px', left: '0', width: '100%', padding: '0 clamp(24px, 5vw, 48px)', maxWidth: '1100px', margin: '0 auto', left: '50%', transform: 'translateX(-50%)', zIndex: 10 }}>
-                    <h2 style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' }}>
-                        Featured Projects
-                    </h2>
-                    <p className="text-gradient-subtle" style={{ fontSize: '15px', marginTop: '8px' }}>
-                        Scroll to explore
-                    </p>
+                {/* Background Artistic Elements */}
+                <div style={{
+                    position: 'absolute', top: '10%', right: '10%', width: '40vw', height: '40vw',
+                    background: 'radial-gradient(circle, var(--accent-purple) 0%, transparent 60%)',
+                    opacity: 0.05, filter: 'blur(80px)', pointerEvents: 'none', zIndex: 0
+                }} />
+                <div style={{
+                    position: 'absolute', bottom: '10%', left: '10%', width: '30vw', height: '30vw',
+                    background: 'radial-gradient(circle, var(--accent-cyan) 0%, transparent 60%)',
+                    opacity: 0.05, filter: 'blur(80px)', pointerEvents: 'none', zIndex: 0
+                }} />
+
+                {/* Title aligned dynamically */}
+                <div style={{ 
+                    position: 'absolute', top: '12vh', left: '0', right: '0', 
+                    paddingLeft: dynamicPadding, paddingRight: dynamicPadding, 
+                    zIndex: 10, pointerEvents: 'none' 
+                }}>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.7 }}
+                    >
+                        <h2 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+                            Featured <br/><span className="text-gradient">Projects</span>
+                        </h2>
+                        <p className="text-gradient-subtle" style={{ fontSize: '15px', marginTop: '16px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                            Scroll to explore →
+                        </p>
+                    </motion.div>
                 </div>
 
                 {/* Horizontal Scroll Container */}
                 <motion.div 
-                    style={{ x, display: 'flex', gap: '4vw', paddingLeft: 'calc(50vw - 550px)', paddingRight: '10vw' }}
+                    style={{ x, display: 'flex', gap: '5vw', paddingLeft: dynamicPadding, paddingRight: '10vw', zIndex: 5 }}
                     className="projects-slider"
                 >
                     {projects.map((project, idx) => (
@@ -131,9 +165,26 @@ export default function Projects() {
                                 flexShrink: 0,
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyContent: 'center'
+                                justifyContent: 'center',
+                                position: 'relative'
                             }}
                         >
+                            {/* Artistic Background Number */}
+                            <div style={{
+                                position: 'absolute',
+                                top: '-80px',
+                                right: '20px',
+                                fontSize: '240px',
+                                fontWeight: 900,
+                                color: 'rgba(255,255,255,0.02)',
+                                zIndex: 0,
+                                userSelect: 'none',
+                                pointerEvents: 'none',
+                                lineHeight: 1
+                            }}>
+                                0{idx + 1}
+                            </div>
+
                             <div 
                                 className="premium-card glass"
                                 style={{
@@ -142,16 +193,13 @@ export default function Projects() {
                                     gap: '40px',
                                     alignItems: 'center',
                                     padding: '40px',
-                                    width: '100%'
+                                    width: '100%',
+                                    zIndex: 1
                                 }}
                             >
                                 {/* Image side */}
                                 <div style={{ height: '380px', padding: '8px', position: 'relative' }}>
                                     <ProjectPlaceholder name={project.name} emoji={project.emoji} />
-                                    {/* Project Number indicator */}
-                                    <div style={{ position: 'absolute', top: '24px', left: '24px', fontSize: '14px', fontWeight: 800, color: 'rgba(255,255,255,0.3)' }}>
-                                        0{idx + 1}
-                                    </div>
                                 </div>
 
                                 {/* Info side */}
