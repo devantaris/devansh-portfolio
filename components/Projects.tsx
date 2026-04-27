@@ -7,13 +7,13 @@ import Image from 'next/image';
 const projects = [
     {
         emoji: '🛡️',
-        name: 'MARI — Risk-Aware Fraud Decision System',
+        name: 'MARI — Fraud Engine',
         description:
-            'A 3-layer fraud detection and decision system (risk assessment · predictive uncertainty · novelty detection) trained on 284,807 real-world transactions across 31 PCA-transformed dimensions with a 0.17% fraud class imbalance.',
+            'A 3-layer fraud detection engine trained on 284k transactions. Combines risk assessment with novelty detection.',
         features: [
-            '5-member calibrated XGBoost bootstrap ensemble paired with Isolation Forest anomaly detection',
-            'Cost-optimised routing policy with asymmetric loss functions and consequence-weighted thresholding',
-            'Real-time inference REST API achieving sub-100ms latency per transaction under production load',
+            '5-member calibrated XGBoost bootstrap ensemble',
+            'Isolation Forest anomaly detection pipeline',
+            'Sub-100ms real-time inference REST API',
         ],
         tech: ['Python', 'FastAPI', 'XGBoost', 'PostgreSQL'],
         demo: 'https://mari-alpha.vercel.app',
@@ -21,13 +21,13 @@ const projects = [
     },
     {
         emoji: '🎬',
-        name: 'Flutter OTT Streaming Application',
+        name: 'Flutter OTT App',
         description:
-            'A cross-platform OTT streaming application (iOS, Android, Web) with local authentication, content catalog, rental and purchase flow, and cinematic UI using Flutter and Dart.',
+            'Cross-platform OTT streaming application featuring local auth, content catalogs, and a cinematic user interface.',
         features: [
-            'Implemented BLoC-pattern state management and secure session handling',
-            'SQLite-backed local persistence for offline data access',
-            'Optimised page transitions for smooth cross-platform user experience',
+            'BLoC-pattern state management architecture',
+            'SQLite-backed local persistence for offline access',
+            'Seamless cross-platform performance optimizations',
         ],
         tech: ['Flutter', 'Dart', 'SQLite', 'BLoC'],
         demo: null,
@@ -37,11 +37,11 @@ const projects = [
         emoji: '🌿',
         name: 'Biome PWA',
         description:
-            'A cross-platform world-building productivity application (PWA & Desktop) featuring a focus timer, daily planner, and real-time interactive leaderboards.',
+            'A world-building productivity application featuring focus timers, daily planners, and interactive leaderboards.',
         features: [
-            'Scalable backend using Firebase for cross-device synchronization and Google Authentication',
-            'Global progression tracking and real-time competitive leaderboards',
-            'Electron desktop build with native window controls',
+            'Scalable Firebase backend for cross-device sync',
+            'Real-time global progression leaderboards',
+            'Electron desktop wrapper with native controls',
         ],
         tech: ['React', 'TypeScript', 'Firebase', 'Electron'],
         demo: null,
@@ -51,11 +51,11 @@ const projects = [
         emoji: '🔄',
         name: 'SkillSync Platform',
         description:
-            'A full-stack peer-to-peer skill economy platform where users earn credits by teaching and spend them to enroll in courses.',
+            'A peer-to-peer skill economy platform where users earn credits by teaching and spend them on premium courses.',
         features: [
-            'AI-powered content validator to automatically score uploaded courses and maintain platform quality',
-            'End-to-end payment flow integration using Razorpay',
-            'Scalable relational data management with Supabase PostgreSQL and RLS',
+            'AI-powered content validation and scoring',
+            'End-to-end payment flow using Razorpay',
+            'Relational data scaling via Supabase and RLS',
         ],
         tech: ['React', 'Node.js', 'Supabase', 'Razorpay'],
         demo: 'https://skill-sync-steel-rho.vercel.app',
@@ -63,13 +63,13 @@ const projects = [
     },
     {
         emoji: '🧠',
-        name: 'Nexus — RAG Knowledge Engine',
+        name: 'Nexus RAG Engine',
         description:
-            'A Retrieval-Augmented Generation (RAG) system that connects to Notion and local markdown files, semantic-searching through personal knowledge graphs to answer complex queries.',
+            'A Retrieval-Augmented Generation system that semantic-searches personal knowledge graphs to answer complex queries.',
         features: [
-            'Vector embeddings stored in Pinecone for ultra-fast cosine similarity search',
-            'Context-aware LLM generation using LangChain and OpenAI gpt-4o-mini',
-            'Sleek conversational UI built with Next.js and Tailwind CSS',
+            'Pinecone embeddings for fast similarity search',
+            'Context-aware LLM generation with LangChain',
+            'Conversational interface built with Next.js',
         ],
         tech: ['TypeScript', 'LangChain', 'Pinecone', 'Next.js'],
         demo: null,
@@ -77,13 +77,13 @@ const projects = [
     },
     {
         emoji: '📊',
-        name: 'Aura — E-Commerce Analytics Dashboard',
+        name: 'Aura Analytics',
         description:
-            'A high-performance analytics dashboard designed for e-commerce vendors to track realtime sales velocity, inventory depletion rates, and geographic customer hotspots.',
+            'High-performance e-commerce dashboard for tracking realtime sales velocity and geographic customer hotspots.',
         features: [
-            'Real-time WebSocket data ingestion handling 1000+ events/sec',
-            'Interactive geospatial mapping using Mapbox GL JS',
-            'Cached Redis layer for instant aggregated metrics loading',
+            'WebSocket data ingestion at 1000+ events/sec',
+            'Interactive geospatial mapping with Mapbox GL',
+            'Redis caching layer for instant metric loading',
         ],
         tech: ['React', 'Node.js', 'Redis', 'Mapbox'],
         demo: null,
@@ -248,13 +248,11 @@ export default function Projects() {
                                         alignItems: 'center',
                                         padding: 'clamp(20px, 4vw, 40px)',
                                         width: '100%',
-                                        maxHeight: '70vh', // Prevent cards from getting too tall and causing cutoffs
-                                        overflowY: 'auto', // Scroll inside card if content is too long on small screens
                                         zIndex: 1
                                     }}
                                 >
                                     {/* Image side */}
-                                    <div style={{ height: 'min(300px, 30vh)', position: 'relative' }}>
+                                    <div style={{ height: 'min(300px, 35vh)', position: 'relative' }}>
                                         <ProjectPlaceholder name={project.name} emoji={project.emoji} />
                                     </div>
 
