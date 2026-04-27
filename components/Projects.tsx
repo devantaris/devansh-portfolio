@@ -110,6 +110,7 @@ export default function Projects() {
     const targetRef = useRef<HTMLDivElement>(null);
     const carouselRef = useRef<HTMLDivElement>(null);
     const [carouselWidth, setCarouselWidth] = useState(0);
+    const [isMobile, setIsMobile] = useState(false);
 
     const { scrollYProgress } = useScroll({
         target: targetRef,
@@ -118,10 +119,15 @@ export default function Projects() {
     // Measure the exact scrollable width on mount and resize
     useEffect(() => {
         const updateWidth = () => {
-            if (carouselRef.current) {
+            const mobile = window.innerWidth < 768;
+            setIsMobile(mobile);
+            
+            if (carouselRef.current && !mobile) {
                 const scrollWidth = carouselRef.current.scrollWidth;
                 const clientWidth = window.innerWidth;
                 setCarouselWidth(scrollWidth - clientWidth);
+            } else {
+                setCarouselWidth(0);
             }
         };
 
@@ -135,12 +141,12 @@ export default function Projects() {
     const x = useTransform(smoothProgress, [0, 1], [0, -carouselWidth]);
 
     return (
-        <section id="projects" ref={targetRef} style={{ height: '400vh', position: 'relative', background: 'transparent' }}>
+        <section id="projects" ref={targetRef} style={{ height: isMobile ? 'auto' : '400vh', position: 'relative', background: 'transparent', paddingBottom: isMobile ? '80px' : '0' }}>
             <div style={{ 
-                position: 'sticky', 
+                position: isMobile ? 'relative' : 'sticky', 
                 top: 0, 
-                height: '100vh', 
-                overflow: 'hidden', 
+                height: isMobile ? 'auto' : '100vh', 
+                overflow: isMobile ? 'visible' : 'hidden', 
                 display: 'flex', 
                 flexDirection: 'column', 
                 paddingTop: '100px' // Clears the navbar
@@ -180,7 +186,16 @@ export default function Projects() {
                 <div style={{ flex: 1, display: 'flex', alignItems: 'center', width: '100%', position: 'relative' }}>
                     <motion.div 
                         ref={carouselRef}
-                        style={{ x, display: 'flex', gap: '4vw', paddingLeft: 'clamp(24px, 5vw, 48px)', paddingRight: 'clamp(24px, 5vw, 48px)', alignItems: 'center', zIndex: 5 }}
+                        style={{ 
+                            x: isMobile ? 0 : x, 
+                            display: 'flex', 
+                            flexDirection: isMobile ? 'column' : 'row',
+                            gap: isMobile ? '80px' : '4vw', 
+                            paddingLeft: 'clamp(24px, 5vw, 48px)', 
+                            paddingRight: 'clamp(24px, 5vw, 48px)', 
+                            alignItems: 'center', 
+                            zIndex: 5 
+                        }}
                         className="projects-slider"
                     >
                         {projects.map((project, idx) => (
@@ -215,7 +230,7 @@ export default function Projects() {
                                     className="premium-card glass"
                                     style={{
                                         display: 'grid',
-                                        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 350px), 1fr))',
+                                        gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(min(100%, 350px), 1fr))',
                                         gap: '30px',
                                         alignItems: 'center',
                                         padding: 'clamp(20px, 4vw, 40px)',

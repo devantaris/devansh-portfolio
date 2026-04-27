@@ -73,7 +73,7 @@ const OrbitalConstellation = () => {
     const ring3 = allSkills.slice(18);
 
     return (
-        <div style={{ position: 'relative', width: '100%', height: '600px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+        <div className="orbit-container" style={{ position: 'relative', width: '100%', height: '600px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
             {/* Inline styles for keyframes to ensure they work component-level */}
             <style dangerouslySetInnerHTML={{__html: `
                 @keyframes spin { 100% { transform: rotate(360deg); } }
@@ -88,12 +88,32 @@ const OrbitalConstellation = () => {
                 
                 .orbit-animate-3 { animation: spin 60s linear infinite; }
                 .orbit-counter-3 { animation: spin-reverse 60s linear infinite; }
+
+                .orbit-wrapper {
+                    position: relative;
+                    width: 600px;
+                    height: 600px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transform-origin: center;
+                }
+
+                @media (max-width: 768px) {
+                    .orbit-wrapper { transform: scale(0.65); }
+                    .orbit-container { height: 450px !important; }
+                }
+                @media (max-width: 480px) {
+                    .orbit-wrapper { transform: scale(0.55); }
+                    .orbit-container { height: 380px !important; }
+                }
             `}} />
 
-            {/* Core */}
-            <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'radial-gradient(circle, var(--accent-cyan) 0%, var(--accent-purple) 100%)', boxShadow: '0 0 40px var(--accent-cyan)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
-                <span style={{ fontWeight: 800, fontSize: '12px', color: '#000' }}>CORE</span>
-            </div>
+            <div className="orbit-wrapper">
+                {/* Core */}
+                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '80px', height: '80px', borderRadius: '50%', background: 'radial-gradient(circle, var(--accent-cyan) 0%, var(--accent-purple) 100%)', boxShadow: '0 0 40px var(--accent-cyan)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
+                    <span style={{ fontWeight: 800, fontSize: '12px', color: '#000' }}>CORE</span>
+                </div>
 
             {/* Ring 1 */}
             <div className="orbit-ring orbit-animate-1" style={{ width: '250px', height: '250px' }}>
@@ -162,6 +182,7 @@ const OrbitalConstellation = () => {
                         </div>
                     );
                 })}
+            </div>
             </div>
         </div>
     );
