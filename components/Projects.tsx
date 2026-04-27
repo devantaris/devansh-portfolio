@@ -116,7 +116,7 @@ export default function Projects() {
 
     return (
         <section id="projects" ref={targetRef} style={{ height: '400vh', position: 'relative', background: 'transparent' }}>
-            <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
+            <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                 
                 {/* Background Artistic Elements */}
                 <div style={{
@@ -130,10 +130,11 @@ export default function Projects() {
                     opacity: 0.05, filter: 'blur(80px)', pointerEvents: 'none', zIndex: 0
                 }} />
 
-                {/* Left Column: Fixed Title Area (40% width) - Prevents Overlap */}
+                {/* Top Section: Fixed Title Area */}
                 <div style={{ 
-                    flex: '0 0 35%',
+                    width: '100%',
                     paddingLeft: 'clamp(24px, 5vw, 48px)',
+                    marginBottom: '6vh',
                     zIndex: 10,
                 }}>
                     <motion.div
@@ -151,10 +152,10 @@ export default function Projects() {
                     </motion.div>
                 </div>
 
-                {/* Right Column: Horizontal Scroll Container (65% width) */}
-                <div style={{ flex: '0 0 65%', height: '100vh', position: 'relative' }}>
+                {/* Bottom Section: Horizontal Scroll Container */}
+                <div style={{ width: '100%', position: 'relative' }}>
                     <motion.div 
-                        style={{ x, display: 'flex', gap: '4vw', paddingLeft: '2vw', paddingRight: '10vw', height: '100%', alignItems: 'center', zIndex: 5 }}
+                        style={{ x, display: 'flex', gap: '4vw', paddingLeft: 'clamp(24px, 5vw, 48px)', paddingRight: '10vw', alignItems: 'center', zIndex: 5 }}
                         className="projects-slider"
                     >
                         {projects.map((project, idx) => (
