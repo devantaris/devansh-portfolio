@@ -38,10 +38,10 @@ export default function GitHubStats() {
                     transition={{ duration: 0.5 }}
                     style={{ marginBottom: '60px' }}
                 >
-                    <h2 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+                    <h2 className="font-ibm" style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
                         Open Source <br/><span className="text-gradient">Activity</span>
                     </h2>
-                    <p className="text-gradient-subtle" style={{ fontSize: '15px', marginTop: '16px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                    <p className="text-gradient-subtle font-space" style={{ fontSize: '15px', marginTop: '16px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                         GitHub Statistics
                     </p>
                 </motion.div>
@@ -62,7 +62,7 @@ export default function GitHubStats() {
                             🐙
                         </div>
                         
-                        <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#a1a1aa', marginBottom: '32px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                        <h3 className="font-space" style={{ fontSize: '14px', fontWeight: 700, color: '#a1a1aa', marginBottom: '32px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                             Overview
                         </h3>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
@@ -75,8 +75,8 @@ export default function GitHubStats() {
                                     style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}
                                 >
                                     <span style={{ fontSize: '24px', filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.2))' }}>{s.icon}</span>
-                                    <span style={{ fontSize: '36px', fontWeight: 800, color: '#fff', lineHeight: 1, textShadow: '0 0 20px rgba(255,255,255,0.1)' }}>{s.value}</span>
-                                    <span style={{ fontSize: '13px', color: '#71717a', fontWeight: 500 }}>{s.label}</span>
+                                    <span className="font-jetbrains" style={{ fontSize: '36px', fontWeight: 800, color: '#fff', lineHeight: 1, textShadow: '0 0 20px rgba(255,255,255,0.1)' }}>{s.value}</span>
+                                    <span className="font-syne" style={{ fontSize: '13px', color: '#71717a', fontWeight: 500 }}>{s.label}</span>
                                 </motion.div>
                             ))}
                         </div>
@@ -91,7 +91,7 @@ export default function GitHubStats() {
                         className="premium-card glass"
                         style={{ flex: '2 1 400px', padding: '40px' }}
                     >
-                        <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#a1a1aa', marginBottom: '32px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                        <h3 className="font-space" style={{ fontSize: '14px', fontWeight: 700, color: '#a1a1aa', marginBottom: '32px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                             Top Languages
                         </h3>
 
@@ -111,9 +111,9 @@ export default function GitHubStats() {
                                 <div key={lang.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                         <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: lang.color, boxShadow: `0 0 10px ${lang.color}` }} />
-                                        <span style={{ fontSize: '14px', color: '#d4d4d8', fontWeight: 600 }}>{lang.name}</span>
+                                        <span className="font-syne" style={{ fontSize: '14px', color: '#d4d4d8', fontWeight: 600 }}>{lang.name}</span>
                                     </div>
-                                    <span style={{ fontSize: '13px', color: '#71717a', fontWeight: 700 }}>{lang.pct}%</span>
+                                    <span className="font-jetbrains" style={{ fontSize: '13px', color: '#71717a', fontWeight: 700 }}>{lang.pct}%</span>
                                 </div>
                             ))}
                         </div>
@@ -128,7 +128,7 @@ export default function GitHubStats() {
                         className="premium-card glass"
                         style={{ flex: '1 1 100%', padding: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
                     >
-                        <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#a1a1aa', marginBottom: '32px', textTransform: 'uppercase', letterSpacing: '0.1em', width: '100%', textAlign: 'left' }}>
+                        <h3 className="font-space" style={{ fontSize: '14px', fontWeight: 700, color: '#a1a1aa', marginBottom: '32px', textTransform: 'uppercase', letterSpacing: '0.1em', width: '100%', textAlign: 'left' }}>
                             Contribution Activity
                         </h3>
                         
@@ -159,6 +159,7 @@ export default function GitHubStats() {
                                 href="https://github.com/devantaris"
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                className="font-space"
                                 style={{ 
                                     fontSize: '13px', 
                                     fontWeight: 600,

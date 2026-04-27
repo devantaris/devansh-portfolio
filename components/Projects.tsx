@@ -87,7 +87,7 @@ const ProjectPlaceholder = ({ name, emoji }: { name: string; emoji: string }) =>
         
         <div style={{ textAlign: 'center', padding: '24px', zIndex: 1 }}>
             <div style={{ fontSize: '80px', marginBottom: '24px', filter: 'drop-shadow(0 0 30px rgba(255,255,255,0.2))' }}>{emoji}</div>
-            <p className="text-gradient" style={{ fontSize: '16px', fontWeight: 800 }}>{name.split('—')[0]}</p>
+            <p className="text-gradient font-ibm" style={{ fontSize: '16px', fontWeight: 800 }}>{name.split('—')[0]}</p>
         </div>
     </div>
 );
@@ -143,10 +143,10 @@ export default function Projects() {
                         viewport={{ once: true }}
                         transition={{ duration: 0.7 }}
                     >
-                        <h2 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+                        <h2 className="font-ibm" style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
                             Featured <br/><span className="text-gradient">Projects</span>
                         </h2>
-                        <p className="text-gradient-subtle" style={{ fontSize: '15px', marginTop: '16px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                        <p className="text-gradient-subtle font-space" style={{ fontSize: '15px', marginTop: '16px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                             Scroll to explore →
                         </p>
                     </motion.div>
@@ -176,6 +176,7 @@ export default function Projects() {
                                 right: '20px',
                                 fontSize: '240px',
                                 fontWeight: 900,
+                                fontFamily: 'var(--font-ibm)',
                                 color: 'rgba(255,255,255,0.02)',
                                 zIndex: 0,
                                 userSelect: 'none',
@@ -204,9 +205,9 @@ export default function Projects() {
 
                                 {/* Info side */}
                                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                    <h3 style={{ fontSize: '26px', fontWeight: 800, color: '#fff', letterSpacing: '-0.01em', marginBottom: '16px' }}>{project.name}</h3>
+                                    <h3 className="font-ibm" style={{ fontSize: '26px', fontWeight: 800, color: '#fff', letterSpacing: '-0.01em', marginBottom: '16px' }}>{project.name}</h3>
                                     
-                                    <p className="text-gradient-subtle" style={{ fontSize: '15px', lineHeight: 1.7, marginBottom: '24px' }}>
+                                    <p className="text-gradient-subtle font-syne" style={{ fontSize: '15px', lineHeight: 1.7, marginBottom: '24px' }}>
                                         {project.description}
                                     </p>
 
@@ -219,7 +220,7 @@ export default function Projects() {
                                                         <polyline points="22 4 12 14.01 9 11.01"></polyline>
                                                     </svg>
                                                 </span>
-                                                <span>{f}</span>
+                                                <span className="font-syne">{f}</span>
                                             </li>
                                         ))}
                                     </ul>
@@ -228,6 +229,7 @@ export default function Projects() {
                                         {project.tech.map((t) => (
                                             <span
                                                 key={t}
+                                                className="font-jetbrains"
                                                 style={{
                                                     fontSize: '12px',
                                                     padding: '6px 14px',
@@ -251,6 +253,7 @@ export default function Projects() {
                                                 href={project.demo}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
+                                                className="font-space"
                                                 style={{
                                                     display: 'flex', alignItems: 'center', gap: '8px',
                                                     padding: '12px 24px',
@@ -273,6 +276,7 @@ export default function Projects() {
                                                 href={project.code}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
+                                                className="font-space"
                                                 style={{
                                                     display: 'flex', alignItems: 'center', gap: '8px',
                                                     padding: '12px 24px',

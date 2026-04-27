@@ -158,7 +158,7 @@ export default function Hero() {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.7, ease: 'easeOut' }}
-                        className="text-gradient"
+                        className="text-gradient font-ibm"
                         style={{
                             fontSize: 'clamp(48px, 6vw, 80px)',
                             fontWeight: 800,
@@ -176,7 +176,7 @@ export default function Hero() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.7, delay: 0.15, ease: 'easeOut' }}
-                        className="text-gradient-subtle"
+                        className="text-gradient-subtle font-syne"
                         style={{
                             fontSize: '17px',
                             maxWidth: '600px',
@@ -212,6 +212,7 @@ export default function Hero() {
                                 textDecoration: 'none',
                                 transition: 'all 0.2s',
                             }}
+                            className="font-space"
                         >
                             <MailIcon />
                             Hire me
@@ -223,7 +224,7 @@ export default function Hero() {
                             href="/resume.pdf"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="glass"
+                            className="glass font-space"
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
