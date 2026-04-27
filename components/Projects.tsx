@@ -1,7 +1,8 @@
 'use client';
 
-import { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { useRef, useState, useEffect } from 'react';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import Image from 'next/image';
 
 const projects = [
     {
@@ -101,7 +102,6 @@ const ProjectPlaceholder = ({ name, emoji }: { name: string; emoji: string }) =>
             overflow: 'hidden'
         }}
     >
-        {/* Artistic glowing orb inside the placeholder */}
         <div style={{
             position: 'absolute',
             top: '50%', left: '50%',
@@ -136,15 +136,43 @@ const GithubIcon = () => (
 
 export default function Projects() {
     const targetRef = useRef<HTMLDivElement>(null);
+    const carouselRef = useRef<HTMLDivElement>(null);
+    const [carouselWidth, setCarouselWidth] = useState(0);
+
     const { scrollYProgress } = useScroll({
         target: targetRef,
     });
 
-    const x = useTransform(scrollYProgress, [0, 1], ["0%", "-85%"]);
+    // Measure the exact scrollable width on mount and resize
+    useEffect(() => {
+        const updateWidth = () => {
+            if (carouselRef.current) {
+                const scrollWidth = carouselRef.current.scrollWidth;
+                const clientWidth = window.innerWidth;
+                setCarouselWidth(scrollWidth - clientWidth);
+            }
+        };
+
+        updateWidth();
+        window.addEventListener('resize', updateWidth);
+        return () => window.removeEventListener('resize', updateWidth);
+    }, []);
+
+    // Smooth physics-based spring for the scroll to avoid jank
+    const smoothProgress = useSpring(scrollYProgress, { mass: 0.1, stiffness: 100, damping: 20 });
+    const x = useTransform(smoothProgress, [0, 1], [0, -carouselWidth]);
 
     return (
         <section id="projects" ref={targetRef} style={{ height: '400vh', position: 'relative', background: 'transparent' }}>
-            <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <div style={{ 
+                position: 'sticky', 
+                top: 0, 
+                height: '100vh', 
+                overflow: 'hidden', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                paddingTop: '100px' // Clears the navbar
+            }}>
                 
                 {/* Background Artistic Elements */}
                 <div style={{
@@ -152,17 +180,13 @@ export default function Projects() {
                     background: 'radial-gradient(circle, var(--accent-purple) 0%, transparent 60%)',
                     opacity: 0.05, filter: 'blur(80px)', pointerEvents: 'none', zIndex: 0
                 }} />
-                <div style={{
-                    position: 'absolute', bottom: '10%', left: '10%', width: '30vw', height: '30vw',
-                    background: 'radial-gradient(circle, var(--accent-cyan) 0%, transparent 60%)',
-                    opacity: 0.05, filter: 'blur(80px)', pointerEvents: 'none', zIndex: 0
-                }} />
 
                 {/* Top Section: Fixed Title Area */}
                 <div style={{ 
+                    flexShrink: 0, // Prevents title from being squished
                     width: '100%',
                     paddingLeft: 'clamp(24px, 5vw, 48px)',
-                    marginBottom: '6vh',
+                    marginBottom: '4vh',
                     zIndex: 10,
                 }}>
                     <motion.div
@@ -181,9 +205,10 @@ export default function Projects() {
                 </div>
 
                 {/* Bottom Section: Horizontal Scroll Container */}
-                <div style={{ width: '100%', position: 'relative' }}>
+                <div style={{ flex: 1, display: 'flex', alignItems: 'center', width: '100%', position: 'relative' }}>
                     <motion.div 
-                        style={{ x, display: 'flex', gap: '4vw', paddingLeft: 'clamp(24px, 5vw, 48px)', paddingRight: '10vw', alignItems: 'center', zIndex: 5 }}
+                        ref={carouselRef}
+                        style={{ x, display: 'flex', gap: '4vw', paddingLeft: 'clamp(24px, 5vw, 48px)', paddingRight: 'clamp(24px, 5vw, 48px)', alignItems: 'center', zIndex: 5 }}
                         className="projects-slider"
                     >
                         {projects.map((project, idx) => (
@@ -201,9 +226,9 @@ export default function Projects() {
                                 {/* Artistic Background Number */}
                                 <div style={{
                                     position: 'absolute',
-                                    top: '-60px',
+                                    top: '-40px',
                                     right: '20px',
-                                    fontSize: '240px',
+                                    fontSize: '200px',
                                     fontWeight: 900,
                                     color: 'rgba(255,255,255,0.02)',
                                     zIndex: 0,
@@ -219,31 +244,33 @@ export default function Projects() {
                                     style={{
                                         display: 'grid',
                                         gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 350px), 1fr))',
-                                        gap: '40px',
+                                        gap: '30px',
                                         alignItems: 'center',
-                                        padding: '40px',
+                                        padding: 'clamp(20px, 4vw, 40px)',
                                         width: '100%',
+                                        maxHeight: '70vh', // Prevent cards from getting too tall and causing cutoffs
+                                        overflowY: 'auto', // Scroll inside card if content is too long on small screens
                                         zIndex: 1
                                     }}
                                 >
                                     {/* Image side */}
-                                    <div style={{ height: '350px', padding: '8px', position: 'relative' }}>
+                                    <div style={{ height: 'min(300px, 30vh)', position: 'relative' }}>
                                         <ProjectPlaceholder name={project.name} emoji={project.emoji} />
                                     </div>
 
                                     {/* Info side */}
                                     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                        <h3 style={{ fontSize: '26px', fontWeight: 800, color: '#fff', letterSpacing: '-0.01em', marginBottom: '16px' }}>{project.name}</h3>
+                                        <h3 style={{ fontSize: 'clamp(20px, 2.5vw, 26px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.01em', marginBottom: '16px' }}>{project.name}</h3>
                                         
-                                        <p className="text-gradient-subtle" style={{ fontSize: '15px', lineHeight: 1.7, marginBottom: '24px' }}>
+                                        <p className="text-gradient-subtle" style={{ fontSize: '14px', lineHeight: 1.6, marginBottom: '20px' }}>
                                             {project.description}
                                         </p>
 
-                                        <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px 0', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                        <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                             {project.features.map((f) => (
-                                                <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', fontSize: '14px', color: '#8b8b99', lineHeight: '1.6' }}>
+                                                <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '13px', color: '#8b8b99', lineHeight: '1.5' }}>
                                                     <span style={{ color: 'var(--accent-cyan)', marginTop: '2px' }}>
-                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                                                             <polyline points="22 4 12 14.01 9 11.01"></polyline>
                                                         </svg>
@@ -253,18 +280,18 @@ export default function Projects() {
                                             ))}
                                         </ul>
 
-                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '32px' }}>
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '24px' }}>
                                             {project.tech.map((t) => (
                                                 <span
                                                     key={t}
                                                     style={{
-                                                        fontSize: '12px',
-                                                        padding: '6px 14px',
+                                                        fontSize: '11px',
+                                                        padding: '4px 12px',
                                                         background: 'rgba(255,255,255,0.03)',
                                                         border: '1px solid rgba(255,255,255,0.08)',
                                                         borderRadius: '20px',
                                                         color: '#d4d4d8',
-                                                        fontWeight: 500
+                                                        fontWeight: 600
                                                     }}
                                                 >
                                                     {t}
@@ -272,7 +299,7 @@ export default function Projects() {
                                             ))}
                                         </div>
 
-                                        <div style={{ display: 'flex', gap: '16px' }}>
+                                        <div style={{ display: 'flex', gap: '12px' }}>
                                             {project.demo && (
                                                 <motion.a
                                                     whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(0,240,255,0.2)' }}
@@ -281,11 +308,11 @@ export default function Projects() {
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     style={{
-                                                        display: 'flex', alignItems: 'center', gap: '8px',
-                                                        padding: '12px 24px',
+                                                        display: 'flex', alignItems: 'center', gap: '6px',
+                                                        padding: '10px 20px',
                                                         background: 'linear-gradient(135deg, var(--accent-cyan), var(--accent-blue))',
-                                                        borderRadius: '12px',
-                                                        fontSize: '14px',
+                                                        borderRadius: '10px',
+                                                        fontSize: '13px',
                                                         fontWeight: 700,
                                                         color: '#000',
                                                         textDecoration: 'none',
@@ -303,11 +330,11 @@ export default function Projects() {
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     style={{
-                                                        display: 'flex', alignItems: 'center', gap: '8px',
-                                                        padding: '12px 24px',
-                                                        borderRadius: '12px',
+                                                        display: 'flex', alignItems: 'center', gap: '6px',
+                                                        padding: '10px 20px',
+                                                        borderRadius: '10px',
                                                         border: '1px solid rgba(255,255,255,0.1)',
-                                                        fontSize: '14px',
+                                                        fontSize: '13px',
                                                         fontWeight: 600,
                                                         color: '#fff',
                                                         textDecoration: 'none',
