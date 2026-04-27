@@ -107,7 +107,7 @@ export default function Navigation() {
                                 letterSpacing: '0.05em',
                                 transition: 'border-color 0.2s',
                             }}
-                            onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#3b82f6')}
+                            onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--accent-cyan)')}
                             onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#3f3f46')}
                         >
                             CONTACT

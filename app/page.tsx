@@ -4,6 +4,7 @@ import MultiLayerStarfield from '@/components/StarfieldBackground';
 import CustomCursor from '@/components/CustomCursor';
 import AboutBento from '@/components/sections/AboutBento';
 import TechStack from '@/components/sections/TechStack';
+import Experience from '@/components/Experience';
 import Projects from '@/components/Projects';
 import GitHubStats from '@/components/sections/GitHubStats';
 import Blog from '@/components/sections/Blog';
@@ -18,6 +19,7 @@ export default function Home() {
       <Hero />
       <AboutBento />
       <TechStack />
+      <Experience />
       <Projects />
       <GitHubStats />
       <Blog />

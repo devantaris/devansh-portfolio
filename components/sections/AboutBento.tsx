@@ -11,13 +11,13 @@ const fadeUp = (delay: number) => ({
 
 const principles = [
     'Risk-aware fraud architecture',
-    'Gamified productivity systems',
-    'Peer-to-peer credit economies',
+    'Cost-sensitive modeling',
+    'Consequence-weighted thresholding',
     'EDA-driven reasoning',
     'Layered decision architecture',
     'The Extremity Principle',
-    'SIMPLY UNIVERSE — published book',
-    'IEEE Chairperson — Bennett University',
+    'SIMPLY UNIVERSE - published book',
+    'IEEE Chairperson - IEEE Student Branch Bennett University',
 ];
 
 export default function AboutBento() {

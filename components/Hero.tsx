@@ -127,15 +127,15 @@ export default function Hero() {
             className="relative overflow-hidden"
             style={{ minHeight: '100vh', display: 'flex', alignItems: 'center' }}
         >
-            {/* Blue edge glow - left */}
+            {/* Cyber edge glow - left */}
             <div
                 className="absolute left-0 top-0 bottom-0 pointer-events-none"
-                style={{ width: '2px', background: 'linear-gradient(to bottom, transparent, #3b82f6, transparent)', opacity: 0.5 }}
+                style={{ width: '1px', background: 'linear-gradient(to bottom, transparent, var(--accent-cyan), transparent)', opacity: 0.3 }}
             />
-            {/* Blue edge glow - right */}
+            {/* Cyber edge glow - right */}
             <div
                 className="absolute right-0 top-0 bottom-0 pointer-events-none"
-                style={{ width: '2px', background: 'linear-gradient(to bottom, transparent, #3b82f6, transparent)', opacity: 0.5 }}
+                style={{ width: '1px', background: 'linear-gradient(to bottom, transparent, var(--accent-purple), transparent)', opacity: 0.3 }}
             />
 
             <div
@@ -158,13 +158,14 @@ export default function Hero() {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.7, ease: 'easeOut' }}
+                        className="text-gradient"
                         style={{
                             fontSize: 'clamp(48px, 6vw, 80px)',
-                            fontWeight: 700,
-                            letterSpacing: '-0.03em',
-                            color: '#fff',
+                            fontWeight: 800,
+                            letterSpacing: '-0.04em',
                             marginBottom: '20px',
                             lineHeight: 1.1,
+                            display: 'inline-block'
                         }}
                     >
                         Devansh Kumar
@@ -175,16 +176,16 @@ export default function Hero() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.7, delay: 0.15, ease: 'easeOut' }}
+                        className="text-gradient-subtle"
                         style={{
-                            fontSize: '16px',
-                            color: '#a1a1aa',
-                            maxWidth: '520px',
+                            fontSize: '17px',
+                            maxWidth: '600px',
                             marginBottom: '40px',
-                            lineHeight: 1.7,
+                            lineHeight: 1.6,
+                            fontWeight: 500,
                         }}
                     >
-                        Building systems that think — from risk intelligence engines and peer economies
-                        to gamified desktop apps. I write code that solves real problems, reads well, and ships.
+                        Building systems that scale. From real-time fraud detection engines to cross-platform mobile experiences. Software Engineer, ML Practitioner, and IEEE Student Branch Chairperson focused on shipping robust, production-ready code.
                     </motion.p>
 
                     {/* CTA Row */}
@@ -192,44 +193,48 @@ export default function Hero() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
-                        style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}
+                        style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}
                     >
-                        <a
+                        <motion.a
+                            whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(0, 240, 255, 0.4)" }}
+                            whileTap={{ scale: 0.95 }}
                             href="mailto:work.devanshkumar@gmail.com"
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '8px',
-                                padding: '10px 20px',
-                                background: '#fff',
+                                padding: '12px 24px',
+                                background: 'linear-gradient(135deg, var(--accent-cyan), var(--accent-blue))',
                                 color: '#000',
                                 fontSize: '14px',
-                                fontWeight: 600,
-                                borderRadius: '8px',
+                                fontWeight: 700,
+                                borderRadius: '12px',
                                 textDecoration: 'none',
-                                transition: 'background 0.2s',
+                                transition: 'all 0.2s',
                             }}
                         >
                             <MailIcon />
                             Hire me
-                        </a>
+                        </motion.a>
 
-                        <a
+                        <motion.a
+                            whileHover={{ scale: 1.05, backgroundColor: "rgba(255, 255, 255, 0.1)" }}
+                            whileTap={{ scale: 0.95 }}
                             href="/resume.pdf"
                             target="_blank"
                             rel="noopener noreferrer"
+                            className="glass"
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '8px',
-                                padding: '10px 20px',
-                                border: '1px solid #3f3f46',
-                                borderRadius: '8px',
-                                color: '#d4d4d8',
+                                padding: '12px 24px',
+                                borderRadius: '12px',
+                                color: '#fff',
                                 fontSize: '14px',
                                 fontWeight: 600,
                                 textDecoration: 'none',
-                                transition: 'border-color 0.2s, color 0.2s',
+                                transition: 'all 0.2s',
                             }}
                         >
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -238,49 +243,53 @@ export default function Hero() {
                                 <line x1="12" y1="15" x2="12" y2="3" />
                             </svg>
                             Resume
-                        </a>
+                        </motion.a>
 
-                        <a
+                        <motion.a
+                            whileHover={{ scale: 1.1, backgroundColor: "rgba(255, 255, 255, 0.1)" }}
+                            whileTap={{ scale: 0.9 }}
                             href="https://github.com/devantaris"
                             target="_blank"
                             rel="noopener noreferrer"
+                            className="glass"
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                width: '40px',
-                                height: '40px',
-                                border: '1px solid #3f3f46',
-                                borderRadius: '8px',
-                                color: '#d4d4d8',
+                                width: '44px',
+                                height: '44px',
+                                borderRadius: '12px',
+                                color: '#fff',
                                 textDecoration: 'none',
-                                transition: 'border-color 0.2s, color 0.2s',
+                                transition: 'all 0.2s',
                             }}
                             aria-label="GitHub"
                         >
                             <GithubIcon />
-                        </a>
+                        </motion.a>
 
-                        <a
+                        <motion.a
+                            whileHover={{ scale: 1.1, backgroundColor: "rgba(255, 255, 255, 0.1)" }}
+                            whileTap={{ scale: 0.9 }}
                             href="https://www.linkedin.com/in/devansh-kumar-3b3701217/"
                             target="_blank"
                             rel="noopener noreferrer"
+                            className="glass"
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                width: '40px',
-                                height: '40px',
-                                border: '1px solid #3f3f46',
-                                borderRadius: '8px',
-                                color: '#d4d4d8',
+                                width: '44px',
+                                height: '44px',
+                                borderRadius: '12px',
+                                color: '#fff',
                                 textDecoration: 'none',
-                                transition: 'border-color 0.2s, color 0.2s',
+                                transition: 'all 0.2s',
                             }}
                             aria-label="LinkedIn"
                         >
                             <LinkedInIcon />
-                        </a>
+                        </motion.a>
                     </motion.div>
                 </div>
 

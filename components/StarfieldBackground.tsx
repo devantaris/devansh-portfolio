@@ -14,64 +14,115 @@ export default function MultiLayerStarfield() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // ── Scene ── pure black, no fog tint
+    // ── Scene ──
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x000000, 0.00015);
+    scene.fog = new THREE.FogExp2(0x020205, 0.001); // Subtle cyber-midnight fog
 
     // ── Camera ──
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      2000
-    );
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
     camera.position.set(0, 20, 100);
 
-    // ── Renderer ── pure black clear color
+    // ── Renderer ──
     const isMobile = window.innerWidth <= 768;
-    // Cap pixel ratio to 1.5 on desktop to keep post-processing fast, 1 on mobile
     const pixelRatio = isMobile ? 1 : Math.min(window.devicePixelRatio, 1.5);
 
     const renderer = new THREE.WebGLRenderer({
       canvas,
-      antialias: false, // Antialiasing is expensive and unnecessary for Points
+      antialias: false,
       alpha: false,
       powerPreference: 'high-performance',
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(pixelRatio);
-    renderer.setClearColor(0x000000, 1); // Pure black
+    renderer.setClearColor(0x020205, 1);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.0;
+    renderer.toneMappingExposure = 1.2;
 
-    // ── Post-processing — bloom only on bright stars (DISABLED ON MOBILE) ──
+    // ── Post-processing ──
     const composer = new EffectComposer(renderer);
-    composer.setPixelRatio(pixelRatio); // Prevents default scaling on heavy high-DPI displays
+    composer.setPixelRatio(pixelRatio);
     composer.addPass(new RenderPass(scene, camera));
 
-    // Only add the expensive Bloom pass on Desktop
     if (!isMobile) {
       composer.addPass(
         new UnrealBloomPass(
           new THREE.Vector2(window.innerWidth, window.innerHeight),
-          0.4,  // strength — gentle glow on stars only
-          0.3,  // radius
-          0.85  // threshold — high so only bright stars bloom
+          0.6,  // strength
+          0.4,  // radius
+          0.7   // threshold
         )
       );
     }
 
+    // ── Nebula / Cosmic Dust Background ──
+    const nebulaGeo = new THREE.SphereGeometry(800, 32, 32);
+    const nebulaMat = new THREE.ShaderMaterial({
+      uniforms: {
+        time: { value: 0 },
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        varying vec2 vUv;
+        uniform float time;
+
+        // Simple 2D noise
+        vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+        vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+        vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+        float snoise(vec2 v) {
+          const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
+          vec2 i  = floor(v + dot(v, C.yy) );
+          vec2 x0 = v -   i + dot(i, C.xx);
+          vec2 i1; i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+          vec4 x12 = x0.xyxy + C.xxzz;
+          x12.xy -= i1;
+          i = mod289(i);
+          vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 )) + i.x + vec3(0.0, i1.x, 1.0 ));
+          vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+          m = m*m; m = m*m;
+          vec3 x = 2.0 * fract(p * C.www) - 1.0;
+          vec3 h = abs(x) - 0.5;
+          vec3 ox = floor(x + 0.5);
+          vec3 a0 = x - ox;
+          m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
+          vec3 g;
+          g.x  = a0.x  * x0.x  + h.x  * x0.y;
+          g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+          return 130.0 * dot(m, g);
+        }
+
+        void main() {
+          vec2 p = vUv * 3.0;
+          float n = snoise(p + time * 0.02) * 0.5 + 0.5;
+          float n2 = snoise(p * 2.0 - time * 0.03) * 0.5 + 0.5;
+          
+          vec3 color1 = vec3(0.0, 0.1, 0.2); // deep cyan/blue
+          vec3 color2 = vec3(0.1, 0.0, 0.2); // deep purple
+          
+          vec3 finalColor = mix(color1, color2, n2) * n * 0.15; // faint
+          
+          gl_FragColor = vec4(finalColor, 1.0);
+        }
+      `,
+      side: THREE.BackSide,
+      depthWrite: false,
+    });
+    const nebula = new THREE.Mesh(nebulaGeo, nebulaMat);
+    scene.add(nebula);
+
     // ── Stars ──
     const starLayers: THREE.Points[] = [];
 
-    // Reduce overall star count to half, heavily reducing slower moving stars (higher depth)
     const getLayerStarCount = (layerIdx: number) => {
-      // Drastically reduce star count on mobile to prevent crashes
       const base = isMobile ? 0.25 : 1;
-
-      if (layerIdx === 0) return Math.floor(4000 * base); // Fastest moving (front)
-      if (layerIdx === 1) return Math.floor(2000 * base); // Medium speed
-      if (layerIdx === 2) return Math.floor(1500 * base); // Slowest moving (back)
+      if (layerIdx === 0) return Math.floor(4000 * base);
+      if (layerIdx === 1) return Math.floor(2000 * base);
       return Math.floor(1500 * base);
     };
 
@@ -80,9 +131,9 @@ export default function MultiLayerStarfield() {
       const positions = new Float32Array(STAR_COUNT * 3);
       const colors = new Float32Array(STAR_COUNT * 3);
       const sizes = new Float32Array(STAR_COUNT);
+      const randoms = new Float32Array(STAR_COUNT);
 
       for (let j = 0; j < STAR_COUNT; j++) {
-        // Spherically distributed. Using a power function pushes more stars outward, reducing center density.
         const radius = 100 + Math.pow(Math.random(), 0.5) * 800;
         const theta = Math.random() * Math.PI * 2;
         const phi = Math.acos(Math.random() * 2 - 1);
@@ -91,27 +142,32 @@ export default function MultiLayerStarfield() {
         positions[j * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
         positions[j * 3 + 2] = radius * Math.cos(phi);
 
-        // Color: mostly pure white, some warm, some cool blue tint
+        // Cyber Anomalies
         const color = new THREE.Color();
         const r = Math.random();
-        if (r < 0.75) {
+        if (r < 0.8) {
           color.setHSL(0, 0, 0.85 + Math.random() * 0.15); // white
         } else if (r < 0.9) {
-          color.setHSL(0.08, 0.3, 0.85); // warm white
+          color.setHex(0x00f0ff); // neon cyan
+        } else if (r < 0.98) {
+          color.setHex(0x9d4edd); // vivid purple
         } else {
-          color.setHSL(0.6, 0.2, 0.85); // cool white (subtle)
+          color.setHex(0xff00ff); // hot pink
         }
+        
         colors[j * 3] = color.r;
         colors[j * 3 + 1] = color.g;
         colors[j * 3 + 2] = color.b;
 
         sizes[j] = Math.random() * 3 + 1;
+        randoms[j] = Math.random(); // For twinkling
       }
 
       const geometry = new THREE.BufferGeometry();
       geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
       geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
       geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+      geometry.setAttribute('random', new THREE.BufferAttribute(randoms, 1));
 
       const material = new THREE.ShaderMaterial({
         precision: 'highp',
@@ -124,8 +180,11 @@ export default function MultiLayerStarfield() {
         vertexShader: `
           attribute float size;
           attribute vec3 color;
+          attribute float random;
+          
           varying vec3 vColor;
-          varying float vBlurAmount;
+          varying float vOpacity;
+          
           uniform float time;
           uniform float depth;
           uniform vec2 uMouse;
@@ -135,7 +194,7 @@ export default function MultiLayerStarfield() {
             vColor = color;
             vec3 pos = position;
 
-            // Slow rotation per layer
+            // Slow rotation
             float angle = time * 0.05 * (1.0 - depth * 0.3);
             mat2 rot = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
             pos.xy = rot * pos.xy;
@@ -143,7 +202,7 @@ export default function MultiLayerStarfield() {
             vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
             vec4 projectedPos = projectionMatrix * mvPosition;
             
-            // Calculate blur amount based on distance to mouse
+            // Mouse Repulsion (Screen Space)
             vec2 ndcPos = projectedPos.xy / projectedPos.w;
             vec2 screenPos = vec2(
               (ndcPos.x * 0.5 + 0.5) * uResolution.x,
@@ -151,35 +210,48 @@ export default function MultiLayerStarfield() {
             );
             
             float distToMouse = length(screenPos - uMouse);
-            // Radius of 120px clear, blurring out to 300px
-            vBlurAmount = smoothstep(120.0, 300.0, distToMouse);
+            float repulsionRadius = 250.0;
+            
+            if (distToMouse < repulsionRadius) {
+              float force = (repulsionRadius - distToMouse) / repulsionRadius;
+              vec2 dir = normalize(screenPos - uMouse);
+              
+              // Push the projected position away
+              // Notice we must invert the Y direction for NDC (where +Y is up)
+              vec2 pushNDC = (dir * force * 150.0) / uResolution * 2.0;
+              pushNDC.y = -pushNDC.y; 
+              projectedPos.xy += pushNDC * projectedPos.w;
+            }
+
+            // Chaotic Twinkling
+            float twinkle = sin(time * (2.0 + random * 5.0) + random * 10.0) * 0.5 + 0.5;
+            float twinkleFactor = mix(1.0, twinkle, random > 0.5 ? 0.8 : 0.2);
+            
+            vOpacity = twinkleFactor;
 
             float baseSize = size * (300.0 / -mvPosition.z);
-            // Increase size for blurred stars up to 2.5x, making them look out of focus
-            gl_PointSize = baseSize * (1.0 + vBlurAmount * 1.5);
+            gl_PointSize = baseSize * twinkleFactor;
             
             gl_Position = projectedPos;
           }
         `,
         fragmentShader: `
           varying vec3 vColor;
-          varying float vBlurAmount;
+          varying float vOpacity;
 
           void main() {
             float dist = length(gl_PointCoord - vec2(0.5));
             if (dist > 0.5) discard;
 
-            float opacity = 1.0 - smoothstep(0.0, 0.5, dist);
-            // Faint down the blurred stars to keep brightness balanced
-            opacity *= mix(1.0, 0.25, vBlurAmount);
+            float alpha = (1.0 - smoothstep(0.0, 0.5, dist)) * vOpacity;
             
-            gl_FragColor = vec4(vColor, opacity);
+            gl_FragColor = vec4(vColor, alpha);
           }
         `,
         transparent: true,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
-        depthTest: false, // Disabling depth test skips Z-buffer reading for performance
+        depthTest: false,
       });
 
       const points = new THREE.Points(geometry, material);
@@ -187,13 +259,9 @@ export default function MultiLayerStarfield() {
       starLayers.push(points);
     }
 
-    // NO atmosphere sphere — pure black space
-
     // ── Scroll state ──
     let scrollY = window.scrollY;
-    const handleScroll = () => {
-      scrollY = window.scrollY;
-    };
+    const handleScroll = () => scrollY = window.scrollY;
     window.addEventListener('scroll', handleScroll, { passive: true });
 
     // ── Mouse parallax ──
@@ -216,7 +284,8 @@ export default function MultiLayerStarfield() {
       animationId = requestAnimationFrame(animate);
       const time = performance.now() * 0.001;
 
-      // Update star shader uniforms
+      nebulaMat.uniforms.time.value = time;
+
       starLayers.forEach((layer) => {
         if (layer.material instanceof THREE.ShaderMaterial) {
           layer.material.uniforms.time.value = time;
@@ -225,25 +294,18 @@ export default function MultiLayerStarfield() {
         }
       });
 
-      // Calculate scroll-based camera target
-      const docHeight = Math.max(
-        document.documentElement.scrollHeight - window.innerHeight,
-        1
-      );
+      const docHeight = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
       const progress = Math.min(scrollY / docHeight, 1);
 
-      // Camera moves deeper into the starfield as user scrolls
       const targetX = mouseX * 8;
       const targetY = 30 - progress * 20 + mouseY * 5;
       const targetZ = 100 - progress * 150;
 
-      // Smooth camera movement
       const smooth = 0.04;
       smoothCameraPos.current.x += (targetX - smoothCameraPos.current.x) * smooth;
       smoothCameraPos.current.y += (targetY - smoothCameraPos.current.y) * smooth;
       smoothCameraPos.current.z += (targetZ - smoothCameraPos.current.z) * smooth;
 
-      // Subtle floating
       const floatX = Math.sin(time * 0.1) * 2;
       const floatY = Math.cos(time * 0.15) * 1;
 
@@ -266,12 +328,14 @@ export default function MultiLayerStarfield() {
     };
     window.addEventListener('resize', handleResize);
 
-    // ── Cleanup ──
     return () => {
       cancelAnimationFrame(animationId);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('mousemove', handleMouseMove);
+
+      nebulaGeo.dispose();
+      nebulaMat.dispose();
 
       starLayers.forEach((s) => {
         s.geometry.dispose();
@@ -285,7 +349,7 @@ export default function MultiLayerStarfield() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 -z-20 pointer-events-none"
-      style={{ background: '#000000' }}
+      style={{ background: '#020205' }}
     />
   );
 }

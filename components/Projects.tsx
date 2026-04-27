@@ -1,97 +1,79 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 const projects = [
     {
-        emoji: '🌿',
-        name: 'Biome — Focus Forest Desktop App',
-        description:
-            'A world-building productivity app for desktop. Complete Pomodoro focus sessions to earn trees, flowers, and rare items — then place them on your personal grid to grow a living ecosystem. Your deep work leaves a tangible, beautiful trace.',
-        features: [
-            'Gamified focus timer with item rarity system (Common → Legendary)',
-            'Interactive world grid with manual placement & territory expansion',
-            'Real-time leaderboard, XP levels, streaks & 30+ achievements',
-            'Cross-device sync via Firebase with Electron desktop & PWA support',
-        ],
-        tech: ['TypeScript', 'React', 'Electron', 'Firebase', 'Vite'],
-        demo: null,
-        code: 'https://github.com/devantaris/Biome',
-    },
-    {
-        emoji: '🔄',
-        name: 'SkillSync — Peer Skill Economy',
-        description:
-            'A full-stack platform where users share knowledge through courses, earn credits for every enrollment, and spend credits to learn new skills — no money needed, just knowledge. Features AI-powered course validation and a built-in credit economy.',
-        features: [
-            'Credit economy — earn by teaching, spend to learn (15% platform fee)',
-            'AI content validator scores every course for quality (0–100)',
-            'Multi-step course upload wizard with live AI review',
-            'Dashboard with skill radar charts, wallet, and Razorpay integration',
-        ],
-        tech: ['React', 'Vite', 'Express', 'Supabase', 'Zustand', 'Razorpay'],
-        demo: 'https://skill-sync-steel-rho.vercel.app',
-        code: 'https://github.com/devantaris/SkillSync',
-    },
-    {
         emoji: '🛡️',
-        name: 'MARI — Risk-Aware Fraud Decision Engine',
+        name: 'MARI — Risk-Aware Fraud Decision System',
         description:
-            'A multi-axis risk intelligence engine that evaluates financial transactions using behavioral, network, and temporal risk signals to produce explainable fraud decisions with uncertainty quantification.',
+            'A 3-layer fraud detection and decision system (risk assessment · predictive uncertainty · novelty detection) trained on 284,807 real-world transactions across 31 PCA-transformed dimensions with a 0.17% fraud class imbalance.',
         features: [
-            'Multi-layered risk scoring with 12+ risk signals',
-            'Explainable AI — every decision has a human-readable breakdown',
-            'Real-time decision API with sub-100ms latency',
-            'Adaptive rules engine with cost-sensitive thresholding',
+            '5-member calibrated XGBoost bootstrap ensemble paired with Isolation Forest anomaly detection',
+            'Cost-optimised routing policy with asymmetric loss functions and consequence-weighted thresholding',
+            'Real-time inference REST API achieving sub-100ms latency per transaction under production load',
         ],
-        tech: ['Python', 'FastAPI', 'Scikit-learn', 'PostgreSQL', 'Redis', 'Railway'],
+        tech: ['Python', 'FastAPI', 'XGBoost', 'PostgreSQL'],
         demo: 'https://mari-alpha.vercel.app',
         code: 'https://github.com/devantaris/mari',
     },
     {
         emoji: '🎬',
-        name: 'Flutter OTT Streaming App',
+        name: 'Flutter OTT Streaming Application',
         description:
-            'A Flutter-based OTT streaming-style application with local authentication, content rentals, and a rich cinematic UI — built in 48 hours as a rapid prototyping exercise.',
+            'A cross-platform OTT streaming application (iOS, Android, Web) with local authentication, content catalog, rental and purchase flow, and cinematic UI using Flutter and Dart.',
         features: [
-            'Local auth with secure session management',
-            'Content catalog with rental & purchase flow',
-            'Rich cinematic UI with smooth page transitions',
-            'Cross-platform: iOS, Android & Web',
+            'Implemented BLoC-pattern state management and secure session handling',
+            'SQLite-backed local persistence for offline data access',
+            'Optimised page transitions for smooth cross-platform user experience',
         ],
         tech: ['Flutter', 'Dart', 'SQLite', 'BLoC'],
         demo: null,
         code: 'https://github.com/devantaris/flutter-ott-app',
     },
     {
-        emoji: '🌐',
-        name: 'Portfolio — This Site',
+        emoji: '🌿',
+        name: 'Biome PWA',
         description:
-            'A minimal, high-performance portfolio with a swimming avatar, starfield background, bento grid layout, and live GitHub stats — all built with zero template dependencies.',
+            'A cross-platform world-building productivity application (PWA & Desktop) featuring a focus timer, daily planner, and real-time interactive leaderboards.',
         features: [
-            'Multi-layer starfield canvas with parallax scrolling',
-            'Swimming avatar that reacts to scroll position',
-            'Bento grid about section with engineering philosophy',
-            'GitHub contribution graph & stats integration',
+            'Scalable backend using Firebase for cross-device synchronization and Google Authentication',
+            'Global progression tracking and real-time competitive leaderboards',
+            'Electron desktop build with native window controls',
         ],
-        tech: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Framer Motion'],
+        tech: ['React', 'TypeScript', 'Firebase', 'Electron'],
         demo: null,
-        code: 'https://github.com/devantaris/devansh-portfolio',
+        code: 'https://github.com/devantaris/Biome',
+    },
+    {
+        emoji: '🔄',
+        name: 'SkillSync Platform',
+        description:
+            'A full-stack peer-to-peer skill economy platform where users earn credits by teaching and spend them to enroll in courses.',
+        features: [
+            'AI-powered content validator to automatically score uploaded courses and maintain platform quality',
+            'End-to-end payment flow integration using Razorpay',
+            'Scalable relational data management with Supabase PostgreSQL and RLS',
+        ],
+        tech: ['React', 'Node.js', 'Supabase', 'Razorpay'],
+        demo: 'https://skill-sync-steel-rho.vercel.app',
+        code: 'https://github.com/devantaris/SkillSync',
     },
 ];
 
 const ProjectPlaceholder = ({ name, emoji }: { name: string; emoji: string }) => (
     <div
         style={{
-            width: '100%', height: '100%', borderRadius: '16px',
+            width: '100%', height: '100%', borderRadius: '20px',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'linear-gradient(135deg, #18181b, #09090b)',
-            border: '1px solid #27272a',
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.05), rgba(0,0,0,0.8))',
+            boxShadow: 'inset 0 0 50px rgba(0,0,0,0.8)'
         }}
     >
         <div style={{ textAlign: 'center', padding: '24px' }}>
-            <div style={{ fontSize: '40px', marginBottom: '12px' }}>{emoji}</div>
-            <p style={{ fontSize: '12px', color: '#52525b' }}>{name}</p>
+            <div style={{ fontSize: '80px', marginBottom: '24px', filter: 'drop-shadow(0 0 30px rgba(255,255,255,0.2))' }}>{emoji}</div>
+            <p className="text-gradient" style={{ fontSize: '16px', fontWeight: 800 }}>{name.split('—')[0]}</p>
         </div>
     </div>
 );
@@ -111,137 +93,159 @@ const GithubIcon = () => (
 );
 
 export default function Projects() {
-    return (
-        <section id="projects" style={{ padding: 'clamp(60px, 10vw, 120px) 0' }}>
-            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 clamp(24px, 5vw, 48px)' }}>
-                {/* Section heading */}
-                <motion.h2
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5 }}
-                    style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 700, color: '#fff', marginBottom: '64px' }}
-                >
-                    Latest Projects
-                </motion.h2>
+    const targetRef = useRef<HTMLDivElement>(null);
+    const { scrollYProgress } = useScroll({
+        target: targetRef,
+    });
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '96px' }}>
+    // Translate the cards horizontally from 0% to -75% based on scroll progress
+    // We have 4 cards. We need to shift so the last card is visible.
+    // Each card takes up 100vw, so total width is 400vw.
+    // To show the last card, we need to translate by -300vw.
+    const x = useTransform(scrollYProgress, [0, 1], ["1%", "-75%"]);
+
+    return (
+        <section id="projects" ref={targetRef} style={{ height: '400vh', position: 'relative', background: 'var(--background)' }}>
+            <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
+                
+                {/* Title */}
+                <div style={{ position: 'absolute', top: '100px', left: '0', width: '100%', padding: '0 clamp(24px, 5vw, 48px)', maxWidth: '1100px', margin: '0 auto', left: '50%', transform: 'translateX(-50%)', zIndex: 10 }}>
+                    <h2 style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' }}>
+                        Featured Projects
+                    </h2>
+                    <p className="text-gradient-subtle" style={{ fontSize: '15px', marginTop: '8px' }}>
+                        Scroll to explore
+                    </p>
+                </div>
+
+                {/* Horizontal Scroll Container */}
+                <motion.div 
+                    style={{ x, display: 'flex', gap: '4vw', paddingLeft: 'calc(50vw - 550px)', paddingRight: '10vw' }}
+                    className="projects-slider"
+                >
                     {projects.map((project, idx) => (
-                        <motion.div
+                        <div 
                             key={project.name}
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, margin: '-80px' }}
-                            transition={{ duration: 0.6, ease: 'easeOut' }}
-                            style={{
-                                display: 'grid',
-                                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))',
-                                gap: '40px',
+                            style={{ 
+                                width: 'min(90vw, 1000px)', 
+                                flexShrink: 0,
+                                display: 'flex',
                                 alignItems: 'center',
+                                justifyContent: 'center'
                             }}
                         >
-                            {/* Image side */}
-                            <div
-                                className="project-image-side"
+                            <div 
+                                className="premium-card glass"
                                 style={{
-                                    height: '320px',
-                                    borderRadius: '16px',
-                                    overflow: 'hidden',
-                                    boxShadow: '0 0 40px rgba(59, 130, 246, 0.12), 0 0 80px rgba(59, 130, 246, 0.04)',
-                                    border: '1px solid rgba(59, 130, 246, 0.15)',
-                                    order: idx % 2 === 1 ? 2 : 1,
+                                    display: 'grid',
+                                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))',
+                                    gap: '40px',
+                                    alignItems: 'center',
+                                    padding: '40px',
+                                    width: '100%'
                                 }}
                             >
-                                <ProjectPlaceholder name={project.name} emoji={project.emoji} />
+                                {/* Image side */}
+                                <div style={{ height: '380px', padding: '8px', position: 'relative' }}>
+                                    <ProjectPlaceholder name={project.name} emoji={project.emoji} />
+                                    {/* Project Number indicator */}
+                                    <div style={{ position: 'absolute', top: '24px', left: '24px', fontSize: '14px', fontWeight: 800, color: 'rgba(255,255,255,0.3)' }}>
+                                        0{idx + 1}
+                                    </div>
+                                </div>
+
+                                {/* Info side */}
+                                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                    <h3 style={{ fontSize: '26px', fontWeight: 800, color: '#fff', letterSpacing: '-0.01em', marginBottom: '16px' }}>{project.name}</h3>
+                                    
+                                    <p className="text-gradient-subtle" style={{ fontSize: '15px', lineHeight: 1.7, marginBottom: '24px' }}>
+                                        {project.description}
+                                    </p>
+
+                                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px 0', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                        {project.features.map((f) => (
+                                            <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', fontSize: '14px', color: '#8b8b99', lineHeight: '1.6' }}>
+                                                <span style={{ color: 'var(--accent-cyan)', marginTop: '2px' }}>
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                                    </svg>
+                                                </span>
+                                                <span>{f}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '32px' }}>
+                                        {project.tech.map((t) => (
+                                            <span
+                                                key={t}
+                                                style={{
+                                                    fontSize: '12px',
+                                                    padding: '6px 14px',
+                                                    background: 'rgba(255,255,255,0.03)',
+                                                    border: '1px solid rgba(255,255,255,0.08)',
+                                                    borderRadius: '20px',
+                                                    color: '#d4d4d8',
+                                                    fontWeight: 500
+                                                }}
+                                            >
+                                                {t}
+                                            </span>
+                                        ))}
+                                    </div>
+
+                                    <div style={{ display: 'flex', gap: '16px' }}>
+                                        {project.demo && (
+                                            <motion.a
+                                                whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(0,240,255,0.2)' }}
+                                                whileTap={{ scale: 0.95 }}
+                                                href={project.demo}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{
+                                                    display: 'flex', alignItems: 'center', gap: '8px',
+                                                    padding: '12px 24px',
+                                                    background: 'linear-gradient(135deg, var(--accent-cyan), var(--accent-blue))',
+                                                    borderRadius: '12px',
+                                                    fontSize: '14px',
+                                                    fontWeight: 700,
+                                                    color: '#000',
+                                                    textDecoration: 'none',
+                                                }}
+                                            >
+                                                <ExternalLinkIcon />
+                                                Live Demo
+                                            </motion.a>
+                                        )}
+                                        {project.code && (
+                                            <motion.a
+                                                whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.1)' }}
+                                                whileTap={{ scale: 0.95 }}
+                                                href={project.code}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{
+                                                    display: 'flex', alignItems: 'center', gap: '8px',
+                                                    padding: '12px 24px',
+                                                    borderRadius: '12px',
+                                                    border: '1px solid rgba(255,255,255,0.1)',
+                                                    fontSize: '14px',
+                                                    fontWeight: 600,
+                                                    color: '#fff',
+                                                    textDecoration: 'none',
+                                                }}
+                                            >
+                                                <GithubIcon />
+                                                View Code
+                                            </motion.a>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
-
-                            {/* Info side */}
-                            <div className="project-info-side" style={{ order: idx % 2 === 1 ? 1 : 2 }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                                    <span style={{ fontSize: '24px' }}>{project.emoji}</span>
-                                    <h3 style={{ fontSize: '22px', fontWeight: 700, color: '#fff' }}>{project.name}</h3>
-                                </div>
-
-                                <p style={{ fontSize: '14px', color: '#a1a1aa', lineHeight: 1.7, marginBottom: '20px' }}>
-                                    {project.description}
-                                </p>
-
-                                {/* Features */}
-                                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                    {project.features.map((f) => (
-                                        <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '13px', color: '#a1a1aa' }}>
-                                            <span style={{ fontSize: '14px', flexShrink: 0, lineHeight: '1.4' }}>✨</span>
-                                            <span>{f}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-
-                                {/* Tech pills */}
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '24px' }}>
-                                    {project.tech.map((t) => (
-                                        <span
-                                            key={t}
-                                            style={{
-                                                fontSize: '12px',
-                                                padding: '6px 14px',
-                                                border: '1px solid #3f3f46',
-                                                borderRadius: '6px',
-                                                color: '#d4d4d8',
-                                                background: '#18181b',
-                                            }}
-                                        >
-                                            {t}
-                                        </span>
-                                    ))}
-                                </div>
-
-                                {/* Buttons */}
-                                <div style={{ display: 'flex', gap: '12px' }}>
-                                    {project.demo && (
-                                        <a
-                                            href={project.demo}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            style={{
-                                                display: 'flex', alignItems: 'center', gap: '8px',
-                                                padding: '8px 16px',
-                                                border: '1px solid #52525b',
-                                                borderRadius: '6px',
-                                                fontSize: '13px',
-                                                color: '#fff',
-                                                textDecoration: 'none',
-                                                transition: 'border-color 0.2s',
-                                            }}
-                                        >
-                                            <ExternalLinkIcon />
-                                            Live Demo
-                                        </a>
-                                    )}
-                                    {project.code && (
-                                        <a
-                                            href={project.code}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            style={{
-                                                display: 'flex', alignItems: 'center', gap: '8px',
-                                                padding: '8px 16px',
-                                                border: '1px solid #52525b',
-                                                borderRadius: '6px',
-                                                fontSize: '13px',
-                                                color: '#fff',
-                                                textDecoration: 'none',
-                                                transition: 'border-color 0.2s',
-                                            }}
-                                        >
-                                            <GithubIcon />
-                                            View Code
-                                        </a>
-                                    )}
-                                </div>
-                            </div>
-                        </motion.div>
+                        </div>
                     ))}
-                </div>
+                </motion.div>
             </div>
         </section>
     );
