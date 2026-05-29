@@ -92,7 +92,7 @@ export default function Navigation() {
 
                         {/* V2 Preview Link */}
                         <a
-                            href="https://REPLACE_WITH_VERCEL_URL"
+                            href="https://devantaris.github.io/devansh-portfolio"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="hidden md:flex items-center"
