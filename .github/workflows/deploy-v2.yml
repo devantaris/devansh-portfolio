@@ -3,14 +3,13 @@ name: Deploy V2 to GitHub Pages
 on:
   push:
     branches:
-      - creative-redesign   # Triggers on every push to this branch
+      - creative-redesign
 
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Only one deployment at a time
 concurrency:
   group: pages
   cancel-in-progress: true
@@ -18,9 +17,6 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: portfolio-devansh   # monorepo subfolder
 
     steps:
       - name: Checkout
@@ -31,7 +27,7 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: portfolio-devansh/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -39,12 +35,12 @@ jobs:
       - name: Build static export
         run: npm run build
         env:
-          GITHUB_PAGES: true   # Activates basePath/assetPrefix in next.config.ts
+          GITHUB_PAGES: true
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: portfolio-devansh/out   # next export writes to /out
+          path: out
 
   deploy:
     needs: build
