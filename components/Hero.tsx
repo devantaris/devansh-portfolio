@@ -1,102 +1,31 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import Image from 'next/image';
+import LorenzAttractor from './LorenzAttractor';
 
-/* ─── Swimming Avatar ─── */
-function SwimmingAvatar() {
-    const avatarRef = useRef<HTMLDivElement>(null);
+/* ─── HUD Coordinates Widget ─── */
+function HUDTelemetry() {
+    const [coords, setCoords] = useState({ x: 40.7128, y: -74.0060 });
 
-    // Use framer-motion's highly-optimized scroll tracking instead of native React state
-    // This prevents massive re-renders on every pixel of scroll
-    const { scrollYProgress } = useScroll({
-        offset: ["start start", "end end"]
-    });
-
-    // We pass our scroll logic into useTransform to keep all calculations
-    // on Framer Motion's internal animation thread, off the main React thread.
-
-    // Vertical bob
-    const translateY = useTransform(scrollYProgress, (progress) => {
-        const factor = progress * 30;
-        return Math.sin(factor * 1.2) * 25 - progress * 120;
-    });
-
-    // Horizontal sway
-    const translateX = useTransform(scrollYProgress, (progress) => {
-        const factor = progress * 30;
-        return Math.sin(factor * 0.8) * 35 + Math.sin(factor * 2.1) * 12;
-    });
-
-    // Rotation
-    const rotate = useTransform(scrollYProgress, (progress) => {
-        const factor = progress * 30;
-        return Math.sin(factor * 0.9) * 8 + Math.sin(factor * 2.5) * 3;
-    });
-
-    // Scale
-    const scale = useTransform(scrollYProgress, (progress) => {
-        const factor = progress * 30;
-        return 1 + Math.sin(factor * 1.5) * 0.03;
-    });
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCoords({
+                x: 40.7128 + (Math.random() - 0.5) * 0.05,
+                y: -74.0060 + (Math.random() - 0.5) * 0.05
+            });
+        }, 1200);
+        return () => clearInterval(interval);
+    }, []);
 
     return (
-        <motion.div
-            ref={avatarRef}
-            initial={{ opacity: 0, y: 120, x: 80, scale: 0.7, rotate: 15 }}
-            animate={{ opacity: 1, y: 0, x: 0, scale: 1, rotate: 0 }}
-            transition={{
-                duration: 1.2,
-                ease: [0.25, 0.46, 0.45, 0.94],
-                delay: 0.4,
-            }}
-            style={{
-                position: 'relative',
-                zIndex: 5,
-            }}
-        >
-            <motion.div
-                style={{
-                    y: translateY,
-                    x: translateX,
-                    rotate: rotate,
-                    scale: scale,
-                    willChange: 'transform',
-                }}
-            >
-                {/* Glow effect behind avatar */}
-                <div
-                    style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: '150%',
-                        height: '150%',
-                        background: 'radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, rgba(124, 111, 181, 0.06) 40%, transparent 70%)',
-                        borderRadius: '50%',
-                        filter: 'blur(30px)',
-                        pointerEvents: 'none',
-                    }}
-                />
-                <Image
-                    src="/images/image3.png"
-                    alt="Devansh Kumar Avatar"
-                    width={360}
-                    height={360}
-                    priority
-                    style={{
-                        width: 'clamp(220px, 22vw, 360px)',
-                        height: 'auto',
-                        objectFit: 'contain',
-                        filter: 'drop-shadow(0 20px 60px rgba(59, 130, 246, 0.15)) drop-shadow(0 4px 20px rgba(0,0,0,0.4))',
-                        pointerEvents: 'none',
-                        userSelect: 'none',
-                    }}
-                />
-            </motion.div>
-        </motion.div>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-cyan)', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+            <div>LAT_REF: {coords.x.toFixed(5)}°N</div>
+            <div>LON_REF: {coords.y.toFixed(5)}°W</div>
+            <div>MODEL_STABILITY: 99.84% [MAX]</div>
+            <div>THROTTLE_VAL: 2.148 // ACTIVE</div>
+        </div>
     );
 }
 
@@ -114,188 +43,278 @@ const LinkedInIcon = () => (
 );
 
 const MailIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <rect x="2" y="4" width="20" height="16" rx="2" />
         <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
     </svg>
 );
 
 export default function Hero() {
+    const containerRef = useRef<HTMLDivElement>(null);
+    
+    // Parallax tracking
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ["start start", "end end"]
+    });
+
+    const yBackground = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
+    const scaleFactor = useTransform(scrollYProgress, [0, 1], [1, 0.95]);
+
     return (
         <section
             id="home"
-            className="relative overflow-hidden"
-            style={{ minHeight: '100vh', display: 'flex', alignItems: 'center' }}
+            ref={containerRef}
+            style={{ 
+                minHeight: '100vh', 
+                position: 'relative', 
+                overflow: 'hidden',
+                display: 'flex',
+                alignItems: 'center',
+                paddingTop: '80px',
+                background: 'radial-gradient(circle at 70% 30%, rgba(189, 0, 255, 0.03) 0%, transparent 60%)'
+            }}
         >
-            {/* Cyber edge glow - left */}
-            <div
-                className="absolute left-0 top-0 bottom-0 pointer-events-none"
-                style={{ width: '1px', background: 'linear-gradient(to bottom, transparent, var(--accent-cyan), transparent)', opacity: 0.3 }}
-            />
-            {/* Cyber edge glow - right */}
-            <div
-                className="absolute right-0 top-0 bottom-0 pointer-events-none"
-                style={{ width: '1px', background: 'linear-gradient(to bottom, transparent, var(--accent-purple), transparent)', opacity: 0.3 }}
-            />
+            {/* Fine Grid Background Overlay */}
+            <div style={{
+                position: 'absolute',
+                inset: 0,
+                backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px)',
+                backgroundSize: '32px 32px',
+                pointerEvents: 'none',
+                zIndex: 0
+            }} />
 
+            {/* Asymmetrical Frame Accents */}
+            <div style={{
+                position: 'absolute', top: '10%', left: '4%', right: '4%', height: '1px',
+                background: 'linear-gradient(to right, var(--border), var(--accent-cyan), transparent 60%)',
+                opacity: 0.5, pointerEvents: 'none'
+            }} />
+            <div style={{
+                position: 'absolute', bottom: '10%', left: '4%', right: '4%', height: '1px',
+                background: 'linear-gradient(to left, var(--border), var(--accent-purple), transparent 60%)',
+                opacity: 0.5, pointerEvents: 'none'
+            }} />
+
+            {/* Main Editorial Split Shell */}
             <div
-                className="relative z-10 w-full"
                 style={{
-                    maxWidth: '1100px',
+                    position: 'relative',
+                    width: '100%',
+                    maxWidth: '1440px',
                     margin: '0 auto',
-                    padding: 'clamp(80px, 15vh, 120px) clamp(24px, 5vw, 48px) 80px clamp(24px, 5vw, 48px)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: '40px',
-                    flexWrap: 'wrap',
+                    padding: '0 clamp(24px, 5vw, 96px)',
+                    zIndex: 10,
                 }}
             >
-                {/* Left: Text content */}
-                <div style={{ flex: '1 1 400px', minWidth: 'min(100%, 320px)' }}>
-                    {/* Main heading */}
-                    <motion.h1
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.7, ease: 'easeOut' }}
-                        className="text-gradient"
-                        style={{
-                            fontSize: 'clamp(48px, 6vw, 80px)',
-                            fontWeight: 800,
-                            letterSpacing: '-0.04em',
-                            marginBottom: '20px',
-                            lineHeight: 1.1,
-                            display: 'inline-block'
-                        }}
-                    >
-                        Devansh Kumar
-                    </motion.h1>
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 500px), 1fr))',
+                    gap: '64px',
+                    alignItems: 'center'
+                }}>
+                    {/* Left Column: Asymmetrical Editorial Text Blocks */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', position: 'relative' }}>
+                        {/* Vertical Sideways Ticker */}
+                        <div style={{
+                            position: 'absolute',
+                            left: 'clamp(-80px, -6vw, -40px)',
+                            top: '40px',
+                            writingMode: 'vertical-rl',
+                            transform: 'rotate(180deg)',
+                            fontFamily: 'var(--font-mono)',
+                            fontSize: '9px',
+                            letterSpacing: '0.3em',
+                            color: 'var(--accent-cyan)',
+                            opacity: 0.6,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '16px'
+                        }}>
+                            <span>01 // CREATIVE TECHNOLOGIST</span>
+                            <div style={{ width: '1px', height: '40px', background: 'var(--accent-cyan)' }} />
+                        </div>
 
-                    {/* Subtext */}
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.7, delay: 0.15, ease: 'easeOut' }}
-                        className="text-gradient-subtle"
-                        style={{
-                            fontSize: '17px',
-                            maxWidth: '600px',
-                            marginBottom: '40px',
-                            lineHeight: 1.6,
-                            fontWeight: 500,
-                        }}
-                    >
-                        Building systems that scale. From real-time fraud detection engines to cross-platform mobile experiences. Software Engineer, ML Practitioner, and IEEE Student Branch Chairperson focused on shipping robust, production-ready code.
-                    </motion.p>
+                        {/* Telemetry Monospace Heading */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <span className="mono-tag" style={{ border: '1px solid rgba(0, 245, 255, 0.2)', padding: '4px 12px', background: 'rgba(0, 245, 255, 0.02)' }}>
+                                INTJ ENGINE READY
+                            </span>
+                            <div style={{ flex: 1, height: '1px', background: 'var(--border-strong)' }} />
+                        </div>
 
-                    {/* CTA Row */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
-                        style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}
-                    >
-                        <motion.a
-                            whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(0, 240, 255, 0.4)" }}
-                            whileTap={{ scale: 0.95 }}
-                            href="mailto:work.devanshkumar@gmail.com"
+                        {/* Extreme Typography Heading */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 40 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                        >
+                            <h1 style={{ 
+                                fontSize: 'clamp(54px, 7vw, 94px)', 
+                                fontFamily: 'var(--font-serif)', 
+                                fontWeight: 800,
+                                letterSpacing: '-0.05em',
+                                lineHeight: 0.95,
+                                margin: 0,
+                                color: '#f6f5fa'
+                            }}>
+                                Building <br />
+                                <span className="text-void" style={{ fontWeight: 900 }}>Systems</span> <br />
+                                That Think.
+                            </h1>
+                        </motion.div>
+
+                        {/* Sophisticated Pairing Copy */}
+                        <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
                             style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                padding: '12px 24px',
-                                background: 'linear-gradient(135deg, var(--accent-cyan), var(--accent-blue))',
-                                color: '#000',
-                                fontSize: '14px',
-                                fontWeight: 700,
-                                borderRadius: '12px',
-                                textDecoration: 'none',
-                                transition: 'all 0.2s',
+                                fontSize: 'clamp(16px, 1.8vw, 19px)',
+                                fontFamily: 'var(--font-sans)',
+                                lineHeight: 1.6,
+                                color: 'var(--foreground-muted)',
+                                maxWidth: '580px',
+                                margin: 0
                             }}
                         >
-                            <MailIcon />
-                            Hire me
-                        </motion.a>
+                            From real-time <span style={{ color: '#fff', fontWeight: 600 }}>fraud intelligence engines</span> calibrated on extreme dimensional bootstrap vectors, to decentralized peer learning systems and cross-platform mobile frameworks. Architecting for robustness, shipping clean, deterministic systems.
+                        </motion.p>
 
-                        <motion.a
-                            whileHover={{ scale: 1.05, backgroundColor: "rgba(255, 255, 255, 0.1)" }}
-                            whileTap={{ scale: 0.95 }}
-                            href="/resume.pdf"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="glass"
+                        {/* Asymmetrical HUD Telemetry Wrapper */}
+                        <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap', alignItems: 'center', marginTop: '16px' }}>
+                            <HUDTelemetry />
+                            <div style={{ width: '1px', height: '40px', background: 'var(--border)' }} />
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                <span className="mono-tag" style={{ color: 'var(--accent-purple)' }}>IEEE BRANCH CHAIRPERSON</span>
+                                <span style={{ fontSize: '13px', color: '#f6f5fa', fontFamily: 'var(--font-mono)' }}>
+                                    BENNETT UNIVERSITY
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Editorial CTA Panel */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap', marginTop: '24px' }}>
+                            <motion.a
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                href="mailto:work.devanshkumar@gmail.com"
+                                className="glow-btn"
+                                style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                            >
+                                <MailIcon />
+                                INITIATE_COMMS
+                            </motion.a>
+
+                            <motion.a
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                href="/resume.pdf"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="glow-btn"
+                                style={{ borderColor: 'var(--accent-purple)', color: '#fff' }}
+                            >
+                                TELEMETRY_RESUME.PDF
+                            </motion.a>
+                        </div>
+                    </div>
+
+                    {/* Right Column: WebGL Attractions and Telemetries */}
+                    <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        {/* 3D Attractor Container */}
+                        <div style={{
+                            width: 'min(90vw, 550px)',
+                            height: 'min(90vw, 550px)',
+                            position: 'relative',
+                            zIndex: 2,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: '32px',
+                            border: '1px solid rgba(255,255,255,0.04)',
+                            background: 'radial-gradient(circle, rgba(5,5,10,0.6) 0%, transparent 80%)',
+                            backdropFilter: 'blur(10px)'
+                        }}>
+                            <LorenzAttractor />
+                            
+                            {/* HUD Frame Overlay ticks */}
+                            <div style={{ position: 'absolute', top: '16px', left: '16px', fontFamily: 'var(--font-mono)', fontSize: '8px', color: 'rgba(255,255,255,0.2)' }}>
+                                [ATTRACTOR_01 // LORENZ_CHAOS]
+                            </div>
+                            <div style={{ position: 'absolute', bottom: '16px', right: '16px', fontFamily: 'var(--font-mono)', fontSize: '8px', color: 'rgba(255,255,255,0.2)' }}>
+                                PLOT_INTERVAL: dt_0.007
+                            </div>
+                        </div>
+
+                        {/* Editorial Overlapping Developer Avatar Telemetry HUD */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, x: 20 }}
+                            animate={{ opacity: 1, scale: 1, x: 0 }}
+                            transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                            className="overlap-right offset-down"
                             style={{
+                                position: 'absolute',
+                                bottom: '-30px',
+                                left: '-30px',
+                                zIndex: 10,
+                                width: '180px',
+                                background: 'rgba(5,5,10,0.9)',
+                                border: '1px solid var(--border-strong)',
+                                padding: '16px',
                                 display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                padding: '12px 24px',
-                                borderRadius: '12px',
-                                color: '#fff',
-                                fontSize: '14px',
-                                fontWeight: 600,
-                                textDecoration: 'none',
-                                transition: 'all 0.2s',
+                                flexDirection: 'column',
+                                gap: '12px',
+                                boxShadow: '0 20px 50px rgba(0,0,0,0.6)',
+                                backdropFilter: 'blur(20px)'
                             }}
                         >
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                <polyline points="7 10 12 15 17 10" />
-                                <line x1="12" y1="15" x2="12" y2="3" />
-                            </svg>
-                            Resume
-                        </motion.a>
-
-                        <motion.a
-                            whileHover={{ scale: 1.1, backgroundColor: "rgba(255, 255, 255, 0.1)" }}
-                            whileTap={{ scale: 0.9 }}
-                            href="https://github.com/devantaris"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="glass"
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                width: '44px',
-                                height: '44px',
-                                borderRadius: '12px',
-                                color: '#fff',
-                                textDecoration: 'none',
-                                transition: 'all 0.2s',
-                            }}
-                            aria-label="GitHub"
-                        >
-                            <GithubIcon />
-                        </motion.a>
-
-                        <motion.a
-                            whileHover={{ scale: 1.1, backgroundColor: "rgba(255, 255, 255, 0.1)" }}
-                            whileTap={{ scale: 0.9 }}
-                            href="https://www.linkedin.com/in/devansh-kumar-3b3701217/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="glass"
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                width: '44px',
-                                height: '44px',
-                                borderRadius: '12px',
-                                color: '#fff',
-                                textDecoration: 'none',
-                                transition: 'all 0.2s',
-                            }}
-                            aria-label="LinkedIn"
-                        >
-                            <LinkedInIcon />
-                        </motion.a>
-                    </motion.div>
-                </div>
-
-                {/* Right: Swimming Avatar */}
-                <div style={{ flex: '0 1 auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <SwimmingAvatar />
+                            {/* Diagnostic HUD Photo Wrapper */}
+                            <div style={{ position: 'relative', width: '100%', height: '160px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                <Image
+                                    src="/images/image3.png"
+                                    alt="Devansh Kumar Avatar"
+                                    fill
+                                    priority
+                                    style={{
+                                        objectFit: 'cover',
+                                        filter: 'contrast(1.15) brightness(0.9) saturate(0.85) hue-rotate(5deg)'
+                                    }}
+                                />
+                                <div style={{
+                                    position: 'absolute',
+                                    inset: 0,
+                                    background: 'linear-gradient(to top, rgba(5,5,10,0.85) 0%, transparent 50%)',
+                                    pointerEvents: 'none'
+                                }} />
+                                
+                                <div style={{
+                                    position: 'absolute',
+                                    top: '6px',
+                                    right: '6px',
+                                    fontFamily: 'var(--font-mono)',
+                                    fontSize: '7px',
+                                    background: 'rgba(0, 245, 255, 0.1)',
+                                    color: 'var(--accent-cyan)',
+                                    padding: '2px 6px',
+                                    border: '1px solid var(--accent-cyan)'
+                                }}>
+                                    TARGET_ID: DK_01
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <span className="mono-tag" style={{ fontSize: '8px', color: 'var(--accent-purple)' }}>CALIBRATION STATUS</span>
+                                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700, color: '#fff', marginTop: '2px' }}>
+                                    DEVANSH KUMAR
+                                </div>
+                                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', color: 'var(--foreground-muted)', marginTop: '2px' }}>
+                                    SYSTEM ARCHITECT
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
                 </div>
             </div>
         </section>

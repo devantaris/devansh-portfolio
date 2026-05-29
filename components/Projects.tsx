@@ -1,19 +1,18 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import Image from 'next/image';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 const projects = [
     {
         emoji: '🛡️',
-        name: 'MARI — Fraud Engine',
-        description:
-            'A 3-layer fraud detection engine trained on 284k transactions. Combines risk assessment with novelty detection.',
+        number: '01',
+        name: 'MARI — FRAUD ENGINE',
+        description: 'A three-layer real-time fraud filter trained on a highly dimensional 284,000 transaction telemetry database. Optimizes cost-sensitive thresholds to isolate anomalies.',
         features: [
-            '5-member calibrated XGBoost bootstrap ensemble',
+            '5-member calibrated XGBoost bootstrap ensemble model',
             'Isolation Forest anomaly detection pipeline',
-            'Sub-100ms real-time inference REST API',
+            'Sub-100ms real-time REST API inference framework',
         ],
         tech: ['Python', 'FastAPI', 'XGBoost', 'PostgreSQL'],
         demo: 'https://mari-alpha.vercel.app',
@@ -21,13 +20,13 @@ const projects = [
     },
     {
         emoji: '🎬',
-        name: 'Flutter OTT App',
-        description:
-            'Cross-platform OTT streaming application featuring local auth, content catalogs, and a cinematic user interface.',
+        number: '02',
+        name: 'FLUTTER OTT STREAMING APP',
+        description: 'Cross-platform native cinematic application featuring localized secure authentication pipelines, asset offline caching, and responsive transition matrices.',
         features: [
-            'BLoC-pattern state management architecture',
-            'SQLite-backed local persistence for offline access',
-            'Seamless cross-platform performance optimizations',
+            'BLoC-pattern architectural state management flow',
+            'SQLite-backed local secure persistence layers',
+            'Smooth 60fps rendering transitions and overlays',
         ],
         tech: ['Flutter', 'Dart', 'SQLite', 'BLoC'],
         demo: null,
@@ -35,13 +34,13 @@ const projects = [
     },
     {
         emoji: '🌿',
-        name: 'Biome PWA',
-        description:
-            'A world-building productivity application featuring focus timers, daily planners, and interactive leaderboards.',
+        number: '03',
+        name: 'BIOME SYSTEM PROGRESSION',
+        description: 'A world-building productivity application wrapping Pomodoro focus nodes with real-time progression systems, rarity logic layers, and interactive local leaderboards.',
         features: [
-            'Scalable Firebase backend for cross-device sync',
-            'Real-time global progression leaderboards',
-            'Electron desktop wrapper with native controls',
+            'Firebase database scaling for real-time account synch',
+            'Electron-wrapped desktop wrapper with native hook bindings',
+            'Dynamic procedural state logic for progression models',
         ],
         tech: ['React', 'TypeScript', 'Firebase', 'Electron'],
         demo: null,
@@ -49,48 +48,19 @@ const projects = [
     },
     {
         emoji: '🔄',
-        name: 'SkillSync Platform',
-        description:
-            'A peer-to-peer skill economy platform where users earn credits by teaching and spend them on premium courses.',
+        number: '04',
+        name: 'SKILLSYNC PLATFORM',
+        description: 'A decentralized peer-to-peer skill economy platform where users transact system credits gained by teaching courses, securing validation through transactional scoring.',
         features: [
-            'AI-powered content validation and scoring',
-            'End-to-end payment flow using Razorpay',
-            'Relational data scaling via Supabase and RLS',
+            'AI-powered course indexing and scoring logic',
+            'End-to-end payment capture using integrated Razorpay API',
+            'Strict Supabase RLS (Row Level Security) schemas',
         ],
         tech: ['React', 'Node.js', 'Supabase', 'Razorpay'],
         demo: 'https://skill-sync-steel-rho.vercel.app',
         code: 'https://github.com/devantaris/SkillSync',
     },
 ];
-
-const ProjectPlaceholder = ({ name, emoji }: { name: string; emoji: string }) => (
-    <div
-        style={{
-            width: '100%', height: '100%', borderRadius: '20px',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.05), rgba(0,0,0,0.8))',
-            boxShadow: 'inset 0 0 50px rgba(0,0,0,0.8)',
-            position: 'relative',
-            overflow: 'hidden'
-        }}
-    >
-        <div style={{
-            position: 'absolute',
-            top: '50%', left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '200px', height: '200px',
-            background: 'radial-gradient(circle, var(--accent-cyan) 0%, transparent 70%)',
-            opacity: 0.1,
-            filter: 'blur(30px)',
-            pointerEvents: 'none'
-        }} />
-        
-        <div style={{ textAlign: 'center', padding: '24px', zIndex: 1 }}>
-            <div style={{ fontSize: '80px', marginBottom: '24px', filter: 'drop-shadow(0 0 30px rgba(255,255,255,0.2))' }}>{emoji}</div>
-            <p className="text-gradient" style={{ fontSize: '16px', fontWeight: 800 }}>{name.split('—')[0]}</p>
-        </div>
-    </div>
-);
 
 const ExternalLinkIcon = () => (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -106,235 +76,195 @@ const GithubIcon = () => (
     </svg>
 );
 
-export default function Projects() {
-    const targetRef = useRef<HTMLDivElement>(null);
-    const carouselRef = useRef<HTMLDivElement>(null);
-    const [carouselWidth, setCarouselWidth] = useState(0);
-    const [isMobile, setIsMobile] = useState(false);
-
-    const { scrollYProgress } = useScroll({
-        target: targetRef,
-    });
-
-    // Measure the exact scrollable width on mount and resize
-    useEffect(() => {
-        const updateWidth = () => {
-            const mobile = window.innerWidth < 768;
-            setIsMobile(mobile);
-            
-            if (carouselRef.current && !mobile) {
-                const scrollWidth = carouselRef.current.scrollWidth;
-                const clientWidth = window.innerWidth;
-                setCarouselWidth(scrollWidth - clientWidth);
-            } else {
-                setCarouselWidth(0);
-            }
-        };
-
-        updateWidth();
-        window.addEventListener('resize', updateWidth);
-        return () => window.removeEventListener('resize', updateWidth);
-    }, []);
-
-    // Smooth physics-based spring for the scroll to avoid jank
-    const smoothProgress = useSpring(scrollYProgress, { mass: 0.1, stiffness: 100, damping: 20 });
-    const x = useTransform(smoothProgress, [0, 1], [0, -carouselWidth]);
+function ProjectCard({ project, progress, index }: { project: typeof projects[0]; progress: any; index: number }) {
+    const cardY = useTransform(progress, [index * 0.25, (index + 1) * 0.25], [1000, 0]);
+    // Shrink and fade underlying cards slightly as new ones lock on top
+    const scale = useTransform(progress, [(index + 1) * 0.25, (index + 2) * 0.25], [1, 0.93]);
+    const opacity = useTransform(progress, [(index + 1) * 0.25, (index + 2) * 0.25], [1, 0.4]);
 
     return (
-        <section id="projects" ref={targetRef} style={{ height: isMobile ? 'auto' : '400vh', position: 'relative', background: 'transparent', paddingBottom: isMobile ? '80px' : '0' }}>
-            <div style={{ 
-                position: isMobile ? 'relative' : 'sticky', 
-                top: 0, 
-                height: isMobile ? 'auto' : '100vh', 
-                overflow: isMobile ? 'visible' : 'hidden', 
-                display: 'flex', 
-                flexDirection: 'column', 
-                paddingTop: '100px' // Clears the navbar
-            }}>
-                
-                {/* Background Artistic Elements */}
-                <div style={{
-                    position: 'absolute', top: '10%', right: '10%', width: '40vw', height: '40vw',
-                    background: 'radial-gradient(circle, var(--accent-purple) 0%, transparent 60%)',
-                    opacity: 0.05, filter: 'blur(80px)', pointerEvents: 'none', zIndex: 0
-                }} />
+        <motion.div
+            style={{
+                y: index === 0 ? 0 : cardY,
+                scale,
+                opacity,
+                position: 'absolute',
+                top: 0,
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: index
+            }}
+        >
+            <div 
+                className="telemetry-box" 
+                style={{ 
+                    width: '100%', 
+                    maxWidth: '1000px', 
+                    background: '#06060c', 
+                    padding: 'clamp(24px, 4vw, 48px)',
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 360px), 1fr))',
+                    gap: '40px',
+                    alignItems: 'center',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    boxShadow: '0 20px 60px rgba(0,0,0,0.8)'
+                }}
+            >
+                {/* Asymmetric Technical Detail Column */}
+                <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '20px' }}>
+                    
+                    {/* Big Editorial Index Block */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(72px, 8vw, 110px)', fontWeight: 900, lineHeight: 0.8, color: 'var(--accent-purple)' }}>
+                            {project.number}
+                        </div>
+                        <div style={{ fontSize: '48px', filter: 'drop-shadow(0 0 15px rgba(255,255,255,0.15))' }}>
+                            {project.emoji}
+                        </div>
+                    </div>
 
-                {/* Top Section: Fixed Title Area */}
-                <div style={{ 
-                    flexShrink: 0, // Prevents title from being squished
-                    width: '100%',
-                    paddingLeft: 'clamp(24px, 5vw, 48px)',
-                    marginBottom: '4vh',
-                    zIndex: 10,
-                }}>
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.7 }}
-                    >
-                        <h2 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-                            Featured <br/><span className="text-gradient">Projects</span>
-                        </h2>
-                        <p className="text-gradient-subtle" style={{ fontSize: '15px', marginTop: '16px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                            Scroll to explore →
+                    <div>
+                        <span className="mono-tag" style={{ color: 'var(--accent-cyan)' }}>PROJECT_TELEMETRY_VAL</span>
+                        <h3 style={{ fontSize: 'clamp(22px, 2.5vw, 28px)', color: '#fff', fontWeight: 800, margin: '8px 0 12px 0' }}>
+                            {project.name}
+                        </h3>
+                        <p style={{ fontSize: '14px', color: 'var(--foreground-muted)', lineHeight: 1.6 }}>
+                            {project.description}
                         </p>
-                    </motion.div>
-                </div>
+                    </div>
 
-                {/* Bottom Section: Horizontal Scroll Container */}
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', width: '100%', position: 'relative' }}>
-                    <motion.div 
-                        ref={carouselRef}
-                        style={{ 
-                            x: isMobile ? 0 : x, 
-                            display: 'flex', 
-                            flexDirection: isMobile ? 'column' : 'row',
-                            gap: isMobile ? '80px' : '4vw', 
-                            paddingLeft: 'clamp(24px, 5vw, 48px)', 
-                            paddingRight: 'clamp(24px, 5vw, 48px)', 
-                            alignItems: 'center', 
-                            zIndex: 5 
-                        }}
-                        className="projects-slider"
-                    >
-                        {projects.map((project, idx) => (
-                            <div 
-                                key={project.name}
+                    {/* Tech Stacks */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                        {project.tech.map((t) => (
+                            <span 
+                                key={t} 
                                 style={{ 
-                                    width: 'min(90vw, 850px)', 
-                                    flexShrink: 0,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    position: 'relative'
+                                    fontFamily: 'var(--font-mono)', 
+                                    fontSize: '9px', 
+                                    padding: '6px 14px', 
+                                    background: 'rgba(255,255,255,0.02)', 
+                                    border: '1px solid rgba(255,255,255,0.08)', 
+                                    color: '#fff' 
                                 }}
                             >
-                                {/* Artistic Background Number */}
-                                <div style={{
-                                    position: 'absolute',
-                                    top: '-40px',
-                                    right: '20px',
-                                    fontSize: '200px',
-                                    fontWeight: 900,
-                                    color: 'rgba(255,255,255,0.02)',
-                                    zIndex: 0,
-                                    userSelect: 'none',
-                                    pointerEvents: 'none',
-                                    lineHeight: 1
-                                }}>
-                                    0{idx + 1}
-                                </div>
-
-                                <div 
-                                    className="premium-card glass"
-                                    style={{
-                                        display: 'grid',
-                                        gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(min(100%, 350px), 1fr))',
-                                        gap: '30px',
-                                        alignItems: 'center',
-                                        padding: 'clamp(20px, 4vw, 40px)',
-                                        width: '100%',
-                                        zIndex: 1
-                                    }}
-                                >
-                                    {/* Image side */}
-                                    <div style={{ height: 'min(300px, 35vh)', position: 'relative' }}>
-                                        <ProjectPlaceholder name={project.name} emoji={project.emoji} />
-                                    </div>
-
-                                    {/* Info side */}
-                                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                        <h3 style={{ fontSize: 'clamp(20px, 2.5vw, 26px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.01em', marginBottom: '16px' }}>{project.name}</h3>
-                                        
-                                        <p className="text-gradient-subtle" style={{ fontSize: '14px', lineHeight: 1.6, marginBottom: '20px' }}>
-                                            {project.description}
-                                        </p>
-
-                                        <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                            {project.features.map((f) => (
-                                                <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '13px', color: '#8b8b99', lineHeight: '1.5' }}>
-                                                    <span style={{ color: 'var(--accent-cyan)', marginTop: '2px' }}>
-                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                                                        </svg>
-                                                    </span>
-                                                    <span>{f}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-
-                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '24px' }}>
-                                            {project.tech.map((t) => (
-                                                <span
-                                                    key={t}
-                                                    style={{
-                                                        fontSize: '11px',
-                                                        padding: '4px 12px',
-                                                        background: 'rgba(255,255,255,0.03)',
-                                                        border: '1px solid rgba(255,255,255,0.08)',
-                                                        borderRadius: '20px',
-                                                        color: '#d4d4d8',
-                                                        fontWeight: 600
-                                                    }}
-                                                >
-                                                    {t}
-                                                </span>
-                                            ))}
-                                        </div>
-
-                                        <div style={{ display: 'flex', gap: '12px' }}>
-                                            {project.demo && (
-                                                <motion.a
-                                                    whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(0,240,255,0.2)' }}
-                                                    whileTap={{ scale: 0.95 }}
-                                                    href={project.demo}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    style={{
-                                                        display: 'flex', alignItems: 'center', gap: '6px',
-                                                        padding: '10px 20px',
-                                                        background: 'linear-gradient(135deg, var(--accent-cyan), var(--accent-blue))',
-                                                        borderRadius: '10px',
-                                                        fontSize: '13px',
-                                                        fontWeight: 700,
-                                                        color: '#000',
-                                                        textDecoration: 'none',
-                                                    }}
-                                                >
-                                                    <ExternalLinkIcon />
-                                                    Live Demo
-                                                </motion.a>
-                                            )}
-                                            {project.code && (
-                                                <motion.a
-                                                    whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.1)' }}
-                                                    whileTap={{ scale: 0.95 }}
-                                                    href={project.code}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    style={{
-                                                        display: 'flex', alignItems: 'center', gap: '6px',
-                                                        padding: '10px 20px',
-                                                        borderRadius: '10px',
-                                                        border: '1px solid rgba(255,255,255,0.1)',
-                                                        fontSize: '13px',
-                                                        fontWeight: 600,
-                                                        color: '#fff',
-                                                        textDecoration: 'none',
-                                                    }}
-                                                >
-                                                    <GithubIcon />
-                                                    View Code
-                                                </motion.a>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                {t.toUpperCase()}
+                            </span>
                         ))}
-                    </motion.div>
+                    </div>
+                </div>
+
+                {/* Asymmetric blueprint description column */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', borderLeft: '1px solid rgba(255,255,255,0.05)', paddingLeft: 'clamp(0px, 3vw, 32px)' }}>
+                    <div>
+                        <span className="mono-tag" style={{ color: 'var(--accent-orange)' }}>BLUEPRINT_SPECIFICATIONS</span>
+                        <ul style={{ listStyle: 'none', padding: 0, margin: '12px 0 0 0', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                            {project.features.map((feat, i) => (
+                                <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', fontSize: '13px', color: 'var(--foreground-muted)', lineHeight: 1.5 }}>
+                                    <span style={{ color: 'var(--accent-cyan)', flexShrink: 0, marginTop: '2px' }}>&gt;</span>
+                                    <span>{feat}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* Operational CTA anchors */}
+                    <div style={{ display: 'flex', gap: '16px', marginTop: '12px' }}>
+                        {project.demo && (
+                            <a 
+                                href={project.demo} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="glow-btn"
+                                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', background: 'linear-gradient(135deg, var(--accent-cyan), var(--accent-blue))', color: '#000', border: 'none' }}
+                            >
+                                <ExternalLinkIcon />
+                                LIVE_DEMO
+                            </a>
+                        )}
+                        <a 
+                            href={project.code} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="glow-btn"
+                            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderColor: 'rgba(255,255,255,0.1)' }}
+                        >
+                            <GithubIcon />
+                            VIEW_CODE
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </motion.div>
+    );
+}
+
+export default function Projects() {
+    const targetRef = useRef<HTMLDivElement>(null);
+    const { scrollYProgress } = useScroll({
+        target: targetRef
+    });
+
+    return (
+        <section id="projects" ref={targetRef} style={{ height: '320vh', position: 'relative', overflow: 'visible' }}>
+            {/* Sticky portal viewport */}
+            <div style={{
+                position: 'sticky',
+                top: 0,
+                height: '100vh',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                padding: '0 clamp(24px, 5vw, 96px)',
+                overflow: 'hidden'
+            }}>
+                
+                {/* Horizontal telemetry bars */}
+                <div style={{ 
+                    position: 'absolute', top: '10%', left: '4%', right: '4%', height: '1px', 
+                    background: 'linear-gradient(to right, rgba(255,255,255,0.06), rgba(0, 245, 255, 0.1), transparent)', 
+                    pointerEvents: 'none' 
+                }} />
+
+                {/* Section Header inside sticky view */}
+                <div style={{ 
+                    width: '100%', 
+                    maxWidth: '1000px', 
+                    margin: '0 auto 40px auto', 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'flex-end',
+                    zIndex: 10
+                }}>
+                    <div>
+                        <span className="mono-tag" style={{ color: 'var(--accent-purple)' }}>04 // ARCHIVE LOCKER</span>
+                        <h2 style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 800, marginTop: '4px', color: '#fff' }}>
+                            Featured Systems.
+                        </h2>
+                    </div>
+                    <span className="mono-tag" style={{ color: 'var(--foreground-muted)' }}>
+                        SCROLL_DOWN_TO_EXPLORE_DECK
+                    </span>
+                </div>
+
+                {/* Core overlapping absolute drawer viewport */}
+                <div style={{ 
+                    position: 'relative', 
+                    width: '100%', 
+                    height: '520px', 
+                    maxWidth: '1000px', 
+                    margin: '0 auto' 
+                }}>
+                    {projects.map((project, idx) => (
+                        <ProjectCard 
+                            key={project.name} 
+                            project={project} 
+                            progress={scrollYProgress} 
+                            index={idx} 
+                        />
+                    ))}
                 </div>
             </div>
         </section>

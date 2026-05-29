@@ -16,84 +16,132 @@ const LinkedInIcon = () => (
 
 export default function ContactSection() {
     return (
-        <footer id="contact" style={{ padding: '48px 0', borderTop: '1px solid rgba(39, 39, 42, 0.5)' }}>
-            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 clamp(24px, 5vw, 48px)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '24px' }}>
-                    {/* Get In Touch pill */}
-                    <motion.a
-                        href="mailto:work.devanshkumar@gmail.com"
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5 }}
-                        style={{
-                            display: 'flex', alignItems: 'center', gap: '12px',
-                            padding: '12px 24px',
-                            border: '1px solid #3f3f46',
-                            borderRadius: '9999px',
-                            color: '#fff',
-                            fontSize: '14px',
-                            fontWeight: 500,
-                            textDecoration: 'none',
-                            transition: 'border-color 0.2s',
-                        }}
-                    >
-                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#4ade80' }} />
-                        Get In Touch
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M7 17l10-10" />
-                            <path d="M7 7h10v10" />
-                        </svg>
-                    </motion.a>
+        <footer 
+            id="contact" 
+            style={{ 
+                padding: 'clamp(80px, 12vw, 160px) 0 48px 0', 
+                borderTop: '1px solid rgba(255,255,255,0.08)',
+                background: 'linear-gradient(to top, rgba(189,0,255,0.015) 0%, transparent 100%)',
+                position: 'relative'
+            }}
+        >
+            <div style={{ maxWidth: '1320px', margin: '0 auto', padding: '0 clamp(24px, 5vw, 96px)' }}>
+                
+                {/* Horizontal blueprint line */}
+                <div style={{ 
+                    position: 'absolute', top: '0', left: '4%', right: '4%', height: '1px', 
+                    background: 'linear-gradient(to right, rgba(255,255,255,0.08), rgba(189, 0, 255, 0.12), transparent)', 
+                    pointerEvents: 'none' 
+                }} />
 
-                    {/* Social icons */}
-                    <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5 }}
-                        style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
-                    >
-                        <a
-                            href="https://github.com/devantaris"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                width: '40px', height: '40px',
-                                border: '1px solid #3f3f46',
-                                borderRadius: '50%',
-                                color: '#a1a1aa',
-                                textDecoration: 'none',
-                                transition: 'border-color 0.2s, color 0.2s',
-                            }}
-                            aria-label="GitHub"
-                        >
-                            <GithubIcon />
-                        </a>
-                        <a
-                            href="https://www.linkedin.com/in/devansh-kumar-3b3701217/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                width: '40px', height: '40px',
-                                border: '1px solid #3f3f46',
-                                borderRadius: '50%',
-                                color: '#a1a1aa',
-                                textDecoration: 'none',
-                                transition: 'border-color 0.2s, color 0.2s',
-                            }}
-                            aria-label="LinkedIn"
-                        >
-                            <LinkedInIcon />
-                        </a>
-                    </motion.div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))', gap: '64px', marginBottom: '80px' }}>
+                    
+                    {/* Left Column: Comms Callout */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                        <div>
+                            <span className="mono-tag" style={{ color: 'var(--accent-cyan)' }}>08 // SECURE TRANSMISSIONS</span>
+                            <h2 style={{ fontSize: 'clamp(36px, 5vw, 64px)', fontWeight: 800, marginTop: '8px', color: '#fff', letterSpacing: '-0.03em' }}>
+                                Initiate Comms.
+                            </h2>
+                        </div>
+                        <p style={{ fontSize: '15px', color: 'var(--foreground-muted)', lineHeight: 1.7, maxWidth: '440px' }}>
+                            Open secure communication channels for project development, systems engineering consultations, or administrative inquiries.
+                        </p>
+                        
+                        {/* HSL active node indicator */}
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', alignSelf: 'flex-start', padding: '8px 18px', border: '1px solid rgba(0, 245, 255, 0.25)', background: 'rgba(0, 245, 255, 0.02)' }}>
+                            <span style={{ 
+                                width: '8px', 
+                                height: '8px', 
+                                borderRadius: '50%', 
+                                background: 'var(--accent-cyan)', 
+                                display: 'inline-block',
+                                boxShadow: '0 0 10px var(--accent-cyan)',
+                                animation: 'pulse 1s infinite'
+                            }} />
+                            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#fff', fontWeight: 700, letterSpacing: '0.05em' }}>
+                                SYSTEMS STATUS: DEPLOY_READY
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Right Column: Massive Email Link & Social Array */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '40px', justifyContent: 'center' }}>
+                        <div>
+                            <span className="mono-tag" style={{ color: 'var(--foreground-muted)' }}>PRIMARY_SECURE_EMAIL</span>
+                            <motion.a
+                                href="mailto:work.devanshkumar@gmail.com"
+                                whileHover={{ scale: 1.01 }}
+                                style={{
+                                    display: 'block',
+                                    fontFamily: 'var(--font-serif)',
+                                    fontSize: 'clamp(28px, 4vw, 44px)',
+                                    fontWeight: 800,
+                                    color: '#fff',
+                                    textDecoration: 'none',
+                                    marginTop: '8px',
+                                    borderBottom: '1px dashed rgba(255,255,255,0.2)',
+                                    paddingBottom: '8px',
+                                    transition: 'color 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.color = 'var(--accent-cyan)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.color = '#fff';
+                                }}
+                            >
+                                work.devanshkumar <br />@gmail.com
+                            </motion.a>
+                        </div>
+
+                        {/* Social telemetries */}
+                        <div>
+                            <span className="mono-tag" style={{ color: 'var(--foreground-muted)', display: 'block', marginBottom: '16px' }}>NETWORK_HANDSHAKES</span>
+                            <div style={{ display: 'flex', gap: '16px' }}>
+                                <a
+                                    href="https://github.com/devantaris"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="glow-btn"
+                                    style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: '1 1 120px', justifyContent: 'center' }}
+                                    aria-label="GitHub"
+                                >
+                                    <GithubIcon />
+                                    GITHUB
+                                </a>
+                                <a
+                                    href="https://www.linkedin.com/in/devansh-kumar-3b3701217/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="glow-btn"
+                                    style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: '1 1 120px', justifyContent: 'center', borderColor: 'var(--accent-purple)' }}
+                                    aria-label="LinkedIn"
+                                >
+                                    <LinkedInIcon />
+                                    LINKEDIN
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <p style={{ fontSize: '11px', color: '#3f3f46', marginTop: '32px', textAlign: 'center' }}>
-                    © {new Date().getFullYear()} Devansh Kumar — Built with Next.js
-                </p>
+                {/* Microcopyright row */}
+                <div style={{ 
+                    borderTop: '1px solid rgba(255,255,255,0.06)', 
+                    paddingTop: '32px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: '16px',
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '9px',
+                    color: 'var(--foreground-muted)'
+                }}>
+                    <span>© {new Date().getFullYear()} DEVANSH KUMAR // ALL CHANNELS ENCRYPTED</span>
+                    <span>BUILT WITH NEXT.JS 16 // THREE.JS // GSAP // SCROLL_SPRING</span>
+                </div>
             </div>
         </footer>
     );

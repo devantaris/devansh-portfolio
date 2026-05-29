@@ -3,144 +3,202 @@
 import { motion } from 'framer-motion';
 
 const fadeUp = (delay: number) => ({
-    initial: { opacity: 0, y: 20 } as const,
+    initial: { opacity: 0, y: 30 } as const,
     whileInView: { opacity: 1, y: 0 } as const,
-    viewport: { once: true, margin: '-50px' } as const,
-    transition: { duration: 0.5, delay, ease: 'easeOut' as const },
+    viewport: { once: true, margin: '-100px' } as const,
+    transition: { duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] as const },
 });
 
 const principles = [
-    'Risk-aware fraud architecture',
-    'Cost-sensitive modeling',
-    'Consequence-weighted thresholding',
-    'EDA-driven reasoning',
-    'Layered decision architecture',
-    'The Extremity Principle',
-    'SIMPLY UNIVERSE - published book',
-    'IEEE Chairperson - IEEE Student Branch Bennett University',
+    { text: 'Risk-aware fraud architecture', type: 'CORE' },
+    { text: 'Cost-sensitive modeling', type: 'MATH' },
+    { text: 'Consequence-weighted thresholds', type: 'DECISION' },
+    { text: 'EDA-driven reasoning systems', type: 'LOGIC' },
+    { text: 'Layered decision node pipelines', type: 'ARCH' },
+    { text: 'The Extremity Principle', type: 'THEORY' },
+    { text: 'SIMPLY UNIVERSE - published book', type: 'LIT' },
+    { text: 'IEEE Bennett Chairperson', type: 'LEAD' },
 ];
 
 export default function AboutBento() {
     return (
-        <section id="about" style={{ padding: '80px 0 80px 0' }}>
-            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 clamp(24px, 5vw, 48px)' }}>
-                {/* 3-column top row */}
-                <div
-                    style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                        gap: '16px',
-                        marginBottom: '16px',
-                    }}
-                >
-                    {/* About me Card */}
-                    <motion.div {...fadeUp(0)} className="zinc-card" style={{ padding: '28px' }}>
-                        <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '12px' }}>About Me</h3>
-                        <p style={{ fontSize: '14px', color: '#a1a1aa', lineHeight: 1.7 }}>
-                            I build full-stack platforms, risk intelligence engines, gamified desktop apps, and peer economies — all with clean architecture and real users in mind.
-                        </p>
-                    </motion.div>
+        <section id="about" style={{ padding: 'clamp(80px, 12vw, 160px) 0', position: 'relative' }}>
+            {/* Background elements */}
+            <div style={{
+                position: 'absolute', top: '40%', right: '5%', width: '40vw', height: '40vw',
+                background: 'radial-gradient(circle, rgba(0, 245, 255, 0.02) 0%, transparent 60%)',
+                opacity: 0.8, filter: 'blur(100px)', pointerEvents: 'none', zIndex: 0
+            }} />
 
-                    {/* Center card — Profile avatar */}
-                    <motion.div
-                        {...fadeUp(0.1)}
-                        className="zinc-card"
-                        style={{ padding: '28px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', gap: '16px' }}
+            <div style={{ maxWidth: '1320px', margin: '0 auto', padding: '0 clamp(24px, 5vw, 96px)', position: 'relative', zIndex: 1 }}>
+                
+                {/* Section Header */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '32px', marginBottom: '64px', alignItems: 'flex-end' }}>
+                    <motion.div {...fadeUp(0)}>
+                        <span className="mono-tag" style={{ color: 'var(--accent-purple)' }}>02 // DIAGNOSTIC PROFILE</span>
+                        <h2 style={{ fontSize: 'clamp(36px, 5vw, 64px)', fontWeight: 800, marginTop: '8px', color: '#fff' }}>
+                            Architecting <br />
+                            The <span className="text-science">Void</span>.
+                        </h2>
+                    </motion.div>
+                    <motion.p 
+                        {...fadeUp(0.1)} 
+                        style={{ fontSize: '15px', color: 'var(--foreground-muted)', lineHeight: 1.7, maxWidth: '480px', margin: 0, fontFamily: 'var(--font-sans)' }}
                     >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                            src="https://avatars.githubusercontent.com/u/181229665?v=4"
-                            alt="Devansh Kumar"
-                            style={{ width: '64px', height: '64px', borderRadius: '50%', border: '2px solid #3f3f46' }}
-                        />
-                        <div>
-                            <p style={{ color: '#fff', fontWeight: 600, fontSize: '14px' }}>@devantaris</p>
-                            <a
-                                href="https://github.com/devantaris"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{ fontSize: '12px', color: '#71717a', textDecoration: 'none', display: 'block', marginTop: '4px' }}
-                            >
-                                github.com/devantaris →
-                            </a>
-                        </div>
-                    </motion.div>
-
-                    {/* Engineering Philosophy Card */}
-                    <motion.div {...fadeUp(0.2)} className="zinc-card" style={{ padding: '28px' }}>
-                        <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '12px' }}>Engineering Philosophy</h3>
-                        <ul
-                            style={{
-                                fontSize: '14px',
-                                color: '#a1a1aa',
-                                lineHeight: 1.7,
-                                paddingLeft: '20px',
-                                margin: 0,
-                                listStyleType: 'disc',
-                                listStylePosition: 'outside',
-                            }}
-                        >
-                            <li>Decisions matter more than predictions</li>
-                            <li>Architecture before implementation</li>
-                            <li>Design for failure, not ideal cases</li>
-                            <li>Clarity over cleverness</li>
-                            <li>Measure trade-offs explicitly</li>
-                            <li>Systems over scripts</li>
-                        </ul>
-                    </motion.div>
+                        An engineer obsessed with system design. Building full-stack platforms, high-throughput fraud filters, gamified applications, and local-first microservices. INTJ reasoning applied to production pipelines.
+                    </motion.p>
                 </div>
 
-                {/* Bottom row — wider cards */}
-                <div
-                    style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
-                        gap: '16px',
-                    }}
-                >
-                    {/* Systems Card */}
-                    <motion.div {...fadeUp(0.3)} className="zinc-card" style={{ padding: '28px' }}>
-                        <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '16px' }}>Systems I Build</h3>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                            {[
-                                'Risk Engines', 'Desktop Apps', 'Credit Economies', 'Auth Systems',
-                                'Data Dashboards', 'Mobile Apps', 'REST APIs', 'Fraud Detection',
-                            ].map((tag) => (
-                                <span
-                                    key={tag}
-                                    style={{
-                                        fontSize: '12px',
-                                        padding: '6px 14px',
-                                        background: '#27272a',
-                                        border: '1px solid #3f3f46',
-                                        borderRadius: '9999px',
-                                        color: '#d4d4d8',
-                                    }}
-                                >
-                                    {tag}
-                                </span>
-                            ))}
-                        </div>
-                    </motion.div>
-
-                    {/* Proof of Thinking Card */}
-                    <motion.div {...fadeUp(0.4)} className="zinc-card" style={{ padding: '28px' }}>
-                        <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '16px' }}>Proof of Thinking</h3>
-                        <ol
-                            style={{
-                                display: 'grid',
-                                gridTemplateColumns: '1fr 1fr',
-                                gap: '8px 16px',
+                {/* Asymmetric Overlapping Grid Layout */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    
+                    {/* First Row: 2 unequal columns */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 450px), 1fr))', gap: '20px' }}>
+                        
+                        {/* Biography / Intent Box */}
+                        <motion.div 
+                            {...fadeUp(0.15)} 
+                            className="telemetry-box" 
+                            style={{ 
+                                padding: '48px', 
+                                borderRight: '1px solid rgba(255, 255, 255, 0.1)',
+                                background: 'linear-gradient(135deg, rgba(255,255,255,0.015) 0%, transparent 100%)' 
                             }}
                         >
-                            {principles.map((p) => (
-                                <p key={p} style={{ fontSize: '12px', color: '#a1a1aa', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#52525b', flexShrink: 0 }} />
-                                    {p}
-                                </p>
-                            ))}
-                        </ol>
-                    </motion.div>
+                            <span className="mono-tag">BIOGRAPHY_TELEMETRY</span>
+                            <h3 style={{ fontSize: '24px', fontWeight: 700, color: '#fff', margin: '16px 0', letterSpacing: '-0.02em' }}>
+                                Who is Devansh Kumar?
+                            </h3>
+                            <p style={{ fontSize: '15px', color: 'var(--foreground-muted)', lineHeight: 1.8, marginBottom: '24px' }}>
+                                I construct computational tools. My work merges ML optimization pipelines, scalable relational database designs, and immersive visual layouts. I serve as the Chairperson of the IEEE Student Branch at Bennett University, leading over 100 developers in building local systems and global tech summits.
+                            </p>
+                            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                                <div style={{ border: '1px solid rgba(255,255,255,0.06)', padding: '12px 20px', background: 'rgba(255,255,255,0.01)', flex: '1 1 120px' }}>
+                                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', fontWeight: 700, color: 'var(--accent-cyan)' }}>100+</div>
+                                    <div className="mono-tag" style={{ fontSize: '8px', color: 'var(--foreground-muted)' }}>MEMBERS_MANAGED</div>
+                                </div>
+                                <div style={{ border: '1px solid rgba(255,255,255,0.06)', padding: '12px 20px', background: 'rgba(255,255,255,0.01)', flex: '1 1 120px' }}>
+                                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', fontWeight: 700, color: 'var(--accent-purple)' }}>₹1.48L+</div>
+                                    <div className="mono-tag" style={{ fontSize: '8px', color: 'var(--foreground-muted)' }}>SPONSORSHIPS_SECURED</div>
+                                </div>
+                            </div>
+                        </motion.div>
+
+                        {/* Engineering Philosophy List */}
+                        <motion.div 
+                            {...fadeUp(0.25)} 
+                            className="telemetry-box offset-down" 
+                            style={{ 
+                                padding: '48px', 
+                                borderColor: 'rgba(255, 255, 255, 0.1)',
+                                background: 'linear-gradient(135deg, rgba(189, 0, 255, 0.01) 0%, transparent 100%)' 
+                            }}
+                        >
+                            <span className="mono-tag">ENGINEERING_PHILOSOPHY</span>
+                            <h3 style={{ fontSize: '24px', fontWeight: 700, color: '#fff', margin: '16px 0', letterSpacing: '-0.02em' }}>
+                                Decisional Reasoning
+                            </h3>
+                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                                {[
+                                    { title: 'SYSTEMS OVER PREDICTIONS', desc: 'Models fail; architecture should insulate against mathematical thresholds.' },
+                                    { title: 'ARCHITECTURE BEFORE CODE', desc: 'Draft clean systems bounds before allocating computing stacks.' },
+                                    { title: 'FAILURE BY DESIGN', desc: 'Optimize pipelines for the non-ideal, catastrophic boundary cases.' },
+                                    { title: 'EXPLICIT TRADE-OFF WEIGHTS', desc: 'Balance scale bottlenecks against memory boundaries quantitatively.' }
+                                ].map((phil, i) => (
+                                    <li key={i} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontFamily: 'var(--font-mono)', fontSize: '11px', fontWeight: 700, color: '#fff' }}>
+                                            <span style={{ width: '4px', height: '4px', background: 'var(--accent-purple)', borderRadius: '50%' }} />
+                                            {phil.title}
+                                        </div>
+                                        <div style={{ fontSize: '13px', color: 'var(--foreground-muted)', paddingLeft: '12px' }}>
+                                            {phil.desc}
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        </motion.div>
+
+                    </div>
+
+                    {/* Second Row: Overlapping wider boxes */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 450px), 1fr))', gap: '20px', marginTop: '40px' }}>
+                        
+                        {/* Proof of Thinking Matrix */}
+                        <motion.div 
+                            {...fadeUp(0.35)} 
+                            className="telemetry-box" 
+                            style={{ 
+                                padding: '48px', 
+                                flex: '2 1 600px',
+                                background: 'linear-gradient(135deg, rgba(0, 245, 255, 0.015) 0%, transparent 100%)'
+                            }}
+                        >
+                            <span className="mono-tag">PROOF_OF_THINKING</span>
+                            <h3 style={{ fontSize: '24px', fontWeight: 700, color: '#fff', margin: '16px 0', letterSpacing: '-0.02em' }}>
+                                Active Principles
+                            </h3>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+                                {principles.map((p, i) => (
+                                    <div key={i} style={{ border: '1px solid rgba(255,255,255,0.05)', padding: '16px', background: 'rgba(255,255,255,0.015)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', color: 'var(--accent-cyan)', letterSpacing: '0.1em' }}>
+                                            [{p.type}]
+                                        </span>
+                                        <span style={{ fontSize: '13px', color: '#f6f5fa', fontWeight: 500, fontFamily: 'var(--font-sans)' }}>
+                                            {p.text}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </motion.div>
+
+                        {/* Systems Built Grid */}
+                        <motion.div 
+                            {...fadeUp(0.4)} 
+                            className="telemetry-box offset-up" 
+                            style={{ 
+                                padding: '48px', 
+                                flex: '1 1 400px',
+                                background: 'linear-gradient(135deg, rgba(255,255,255,0.01) 0%, transparent 100%)'
+                            }}
+                        >
+                            <span className="mono-tag">SYSTEMS_BUILD_INDEX</span>
+                            <h3 style={{ fontSize: '24px', fontWeight: 700, color: '#fff', margin: '16px 0', letterSpacing: '-0.02em' }}>
+                                Production Nodes
+                            </h3>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                                {[
+                                    'Risk Engines', 'Desktop Applications', 'Credit Economics', 'Authentication Nodes',
+                                    'Data Telemetry Dashboards', 'Cross-Platform Mobile Apps', 'REST APIs', 'Fraud Detection Models',
+                                    'Agile Sprint Cycles', 'IEEE Conference Directives'
+                                ].map((tag, i) => (
+                                    <span
+                                        key={i}
+                                        style={{
+                                            fontFamily: 'var(--font-mono)',
+                                            fontSize: '10px',
+                                            padding: '8px 16px',
+                                            background: 'rgba(255, 255, 255, 0.02)',
+                                            border: '1px solid rgba(255, 255, 255, 0.06)',
+                                            borderRadius: '0px',
+                                            color: '#fff',
+                                            transition: 'all 0.3s'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.borderColor = 'var(--accent-cyan)';
+                                            e.currentTarget.style.background = 'rgba(0, 245, 255, 0.05)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.06)';
+                                            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)';
+                                        }}
+                                    >
+                                        {tag}
+                                    </span>
+                                ))}
+                            </div>
+                        </motion.div>
+
+                    </div>
                 </div>
             </div>
         </section>

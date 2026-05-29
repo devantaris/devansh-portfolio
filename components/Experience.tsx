@@ -6,10 +6,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 const experiences = [
     {
         id: 'buildit',
-        role: 'Software Developer Intern',
-        company: 'BuildIt Service',
-        location: 'Gurugram, Haryana',
-        date: 'Mar 2026 – Present',
+        role: 'SOFTWARE DEVELOPER INTERN',
+        company: 'BUILDIT SERVICE',
+        location: 'GURUGRAM, HARYANA',
+        date: 'MAR 2026 – PRESENT',
         points: [
             'Developing lead generation automation pipelines and REST API integrations for client acquisition workflows at a full-service digital agency.',
             'Building client-facing web applications using modern JavaScript frameworks; contributing to backend system architecture and deployment.',
@@ -19,10 +19,10 @@ const experiences = [
     },
     {
         id: 'raahi',
-        role: 'Application Developer (Flutter)',
-        company: 'Raahi',
-        location: 'Noida, Uttar Pradesh',
-        date: 'Oct 2025 – Mar 2026',
+        role: 'APPLICATION DEVELOPER (FLUTTER)',
+        company: 'RAAHI',
+        location: 'NOIDA, UTTAR PRADESH',
+        date: 'OCT 2025 – MAR 2026',
         points: [
             'Delivered a production cross-platform mobile application (iOS, Android, Web) serving students and young professionals using Flutter and Dart.',
             'Architected BLoC-pattern state management with secure local authentication, encrypted session handling, and SQLite-backed persistent storage.',
@@ -32,10 +32,10 @@ const experiences = [
     },
     {
         id: 'ieee-chair',
-        role: 'Chairperson',
-        company: 'IEEE Student Branch',
-        location: 'Noida, Uttar Pradesh',
-        date: 'Sep 2025 – Present',
+        role: 'STUDENT BRANCH CHAIRPERSON',
+        company: 'IEEE STUDENT BRANCH',
+        location: 'NOIDA, UTTAR PRADESH',
+        date: 'SEP 2025 – PRESENT',
         points: [
             'Lead 100+ member IEEE student branch; secured ₹1.48L+ in sponsorships across Triverse 3.0 and chapter events through end-to-end sponsor negotiation and contract management.',
             'Organised Global AI Summit 1.0 & 2.0 — international AI conferences with 3,000–4,000+ total attendees across both editions, featuring industry leaders, researchers, and foreign dignitaries.',
@@ -46,10 +46,10 @@ const experiences = [
     },
     {
         id: 'csi',
-        role: 'Junior Core — Tech & Research',
+        role: 'JUNIOR CORE — TECH & RESEARCH',
         company: 'IEEE / CSI',
-        location: 'Noida, Uttar Pradesh',
-        date: 'Sep 2024 – Oct 2025',
+        location: 'NOIDA, UTTAR PRADESH',
+        date: 'SEP 2024 – OCT 2025',
         points: [
             'Contributed to technical event planning, speaker coordination, and member onboarding across IEEE and Computer Society of India chapters.'
         ]
@@ -60,62 +60,77 @@ export default function Experience() {
     const [activeIdx, setActiveIdx] = useState(0);
 
     return (
-        <section id="experience" style={{ padding: 'clamp(60px, 10vw, 120px) 0' }}>
-            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 clamp(24px, 5vw, 48px)' }}>
-                <motion.h2
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5 }}
-                    style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800, color: '#fff', marginBottom: '60px', letterSpacing: '-0.02em' }}
-                >
-                    Experience
-                </motion.h2>
-
-                <div 
-                    style={{ 
-                        display: 'flex', 
-                        flexDirection: 'row', 
-                        gap: '40px',
-                        flexWrap: 'wrap',
-                    }}
-                >
-                    {/* Left: Interactive Tabs */}
-                    <div 
-                        style={{ 
-                            display: 'flex', 
-                            flexDirection: 'column', 
-                            gap: '12px',
-                            flex: '1 1 250px',
-                            maxWidth: '100%' 
-                        }}
+        <section id="experience" style={{ padding: 'clamp(80px, 12vw, 160px) 0', position: 'relative' }}>
+            <div style={{ maxWidth: '1320px', margin: '0 auto', padding: '0 clamp(24px, 5vw, 96px)' }}>
+                
+                {/* Section Header */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '32px', marginBottom: '64px', alignItems: 'flex-end' }}>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
                     >
+                        <span className="mono-tag" style={{ color: 'var(--accent-cyan)' }}>06 // CAREER CHRONOLOGY</span>
+                        <h2 style={{ fontSize: 'clamp(36px, 5vw, 64px)', fontWeight: 800, marginTop: '8px', color: '#fff', letterSpacing: '-0.03em' }}>
+                            Professional <br /><span className="text-void">Milestones</span>.
+                        </h2>
+                    </motion.div>
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, delay: 0.1 }}
+                        style={{ fontSize: '15px', color: 'var(--foreground-muted)', lineHeight: 1.7, maxWidth: '480px', margin: 0 }}
+                    >
+                        A history of professional engineering tasks. Building robust automation scripts, optimizing graphics buffers, managing agile teams, and coordinating summits.
+                    </motion.p>
+                </div>
+
+                {/* Main Asymmetric Selector Grid */}
+                <div style={{ 
+                    display: 'flex', 
+                    flexDirection: 'row', 
+                    gap: '40px',
+                    flexWrap: 'wrap',
+                }}>
+                    {/* Left side selector tabs */}
+                    <div style={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        gap: '12px',
+                        flex: '1 1 280px',
+                        maxWidth: '100%' 
+                    }}>
                         {experiences.map((exp, idx) => {
                             const isActive = activeIdx === idx;
                             return (
                                 <button
                                     key={exp.id}
                                     onClick={() => setActiveIdx(idx)}
-                                    className="glass"
                                     style={{
                                         display: 'flex',
                                         flexDirection: 'column',
                                         alignItems: 'flex-start',
-                                        padding: '16px 24px',
-                                        borderRadius: '16px',
-                                        border: isActive ? '1px solid var(--accent-cyan)' : '1px solid rgba(255,255,255,0.05)',
-                                        background: isActive ? 'rgba(0, 240, 255, 0.05)' : 'transparent',
-                                        boxShadow: isActive ? 'inset 0 0 20px rgba(0,240,255,0.05), 0 0 15px rgba(0,240,255,0.1)' : 'none',
+                                        padding: '20px 28px',
+                                        background: isActive ? 'rgba(0, 245, 255, 0.03)' : 'rgba(5,5,10,0.5)',
+                                        border: isActive ? '1px solid var(--accent-cyan)' : '1px solid rgba(255,255,255,0.06)',
                                         cursor: 'pointer',
-                                        transition: 'all 0.3s ease',
+                                        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                                         position: 'relative',
                                         overflow: 'hidden',
                                         textAlign: 'left'
                                     }}
+                                    onMouseEnter={(e) => {
+                                        if (!isActive) e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (!isActive) e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
+                                    }}
                                 >
                                     {isActive && (
                                         <motion.div
-                                            layoutId="activeTabIndicator"
+                                            layoutId="experienceActiveLine"
                                             style={{
                                                 position: 'absolute',
                                                 left: 0,
@@ -127,66 +142,65 @@ export default function Experience() {
                                             }}
                                         />
                                     )}
-                                    <span style={{ fontSize: '15px', fontWeight: 700, color: isActive ? '#fff' : '#a1a1aa', transition: 'color 0.3s ease' }}>
+                                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '14px', fontWeight: 700, color: isActive ? '#fff' : 'var(--foreground-muted)' }}>
                                         {exp.company}
                                     </span>
-                                    <span style={{ fontSize: '13px', color: isActive ? 'var(--accent-purple)' : '#52525b', fontWeight: 500, transition: 'color 0.3s ease', marginTop: '4px' }}>
-                                        {exp.role.split(' ')[0]} {exp.role.split(' ').length > 1 ? '...' : ''}
+                                    <span style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', color: isActive ? 'var(--accent-purple)' : 'var(--foreground-muted)', fontWeight: 600, marginTop: '6px', letterSpacing: '0.05em' }}>
+                                        {exp.role}
                                     </span>
                                 </button>
                             );
                         })}
                     </div>
 
-                    {/* Right: Dynamic Content Area */}
+                    {/* Right side telemetry container showing description */}
                     <div 
-                        className="premium-card"
+                        className="telemetry-box"
                         style={{ 
-                            flex: '3 1 500px', 
-                            minHeight: '400px',
-                            padding: '40px',
-                            display: 'flex',
-                            flexDirection: 'column'
+                            flex: '3 1 600px', 
+                            minHeight: '440px',
+                            padding: '48px',
+                            background: '#06060c',
+                            border: '1px solid rgba(255,255,255,0.08)'
                         }}
                     >
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={activeIdx}
-                                initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
+                                initial={{ opacity: 0, y: 15, filter: 'blur(4px)' }}
                                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                                exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
-                                transition={{ duration: 0.3 }}
-                                style={{ height: '100%' }}
+                                exit={{ opacity: 0, y: -15, filter: 'blur(4px)' }}
+                                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                             >
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '32px' }}>
+                                {/* Role and Title Header */}
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px', marginBottom: '36px', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '24px' }}>
                                     <div>
-                                        <h3 style={{ fontSize: '24px', fontWeight: 800, color: '#fff', letterSpacing: '-0.01em', marginBottom: '8px' }}>
-                                            {experiences[activeIdx].role} <span className="text-gradient">@ {experiences[activeIdx].company}</span>
+                                        <h3 style={{ fontSize: '24px', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', margin: 0 }}>
+                                            {experiences[activeIdx].role}
                                         </h3>
-                                        <div style={{ fontSize: '14px', color: '#8b8b99', fontWeight: 500 }}>
-                                            {experiences[activeIdx].location}
+                                        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--accent-cyan)', marginTop: '8px', letterSpacing: '0.05em' }}>
+                                            {experiences[activeIdx].company} // {experiences[activeIdx].location}
                                         </div>
                                     </div>
-                                    <div style={{ fontSize: '14px', color: '#fff', fontWeight: 600, background: 'rgba(255,255,255,0.05)', padding: '6px 16px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: '#fff', fontWeight: 700, background: 'rgba(255,255,255,0.04)', padding: '8px 18px', border: '1px solid rgba(255,255,255,0.08)' }}>
                                         {experiences[activeIdx].date}
                                     </div>
                                 </div>
 
-                                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                {/* Timeline descriptions */}
+                                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '18px' }}>
                                     {experiences[activeIdx].points.map((p, i) => (
                                         <motion.li 
                                             key={i}
                                             initial={{ opacity: 0, x: -10 }}
                                             animate={{ opacity: 1, x: 0 }}
-                                            transition={{ duration: 0.3, delay: i * 0.1 }}
-                                            style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', fontSize: '15px', color: '#a1a1aa', lineHeight: '1.7' }}
+                                            transition={{ duration: 0.4, delay: i * 0.08 }}
+                                            style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', fontSize: '14.5px', color: 'var(--foreground-muted)', lineHeight: '1.7' }}
                                         >
-                                            <span style={{ flexShrink: 0, marginTop: '2px', color: 'var(--accent-purple)' }}>
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                    <polyline points="9 18 15 12 9 6"></polyline>
-                                                </svg>
+                                            <span style={{ flexShrink: 0, marginTop: '4px', color: 'var(--accent-purple)', fontWeight: 800, fontFamily: 'var(--font-mono)' }}>
+                                                &gt;
                                             </span>
-                                            <span>{p}</span>
+                                            <span style={{ fontFamily: 'var(--font-sans)' }}>{p}</span>
                                         </motion.li>
                                     ))}
                                 </ul>
