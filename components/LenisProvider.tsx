@@ -5,7 +5,6 @@ import Lenis from 'lenis';
 
 export default function LenisProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
-        // Set up Lenis smooth scrolling with organic inertia
         const lenis = new Lenis({
             duration: 1.4,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -13,7 +12,13 @@ export default function LenisProvider({ children }: { children: React.ReactNode 
             infinite: false,
         });
 
-        // Hook up to requestAnimationFrame
+        // Fire a native scroll event on every Lenis tick so that any
+        // window.addEventListener('scroll', ...) listener (e.g. in Projects.tsx)
+        // picks up the smooth-scrolled position in real time.
+        lenis.on('scroll', () => {
+            window.dispatchEvent(new Event('scroll'));
+        });
+
         let rafId: number;
         function raf(time: number) {
             lenis.raf(time);

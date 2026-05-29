@@ -1,14 +1,14 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence, useScroll } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import * as THREE from 'three';
 
 const projects = [
     {
         number: '01',
-        name: 'MARI — ML FRAUD ENGINE',
-        tagline: 'Real-time payment anomaly detection. 99.8% precision at 45 ms p99 latency.',
+        name: 'MARI — ML Fraud Engine',
+        tagline: 'Real-time payment anomaly detection. 99.8% precision at 45ms p99 latency.',
         tech: ['Python', 'XGBoost', 'FastAPI', 'PostgreSQL', 'Scikit-learn'],
         demo: 'https://mari-alpha.vercel.app',
         code: 'https://github.com/devantaris/mari',
@@ -17,12 +17,12 @@ const projects = [
         specs: [
             'Trained XGBoost classifier on 284k labelled payment records; tuned via Bayesian hyperparameter search to achieve 99.8% precision and 0.2% false-positive rate.',
             'Served predictions through a FastAPI async inference endpoint; benchmarked at 45ms p99 on t3.medium with connection-pooled PostgreSQL write-backs.',
-            'Engineered feature-engineering pipeline with StandardScaler normalisation and SMOTE oversampling to handle severe class imbalance (fraud ≈ 0.17% of dataset).',
-        ]
+            'Engineered feature pipeline with StandardScaler normalisation and SMOTE oversampling to handle severe class imbalance (fraud ≈ 0.17% of dataset).',
+        ],
     },
     {
         number: '02',
-        name: 'FLUTTER OTT PLATFORM',
+        name: 'Flutter OTT Platform',
         tagline: 'Cross-platform streaming client shipping to Android & iOS with offline-first architecture.',
         tech: ['Flutter', 'Dart', 'BLoC', 'SQLite', 'REST API'],
         demo: null,
@@ -30,14 +30,14 @@ const projects = [
         color: '#b500fa',
         impact: '60fps · Offline-first · BLoC state mgmt',
         specs: [
-            'Built offline-first media client using SQLite WAL mode for zero-read-latency episode caching; cold launch under 800 ms on mid-range Android.',
-            'Implemented strict BLoC separation—UI layer carries zero business logic; state transitions are pure functions enabling deterministic unit tests.',
-            'Achieved consistent 60fps on 120Hz displays via RepaintBoundary isolation and Flutter DevTools profiling; GPU frame budget under 6ms.',
-        ]
+            'Offline-first media client using SQLite WAL mode for zero-read-latency episode caching; cold launch under 800ms on mid-range Android.',
+            'Strict BLoC separation — UI layer carries zero business logic; state transitions are pure functions enabling deterministic unit tests.',
+            'Consistent 60fps on 120Hz displays via RepaintBoundary isolation and Flutter DevTools profiling; GPU frame budget under 6ms.',
+        ],
     },
     {
         number: '03',
-        name: 'BIOME — ELECTRON DESKTOP',
+        name: 'Biome — Electron Desktop',
         tagline: 'Procedural focus environment shipped as a native desktop app via Electron + React.',
         tech: ['React', 'TypeScript', 'Electron', 'Firebase', 'Canvas API'],
         demo: null,
@@ -45,14 +45,14 @@ const projects = [
         color: '#ff5500',
         impact: 'Native IPC bridge · Firestore sync · Procedural renderer',
         specs: [
-            'Architected bidirectional Electron IPC channel exposing OS-level idle detection and notification APIs to the React renderer without remote-module security holes.',
-            'Built a procedural world renderer using the Canvas 2D API — generates deterministic environments from a user seed, ensuring identical scenes across sessions.',
-            'Integrated Firestore real-time listeners for cross-device session persistence; applied optimistic UI updates with rollback on snapshot conflict.',
-        ]
+            'Bidirectional Electron IPC channel exposing OS-level idle detection and notification APIs to the React renderer without remote-module security holes.',
+            'Procedural world renderer using Canvas 2D API — generates deterministic environments from a user seed, ensuring identical scenes across sessions.',
+            'Firestore real-time listeners for cross-device session persistence; optimistic UI updates with rollback on snapshot conflict.',
+        ],
     },
     {
         number: '04',
-        name: 'SKILLSYNC — P2P EXCHANGE',
+        name: 'SkillSync — P2P Exchange',
         tagline: 'Decentralised peer course-credit marketplace with RLS-secured ledger and Razorpay checkout.',
         tech: ['React', 'Node.js', 'Supabase', 'PostgreSQL', 'Razorpay'],
         demo: 'https://skill-sync-steel-rho.vercel.app',
@@ -60,45 +60,47 @@ const projects = [
         color: '#a0ff60',
         impact: 'RLS row security · Double-entry ledger · Webhook verified',
         specs: [
-            'Implemented double-entry credit ledger in PostgreSQL with ACID transactions and trigger-enforced balance invariants—zero credit can be created or destroyed.',
-            'Secured all data access with Supabase Row Level Security policies; users can only read/write their own rows, enforced at DB level independent of API logic.',
-            'Integrated Razorpay checkout with HMAC-SHA256 webhook signature verification; payment state machine prevents partial fulfilment on network failures.',
-        ]
+            'Double-entry credit ledger in PostgreSQL with ACID transactions and trigger-enforced balance invariants — zero credit can be created or destroyed.',
+            'Supabase Row Level Security policies; users can only read/write their own rows, enforced at DB level independent of API logic.',
+            'Razorpay checkout with HMAC-SHA256 webhook signature verification; payment state machine prevents partial fulfilment on network failures.',
+        ],
     },
 ];
+
+const SPACING = 120; // Z-distance between panels in 3D space
 
 export default function Projects() {
     const sectionRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    // Use a ref for active index so the Three.js loop reads it without
-    // triggering useEffect re-runs (which was destroying/rebuilding WebGL).
+    // Track active index in a ref — never inside the Three.js useEffect deps
     const activeIdxRef = useRef(0);
-    const [activeIdx, setActiveIdx] = useState(0); // only for React UI re-render
+    const [activeIdx, setActiveIdx] = useState(0);
     const [inspectedProj, setInspectedProj] = useState<number | null>(null);
 
-    const { scrollYProgress } = useScroll({
-        target: sectionRef,
-        offset: ['start start', 'end end'],
-    });
-
+    // Scroll to a specific project
     const scrollToProject = (idx: number) => {
-        if (!sectionRef.current) return;
         const el = sectionRef.current;
-        const scrollRange = el.scrollHeight - window.innerHeight;
+        if (!el) return;
+        const scrollRange = el.offsetHeight - window.innerHeight;
         const target = el.offsetTop + (idx / (projects.length - 1)) * scrollRange;
         window.scrollTo({ top: target, behavior: 'smooth' });
     };
 
-    // Three.js scene — runs ONCE only (no activeIdx in dep array)
+    // ─── Three.js Engine (runs ONCE) ─────────────────────────────────────────
     useEffect(() => {
         const canvas = canvasRef.current;
-        if (!canvas) return;
+        const section = sectionRef.current;
+        if (!canvas || !section) return;
 
         const scene = new THREE.Scene();
 
-        const w = canvas.clientWidth || window.innerWidth;
-        const h = canvas.clientHeight || window.innerHeight;
+        const getSize = () => ({
+            w: canvas.clientWidth || window.innerWidth,
+            h: canvas.clientHeight || window.innerHeight,
+        });
+        const { w, h } = getSize();
+
         const camera = new THREE.PerspectiveCamera(50, w / h, 0.1, 2000);
         camera.position.set(0, 0, 60);
 
@@ -106,7 +108,7 @@ export default function Projects() {
         renderer.setSize(w, h, false);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 
-        const SPACING = 100; // Z-distance between panels
+        // ── Build panels ──────────────────────────────────────────────────────
         const projectGroups: THREE.Group[] = [];
         const artifactMeshes: THREE.Mesh[] = [];
         const wireframeMats: THREE.LineBasicMaterial[] = [];
@@ -115,58 +117,55 @@ export default function Projects() {
         projects.forEach((proj, idx) => {
             const group = new THREE.Group();
             const isLeft = idx % 2 === 0;
-            // Stagger X so panels are left / right of centre
-            const xPos = isLeft ? -10 : 10;
+            const xPos = isLeft ? -8 : 8;
 
             // Background panel
-            const panelGeo = new THREE.PlaneGeometry(36, 20);
+            const panelGeo = new THREE.PlaneGeometry(38, 22);
             const panelMat = new THREE.MeshBasicMaterial({
                 color: 0x020204,
                 side: THREE.DoubleSide,
                 transparent: true,
-                opacity: 0.94,
+                opacity: 0.95,
             });
             group.add(new THREE.Mesh(panelGeo, panelMat));
 
-            // Wireframe outline
+            // Glowing wireframe border
             const wfMat = new THREE.LineBasicMaterial({
                 color: new THREE.Color(proj.color),
                 transparent: true,
-                opacity: idx === 0 ? 0.7 : 0.12,
+                opacity: idx === 0 ? 0.75 : 0.1,
             });
             const wf = new THREE.LineSegments(new THREE.EdgesGeometry(panelGeo), wfMat);
-            wf.name = 'wireframe';
             group.add(wf);
             wireframeMats.push(wfMat);
 
-            // Subtle backing glow
+            // Backing glow
             const blMat = new THREE.MeshBasicMaterial({
                 color: new THREE.Color(proj.color),
                 transparent: true,
-                opacity: idx === 0 ? 0.04 : 0.005,
+                opacity: idx === 0 ? 0.05 : 0.003,
                 blending: THREE.AdditiveBlending,
             });
-            const bl = new THREE.Mesh(new THREE.PlaneGeometry(42, 26), blMat);
+            const bl = new THREE.Mesh(new THREE.PlaneGeometry(44, 28), blMat);
             bl.position.z = -1;
-            bl.name = 'backLight';
             group.add(bl);
             backLightMats.push(blMat);
 
-            // Floating geometric artifact
-            const geoms = [
-                new THREE.IcosahedronGeometry(4, 1),
-                new THREE.TorusKnotGeometry(2.5, 0.8, 80, 8),
-                new THREE.OctahedronGeometry(4, 0),
-                new THREE.DodecahedronGeometry(3.8, 0),
+            // Floating geometry artifact
+            const artGeos: THREE.BufferGeometry[] = [
+                new THREE.IcosahedronGeometry(4.5, 1),
+                new THREE.TorusKnotGeometry(2.8, 0.9, 80, 8),
+                new THREE.OctahedronGeometry(4.5, 0),
+                new THREE.DodecahedronGeometry(4.2, 0),
             ];
             const artMat = new THREE.MeshBasicMaterial({
                 color: new THREE.Color(proj.color),
                 wireframe: true,
                 transparent: true,
-                opacity: 0.4,
+                opacity: 0.45,
             });
-            const art = new THREE.Mesh(geoms[idx % geoms.length], artMat);
-            art.position.set(isLeft ? 20 : -20, 1, 3);
+            const art = new THREE.Mesh(artGeos[idx % artGeos.length], artMat);
+            art.position.set(isLeft ? 22 : -22, 0, 3);
             group.add(art);
             artifactMeshes.push(art);
 
@@ -175,12 +174,27 @@ export default function Projects() {
             projectGroups.push(group);
         });
 
-        let scrollVal = 0;
+        // ── Scroll progress (plain window listener — works with Lenis) ────────
+        const scrollValRef = { current: 0 };
+
+        const updateScroll = () => {
+            const el = sectionRef.current;
+            if (!el) return;
+            // Use getBoundingClientRect so this works even when Lenis transforms the body
+            const rect = el.getBoundingClientRect();
+            const totalScrollable = el.offsetHeight - window.innerHeight;
+            if (totalScrollable <= 0) return;
+            // rect.top is negative once we scroll past the section top
+            const scrolled = -rect.top;
+            scrollValRef.current = Math.max(0, Math.min(1, scrolled / totalScrollable));
+        };
+
+        window.addEventListener('scroll', updateScroll, { passive: true });
+        updateScroll(); // initialise
+
+        // ── Mouse parallax ────────────────────────────────────────────────────
         let mouseX = 0;
         let mouseY = 0;
-
-        const unsub = scrollYProgress.on('change', (v) => { scrollVal = v; });
-
         const onMouse = (e: MouseEvent) => {
             const r = canvas.getBoundingClientRect();
             mouseX = ((e.clientX - r.left) / r.width) * 2 - 1;
@@ -188,42 +202,45 @@ export default function Projects() {
         };
         window.addEventListener('mousemove', onMouse, { passive: true });
 
+        // ── Animation loop ────────────────────────────────────────────────────
         let animId: number;
         const animate = () => {
             animId = requestAnimationFrame(animate);
 
+            const sv = scrollValRef.current;
             const total = projects.length;
-            const frac = scrollVal * (total - 1);
-            const cur = Math.min(Math.floor(frac + 0.5), total - 1); // round to nearest
+            const frac = sv * (total - 1);
+            const cur = Math.min(Math.round(frac), total - 1);
 
-            // Camera Z: travel from panel 0 to last panel
-            const targetZ = 60 - scrollVal * (total - 1) * SPACING;
-            // Camera X: pan gently toward active panel's side
-            const targetX = (cur % 2 === 0 ? -6 : 6) + mouseX * 2;
+            // Camera Z travels through the panels
+            const targetZ = 60 - frac * SPACING;
+            // Camera X gently pans to current panel's side
+            const sideX = cur % 2 === 0 ? -4 : 4;
+            const targetX = sideX + mouseX * 2.5;
             const targetY = mouseY * 1.5;
 
-            camera.position.z += (targetZ - camera.position.z) * 0.07;
+            camera.position.z += (targetZ - camera.position.z) * 0.08;
             camera.position.x += (targetX - camera.position.x) * 0.05;
             camera.position.y += (targetY - camera.position.y) * 0.05;
-            camera.lookAt(camera.position.x * 0.3, 0, camera.position.z - 60);
 
-            // Artifact spin
+            // Look slightly ahead of current position
+            camera.lookAt(camera.position.x * 0.4, 0, camera.position.z - 50);
+
+            // Spin artifacts
             artifactMeshes.forEach((m, i) => {
                 m.rotation.y += 0.007 + i * 0.002;
                 m.rotation.x += 0.003 + i * 0.001;
             });
 
-            // Glow the active panel, dim others
+            // Pulse active panel's glow
             wireframeMats.forEach((mat, i) => {
-                const target = i === cur ? 0.8 : 0.1;
-                mat.opacity += (target - mat.opacity) * 0.08;
+                mat.opacity += ((i === cur ? 0.8 : 0.08) - mat.opacity) * 0.08;
             });
             backLightMats.forEach((mat, i) => {
-                const target = i === cur ? 0.05 : 0.003;
-                mat.opacity += (target - mat.opacity) * 0.08;
+                mat.opacity += ((i === cur ? 0.06 : 0.003) - mat.opacity) * 0.08;
             });
 
-            // Update React state only when index actually changes
+            // Update React UI only when index flips
             if (cur !== activeIdxRef.current) {
                 activeIdxRef.current = cur;
                 setActiveIdx(cur);
@@ -233,9 +250,9 @@ export default function Projects() {
         };
         animate();
 
+        // ── Resize ────────────────────────────────────────────────────────────
         const onResize = () => {
-            const nw = canvas.clientWidth;
-            const nh = canvas.clientHeight;
+            const { w: nw, h: nh } = getSize();
             camera.aspect = nw / nh;
             camera.updateProjectionMatrix();
             renderer.setSize(nw, nh, false);
@@ -245,19 +262,19 @@ export default function Projects() {
 
         return () => {
             cancelAnimationFrame(animId);
+            window.removeEventListener('scroll', updateScroll);
             window.removeEventListener('mousemove', onMouse);
-            unsub();
             ro.disconnect();
             projectGroups.forEach((g) =>
-                g.children.forEach((c) => {
-                    if ((c as THREE.Mesh).geometry) (c as THREE.Mesh).geometry.dispose();
-                    if ((c as THREE.Mesh).material) ((c as THREE.Mesh).material as THREE.Material).dispose();
+                g.children.forEach((c: THREE.Object3D) => {
+                    const mesh = c as THREE.Mesh;
+                    if (mesh.geometry) mesh.geometry.dispose();
+                    if (mesh.material) (mesh.material as THREE.Material).dispose();
                 })
             );
             renderer.dispose();
         };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [scrollYProgress]); // Only scrollYProgress — never activeIdx
+    }, []); // ← EMPTY deps — engine starts once and never rebuilds
 
     const proj = projects[activeIdx];
 
@@ -265,80 +282,108 @@ export default function Projects() {
         <section
             ref={sectionRef}
             id="projects"
-            style={{ height: `${projects.length * 100}vh`, position: 'relative', background: '#020204' }}
+            style={{
+                height: `${projects.length * 100}vh`,
+                position: 'relative',
+                background: '#020204',
+            }}
         >
-            {/* Sticky viewport */}
-            <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden' }}>
-
+            {/* ── Sticky viewport ── */}
+            <div
+                style={{
+                    position: 'sticky',
+                    top: 0,
+                    height: '100vh',
+                    overflow: 'hidden',
+                }}
+            >
                 {/* WebGL canvas */}
                 <canvas
                     ref={canvasRef}
-                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 1, pointerEvents: 'none' }}
+                    style={{
+                        position: 'absolute',
+                        inset: 0,
+                        width: '100%',
+                        height: '100%',
+                        zIndex: 1,
+                        pointerEvents: 'none',
+                    }}
                 />
 
-                {/* Left project index nav */}
-                <div style={{
-                    position: 'absolute',
-                    left: 'clamp(20px, 4vw, 56px)',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    zIndex: 6,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '20px',
-                }}>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', letterSpacing: '0.18em', color: 'var(--foreground-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
+                {/* Left project index */}
+                <nav
+                    style={{
+                        position: 'absolute',
+                        left: 'clamp(20px, 4vw, 56px)',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        zIndex: 6,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '22px',
+                    }}
+                >
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '7px', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', marginBottom: '4px' }}>
                         Projects
                     </span>
                     {projects.map((p, i) => (
                         <button
                             key={p.number}
                             onClick={() => scrollToProject(i)}
-                            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                padding: 0,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                            }}
                         >
                             <span style={{
                                 width: i === activeIdx ? '20px' : '8px',
                                 height: '1px',
-                                background: i === activeIdx ? p.color : 'rgba(255,255,255,0.2)',
+                                background: i === activeIdx ? p.color : 'rgba(255,255,255,0.18)',
                                 transition: 'all 0.4s ease',
                                 display: 'block',
                             }} />
                             <span style={{
                                 fontFamily: 'var(--font-mono)',
                                 fontSize: '9px',
-                                color: i === activeIdx ? '#fff' : 'rgba(255,255,255,0.25)',
-                                transition: 'color 0.3s ease',
                                 letterSpacing: '0.08em',
+                                color: i === activeIdx ? '#fff' : 'rgba(255,255,255,0.22)',
+                                transition: 'color 0.3s ease',
                             }}>
                                 {p.number}
                             </span>
                         </button>
                     ))}
-                </div>
+                </nav>
 
                 {/* Content overlay */}
-                <div style={{
-                    position: 'absolute',
-                    inset: 0,
-                    zIndex: 5,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    padding: 'clamp(80px, 10vh, 120px) clamp(24px, 6vw, 96px) clamp(40px, 6vh, 64px)',
-                    pointerEvents: 'none',
-                }}>
-
-                    {/* Header row */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingLeft: 'clamp(60px, 8vw, 120px)' }}>
+                <div
+                    style={{
+                        position: 'absolute',
+                        inset: 0,
+                        zIndex: 5,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        padding: 'clamp(80px, 10vh, 110px) clamp(24px, 6vw, 96px) clamp(36px, 5vh, 56px)',
+                        pointerEvents: 'none',
+                    }}
+                >
+                    {/* Section header */}
+                    <div style={{ paddingLeft: 'clamp(56px, 8vw, 110px)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div>
-                            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.2em', color: 'var(--foreground-muted)', textTransform: 'uppercase' }}>
+                            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase' }}>
                                 04 // Engineering Work
                             </span>
                             <h2 style={{ fontSize: 'clamp(26px, 3.5vw, 42px)', fontWeight: 200, marginTop: '6px', color: '#fff', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
                                 Shipped systems.
                             </h2>
                         </div>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.15em' }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', color: 'rgba(255,255,255,0.2)', letterSpacing: '0.12em' }}>
                             SCROLL TO EXPLORE
                         </span>
                     </div>
@@ -346,37 +391,44 @@ export default function Projects() {
                     {/* Active project card */}
                     <motion.div
                         key={activeIdx}
-                        initial={{ opacity: 0, y: 8 }}
+                        initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                         style={{
+                            paddingLeft: 'clamp(56px, 8vw, 110px)',
                             pointerEvents: 'auto',
-                            alignSelf: 'flex-start',
-                            maxWidth: '420px',
-                            paddingLeft: 'clamp(60px, 8vw, 120px)',
+                            maxWidth: '460px',
                         }}
                     >
-                        {/* Impact chip */}
+                        {/* Impact badge */}
                         <div style={{
                             display: 'inline-block',
                             fontFamily: 'var(--font-mono)',
                             fontSize: '8px',
-                            letterSpacing: '0.12em',
+                            letterSpacing: '0.1em',
                             color: proj.color,
-                            border: `1px solid ${proj.color}40`,
+                            border: `1px solid ${proj.color}50`,
                             padding: '3px 10px',
                             borderRadius: '2px',
                             marginBottom: '14px',
-                            background: `${proj.color}08`,
+                            background: `${proj.color}0a`,
                         }}>
                             {proj.impact}
                         </div>
 
-                        <h3 style={{ fontSize: 'clamp(16px, 1.8vw, 21px)', fontWeight: 300, color: '#fff', margin: '0 0 8px 0', fontFamily: 'var(--font-serif)', letterSpacing: '-0.01em', lineHeight: 1.2 }}>
+                        <h3 style={{
+                            fontSize: 'clamp(17px, 1.8vw, 22px)',
+                            fontWeight: 300,
+                            color: '#fff',
+                            margin: '0 0 8px 0',
+                            fontFamily: 'var(--font-serif)',
+                            letterSpacing: '-0.01em',
+                            lineHeight: 1.2,
+                        }}>
                             {proj.name}
                         </h3>
 
-                        <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.55)', fontWeight: 300, lineHeight: 1.6, margin: '0 0 20px 0' }}>
+                        <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', fontWeight: 300, lineHeight: 1.65, margin: '0 0 18px 0' }}>
                             {proj.tagline}
                         </p>
 
@@ -386,8 +438,8 @@ export default function Projects() {
                                 <span key={t} style={{
                                     fontFamily: 'var(--font-mono)',
                                     fontSize: '8px',
-                                    letterSpacing: '0.08em',
-                                    color: 'rgba(255,255,255,0.5)',
+                                    letterSpacing: '0.06em',
+                                    color: 'rgba(255,255,255,0.45)',
                                     border: '1px solid rgba(255,255,255,0.08)',
                                     padding: '3px 8px',
                                     borderRadius: '2px',
@@ -401,7 +453,7 @@ export default function Projects() {
                             onClick={() => setInspectedProj(activeIdx)}
                             style={{
                                 background: 'transparent',
-                                border: `1px solid ${proj.color}50`,
+                                border: `1px solid ${proj.color}55`,
                                 color: proj.color,
                                 fontFamily: 'var(--font-mono)',
                                 fontSize: '9px',
@@ -413,36 +465,42 @@ export default function Projects() {
                                 textTransform: 'uppercase',
                             }}
                             onMouseEnter={(e) => {
-                                e.currentTarget.style.background = `${proj.color}15`;
+                                e.currentTarget.style.background = `${proj.color}18`;
                                 e.currentTarget.style.borderColor = proj.color;
                             }}
                             onMouseLeave={(e) => {
                                 e.currentTarget.style.background = 'transparent';
-                                e.currentTarget.style.borderColor = `${proj.color}50`;
+                                e.currentTarget.style.borderColor = `${proj.color}55`;
                             }}
                         >
                             View Technical Details
                         </button>
                     </motion.div>
 
-                    {/* Footer dots */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: 'clamp(60px, 8vw, 120px)' }}>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.12em' }}>
-                            PROJECT {activeIdx + 1} / {projects.length}
+                    {/* Footer progress dots */}
+                    <div style={{
+                        paddingLeft: 'clamp(56px, 8vw, 110px)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', color: 'rgba(255,255,255,0.22)', letterSpacing: '0.1em' }}>
+                            {activeIdx + 1} / {projects.length}
                         </span>
-                        <div style={{ display: 'flex', gap: '8px' }}>
+                        <div style={{ display: 'flex', gap: '8px', pointerEvents: 'auto' }}>
                             {projects.map((_, i) => (
-                                <div
+                                <button
                                     key={i}
                                     onClick={() => scrollToProject(i)}
                                     style={{
-                                        width: i === activeIdx ? '24px' : '6px',
+                                        width: i === activeIdx ? '28px' : '7px',
                                         height: '2px',
                                         borderRadius: '1px',
                                         background: i === activeIdx ? proj.color : 'rgba(255,255,255,0.15)',
                                         transition: 'all 0.4s ease',
+                                        border: 'none',
                                         cursor: 'pointer',
-                                        pointerEvents: 'auto',
+                                        padding: 0,
                                     }}
                                 />
                             ))}
@@ -451,7 +509,7 @@ export default function Projects() {
                 </div>
             </div>
 
-            {/* Side inspector drawer */}
+            {/* ── Side inspector drawer ── */}
             <AnimatePresence>
                 {inspectedProj !== null && (
                     <>
@@ -460,9 +518,9 @@ export default function Projects() {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setInspectedProj(null)}
-                            style={{ position: 'fixed', inset: 0, background: 'rgba(2,2,4,0.7)', backdropFilter: 'blur(12px)', zIndex: 900 }}
+                            style={{ position: 'fixed', inset: 0, background: 'rgba(2,2,4,0.75)', backdropFilter: 'blur(14px)', zIndex: 900 }}
                         />
-                        <motion.div
+                        <motion.aside
                             initial={{ x: '100%' }}
                             animate={{ x: 0 }}
                             exit={{ x: '100%' }}
@@ -471,30 +529,28 @@ export default function Projects() {
                                 position: 'fixed',
                                 top: 0, right: 0, bottom: 0,
                                 width: 'min(100vw, 520px)',
-                                background: '#08080c',
-                                borderLeft: `1px solid ${projects[inspectedProj].color}30`,
-                                padding: 'clamp(28px, 5vw, 56px)',
+                                background: '#07070b',
+                                borderLeft: `1px solid ${projects[inspectedProj].color}35`,
+                                padding: 'clamp(28px, 5vw, 52px)',
                                 zIndex: 999,
                                 overflowY: 'auto',
                                 display: 'flex',
                                 flexDirection: 'column',
-                                gap: '32px',
+                                gap: '28px',
                             }}
                         >
-                            {/* Drawer header */}
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '16px' }}>
                                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', letterSpacing: '0.18em', color: projects[inspectedProj].color, textTransform: 'uppercase' }}>
                                     Technical Breakdown — {projects[inspectedProj].number}
                                 </span>
                                 <button
                                     onClick={() => setInspectedProj(null)}
-                                    style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.35)', fontFamily: 'var(--font-mono)', fontSize: '9px', cursor: 'pointer', letterSpacing: '0.1em' }}
+                                    style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', fontFamily: 'var(--font-mono)', fontSize: '9px', cursor: 'pointer', letterSpacing: '0.1em' }}
                                 >
                                     [ ESC ]
                                 </button>
                             </div>
 
-                            {/* Project name + tagline */}
                             <div>
                                 <h4 style={{ fontSize: '22px', fontWeight: 300, fontFamily: 'var(--font-serif)', letterSpacing: '-0.02em', margin: '0 0 8px', color: '#fff' }}>
                                     {projects[inspectedProj].name}
@@ -504,13 +560,12 @@ export default function Projects() {
                                 </p>
                             </div>
 
-                            {/* Impact chip */}
                             <div style={{
                                 fontFamily: 'var(--font-mono)',
                                 fontSize: '9px',
                                 letterSpacing: '0.1em',
                                 color: projects[inspectedProj].color,
-                                border: `1px solid ${projects[inspectedProj].color}40`,
+                                border: `1px solid ${projects[inspectedProj].color}45`,
                                 padding: '8px 14px',
                                 borderRadius: '2px',
                                 background: `${projects[inspectedProj].color}08`,
@@ -519,9 +574,8 @@ export default function Projects() {
                                 {projects[inspectedProj].impact}
                             </div>
 
-                            {/* Engineering details */}
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase' }}>
                                     Engineering Details
                                 </span>
                                 {projects[inspectedProj].specs.map((s, i) => (
@@ -536,9 +590,8 @@ export default function Projects() {
                                 ))}
                             </div>
 
-                            {/* Tech stack */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase' }}>
+                                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase' }}>
                                     Stack
                                 </span>
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -559,7 +612,6 @@ export default function Projects() {
                                 </div>
                             </div>
 
-                            {/* Links */}
                             <div style={{ display: 'flex', gap: '12px', marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                                 {projects[inspectedProj].demo && (
                                     <a
@@ -573,14 +625,14 @@ export default function Projects() {
                                             letterSpacing: '0.12em',
                                             color: projects[inspectedProj].color,
                                             border: `1px solid ${projects[inspectedProj].color}`,
-                                            padding: '11px',
+                                            padding: '12px',
                                             textAlign: 'center',
                                             textDecoration: 'none',
                                             borderRadius: '2px',
                                             transition: 'background 0.2s',
                                             textTransform: 'uppercase',
                                         }}
-                                        onMouseEnter={(e) => e.currentTarget.style.background = `${projects[inspectedProj].color}12`}
+                                        onMouseEnter={(e) => e.currentTarget.style.background = `${projects[inspectedProj].color}14`}
                                         onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                                     >
                                         Live Demo
@@ -597,7 +649,7 @@ export default function Projects() {
                                         letterSpacing: '0.12em',
                                         color: '#fff',
                                         border: '1px solid rgba(255,255,255,0.2)',
-                                        padding: '11px',
+                                        padding: '12px',
                                         textAlign: 'center',
                                         textDecoration: 'none',
                                         borderRadius: '2px',
@@ -610,7 +662,7 @@ export default function Projects() {
                                     View Code
                                 </a>
                             </div>
-                        </motion.div>
+                        </motion.aside>
                     </>
                 )}
             </AnimatePresence>
