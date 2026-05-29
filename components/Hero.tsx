@@ -99,15 +99,15 @@ export default function Hero() {
                             <h1 style={{ 
                                 fontSize: 'clamp(44px, 6vw, 76px)', 
                                 fontFamily: 'var(--font-serif)', 
-                                fontWeight: 200, // Whisper thin
+                                fontWeight: 200,
                                 letterSpacing: '-0.04em',
                                 lineHeight: 1.05,
                                 color: '#f8f8fa',
                                 margin: 0
                             }}>
-                                Building <br />
-                                systems <br />
-                                that think.
+                                Software <br />
+                                engineer. <br />
+                                <span style={{ color: 'var(--accent-cyan)' }}>Builder.</span>
                             </h1>
                         </motion.div>
 
@@ -126,14 +126,14 @@ export default function Hero() {
                                 margin: 0
                             }}
                         >
-                            Designing machine learning pipelines, secure relational structures, and custom graphical visualizers. Delivering robustness, optimizing trade-off bounds.
+                            Full-stack engineer with production ML, mobile, and systems work — from a 99.8%-precision fraud classifier serving 45ms p99 to a 60fps cross-platform OTT client. IEEE Student Branch Chair, leading a 100-person technical org.
                         </motion.p>
 
                         {/* Telemetry Links in Space-Mono */}
                         <div style={{ display: 'flex', gap: '24px', alignItems: 'center', fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--foreground-muted)' }}>
-                            <span>CHAIRPERSON @ IEEE BU</span>
+                            <span>Python · TypeScript · Flutter · SQL</span>
                             <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'var(--border-strong)' }} />
-                            <span>INTJ PROFILE</span>
+                            <span>IEEE Chair · Open to roles</span>
                         </div>
 
                         {/* Delicate CTA elements */}
@@ -144,17 +144,17 @@ export default function Hero() {
                                 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
                             >
                                 <MailIcon />
-                                SECURE_COMMS
+                                Contact me
                             </a>
 
                             <a 
-                                href="/resume.pdf"
+                                href="/Devansh_Kumar_Resume_1Page.pdf"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="glow-btn"
                                 style={{ borderColor: 'var(--border)' }}
                             >
-                                TELEMETRY_RESUME.PDF
+                                Download Resume
                             </a>
                         </div>
                     </div>
