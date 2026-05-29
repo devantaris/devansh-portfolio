@@ -9,37 +9,37 @@ const projects = [
         emoji: '🛡️',
         number: '01',
         name: 'MARI — FRAUD ENGINE',
-        tagline: 'Three-layer XGBoost fraud anomaly filter trained on 284k telemetry records.',
+        tagline: 'XGBoost fraud filter trained on 284k telemetry records.',
         tech: ['PYTHON', 'FASTAPI', 'XGBOOST', 'POSTGRESQL'],
         demo: 'https://mari-alpha.vercel.app',
         code: 'https://github.com/devantaris/mari',
-        color: '#00f5ff'
+        color: '#00e5ff'
     },
     {
         emoji: '🎬',
         number: '02',
         name: 'FLUTTER OTT STREAMER',
-        tagline: 'Cinematic cross-platform mobile client with SQLite auth persistence.',
+        tagline: 'Cinematic cross-platform mobile client with SQLite persistence.',
         tech: ['FLUTTER', 'DART', 'SQLITE', 'BLOC'],
         demo: null,
         code: 'https://github.com/devantaris/flutter-ott-app',
-        color: '#bd00ff'
+        color: '#b500fa'
     },
     {
         emoji: '🌿',
         number: '03',
         name: 'BIOME DESKTOP APP',
-        tagline: 'Procedural focus world-builder wrapped inside secure native Electron hooks.',
+        tagline: 'Procedural focus world-builder running on Electron native hooks.',
         tech: ['REACT', 'TYPESCRIPT', 'FIREBASE', 'ELECTRON'],
         demo: null,
         code: 'https://github.com/devantaris/Biome',
-        color: '#ff5700'
+        color: '#ff5500'
     },
     {
         emoji: '🔄',
         number: '04',
         name: 'SKILLSYNC PLATFORM',
-        tagline: 'Decentralized peer course credit exchange running on secure Supabase RLS.',
+        tagline: 'Decentralized peer course credit exchange running on Supabase RLS.',
         tech: ['REACT', 'NODE.JS', 'SUPABASE', 'RAZORPAY'],
         demo: 'https://skill-sync-steel-rho.vercel.app',
         code: 'https://github.com/devantaris/SkillSync',
@@ -61,14 +61,11 @@ export default function Projects() {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
-        // Scene
         const scene = new THREE.Scene();
 
-        // Camera
-        const camera = new THREE.PerspectiveCamera(50, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+        const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
         camera.position.set(0, 0, 75);
 
-        // Renderer
         const renderer = new THREE.WebGLRenderer({
             canvas,
             antialias: true,
@@ -76,77 +73,57 @@ export default function Projects() {
             powerPreference: 'high-performance'
         });
         renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 
-        // Create 3D Project Screens
         const projectGroups: THREE.Group[] = [];
 
         projects.forEach((proj, idx) => {
             const group = new THREE.Group();
 
-            // Main Screen Panel (asymmetrical proportion)
-            const panelGeo = new THREE.PlaneGeometry(36, 20);
+            // Main Screen Panel - highly transparent, sleek
+            const panelGeo = new THREE.PlaneGeometry(32, 18);
             const panelMat = new THREE.MeshBasicMaterial({
-                color: 0x05050a,
+                color: 0x020204,
                 side: THREE.DoubleSide,
                 transparent: true,
-                opacity: 0.8
+                opacity: 0.95
             });
             const panel = new THREE.Mesh(panelGeo, panelMat);
             group.add(panel);
 
-            // Glowing Outer Wireframe
+            // Whisper-thin wireframe border outline
             const edges = new THREE.EdgesGeometry(panelGeo);
             const wireframeLine = new THREE.LineBasicMaterial({ 
                 color: new THREE.Color(proj.color), 
-                linewidth: 2 
+                transparent: true,
+                opacity: 0.3,
+                linewidth: 1
             });
             const wireframe = new THREE.LineSegments(edges, wireframeLine);
             group.add(wireframe);
 
-            // Futuristic Blueprint Telemetry Grid behind card
-            const gridHelper = new THREE.GridHelper(30, 10, new THREE.Color(proj.color), new THREE.Color(0x222222));
-            gridHelper.rotation.x = Math.PI / 2;
-            gridHelper.position.z = -2;
-            group.add(gridHelper);
-
-            // Glow backing light
-            const lightGeo = new THREE.PlaneGeometry(42, 26);
+            // Extremely subtle glowing backing light
+            const lightGeo = new THREE.PlaneGeometry(36, 22);
             const lightMat = new THREE.MeshBasicMaterial({
                 color: new THREE.Color(proj.color),
                 transparent: true,
-                opacity: 0.05,
+                opacity: 0.015,
                 blending: THREE.AdditiveBlending
             });
             const lightBack = new THREE.Mesh(lightGeo, lightMat);
-            lightBack.position.z = -3;
+            lightBack.position.z = -1;
             group.add(lightBack);
 
-            // Add dynamic floating orbits representing technology links
-            const ringGeo = new THREE.RingGeometry(22, 22.3, 32);
-            const ringMat = new THREE.MeshBasicMaterial({
-                color: new THREE.Color(proj.color),
-                side: THREE.DoubleSide,
-                transparent: true,
-                opacity: 0.15
-            });
-            const techRing = new THREE.Mesh(ringGeo, ringMat);
-            techRing.rotation.x = Math.PI / 3;
-            group.add(techRing);
-
-            // Shift position in space (layer them in 3D depth)
-            // Stagger coordinates so scrolling feels like travelling through a structural system
             group.position.set(0, 0, -idx * 80);
             scene.add(group);
             projectGroups.push(group);
         });
 
         // Ambient Lights
-        const light = new THREE.DirectionalLight(0xffffff, 1.5);
-        light.position.set(0, 20, 50);
+        const light = new THREE.DirectionalLight(0xffffff, 1.0);
+        light.position.set(0, 10, 50);
         scene.add(light);
 
-        // Interaction coordinates
         let mouseX = 0;
         let mouseY = 0;
         let scrollVal = 0;
@@ -159,7 +136,6 @@ export default function Projects() {
 
         window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
-        // Scroll listener to update scrollVal
         const unsubscribeScroll = scrollYProgress.on("change", (latest) => {
             scrollVal = latest;
         });
@@ -168,29 +144,22 @@ export default function Projects() {
         const animate = () => {
             animId = requestAnimationFrame(animate);
 
-            // Smoothly slide camera through 3D space based on scrollVal
-            // Range maps from z=75 down to z=-240 to explore the panels!
+            // Slide camera
             const targetCameraZ = 75 - scrollVal * 300;
             camera.position.z += (targetCameraZ - camera.position.z) * 0.08;
 
-            // Camera looking slightly ahead with mouse parallax
-            camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
-            camera.position.y += (mouseY * 5 - camera.position.y) * 0.05;
+            // Camera looking with subtle parallax drift
+            camera.position.x += (mouseX * 3 - camera.position.x) * 0.05;
+            camera.position.y += (mouseY * 3 - camera.position.y) * 0.05;
             camera.lookAt(0, 0, camera.position.z - 80);
 
-            // Rotate panels slowly in space
+            // Subtle rotation drift
             projectGroups.forEach((group, i) => {
-                group.rotation.y = Math.sin(performance.now() * 0.0005 + i) * 0.06;
-                group.rotation.x = Math.cos(performance.now() * 0.0004 + i) * 0.04;
-                
-                // Spin technology orbits
-                const ring = group.children[4];
-                if (ring) {
-                    ring.rotation.z += 0.005;
-                }
+                group.rotation.y = Math.sin(performance.now() * 0.0003 + i) * 0.04;
+                group.rotation.x = Math.cos(performance.now() * 0.0002 + i) * 0.02;
             });
 
-            // Update active index based on camera location proximity
+            // Update active index
             const currentZ = camera.position.z;
             let currentActive = 0;
             for (let i = 0; i < projectGroups.length; i++) {
@@ -244,8 +213,7 @@ export default function Projects() {
     }, [scrollYProgress, activeIdx]);
 
     return (
-        <section ref={sectionRef} id="projects" style={{ height: '360vh', position: 'relative', overflow: 'visible' }}>
-            {/* Sticky screen container */}
+        <section ref={sectionRef} id="projects" style={{ height: '360vh', position: 'relative', overflow: 'visible', background: '#020204' }}>
             <div style={{
                 position: 'sticky',
                 top: 0,
@@ -269,15 +237,6 @@ export default function Projects() {
                     }}
                 />
 
-                {/* Grid Background Accents */}
-                <div style={{
-                    position: 'absolute',
-                    top: '10%', left: '4%', right: '4%', height: '1px',
-                    background: 'linear-gradient(to right, rgba(255,255,255,0.05), var(--accent-cyan), transparent)',
-                    pointerEvents: 'none',
-                    zIndex: 0
-                }} />
-
                 {/* Fullscreen Overlay containing Ultra-Minimalist Content */}
                 <div style={{
                     position: 'relative',
@@ -285,59 +244,66 @@ export default function Projects() {
                     width: '100%',
                     maxWidth: '1200px',
                     height: '100%',
-                    padding: '0 clamp(24px, 5vw, 64px)',
+                    padding: '0 clamp(24px, 6vw, 96px)',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
-                    paddingTop: '100px',
+                    paddingTop: '120px',
                     paddingBottom: '64px',
-                    pointerEvents: 'none' // allow clicking canvas underneath
+                    pointerEvents: 'none'
                 }}>
                     
                     {/* Header */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div>
-                            <span className="mono-tag" style={{ color: 'var(--accent-purple)' }}>04 // WEBGL_PROJECT_VAULT</span>
-                            <h2 style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 800, marginTop: '4px', color: '#fff', letterSpacing: '-0.02em' }}>
-                                Featured Systems.
+                            <span className="mono-tag">04 // VAULT</span>
+                            <h2 style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 200, marginTop: '4px', color: '#fff', letterSpacing: '-0.03em' }}>
+                                Featured projects.
                             </h2>
                         </div>
                         <span className="mono-tag" style={{ color: 'var(--foreground-muted)' }}>
-                            SCROLL_DOWN_TO_TRAVEL_3D
+                            SCROLL_DOWN_TO_TRAVEL
                         </span>
                     </div>
 
-                    {/* Active Project Highlight Block (Highly Minimalist) */}
-                    <div style={{ pointerEvents: 'auto', alignSelf: 'flex-start', maxWidth: '440px', background: 'rgba(5,5,10,0.8)', border: '1px solid rgba(255,255,255,0.08)', padding: '28px', backdropFilter: 'blur(10px)', borderLeft: `3px solid ${projects[activeIdx].color}` }}>
+                    {/* Active Project Highlight Block (Highly Minimalist, Floating, Fills Removed) */}
+                    <div style={{ 
+                        pointerEvents: 'auto', 
+                        alignSelf: 'flex-start', 
+                        maxWidth: '400px', 
+                        padding: '0 0 0 24px', 
+                        borderLeft: `1px solid ${projects[activeIdx].color}` 
+                    }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span className="mono-tag" style={{ color: projects[activeIdx].color }}>LOCK // {projects[activeIdx].number}</span>
-                            <span style={{ fontSize: '20px' }}>{projects[activeIdx].emoji}</span>
+                            <span className="mono-tag" style={{ color: 'var(--foreground-muted)' }}>LOCK // {projects[activeIdx].number}</span>
+                            <span style={{ fontSize: '18px' }}>{projects[activeIdx].emoji}</span>
                         </div>
                         
-                        <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#fff', margin: '12px 0 6px 0' }}>
+                        <h3 style={{ fontSize: '18px', fontWeight: 300, color: '#fff', margin: '8px 0 6px 0', fontFamily: 'var(--font-serif)', letterSpacing: '-0.01em' }}>
                             {projects[activeIdx].name}
                         </h3>
                         
-                        <p style={{ fontSize: '13px', color: 'var(--foreground-muted)', lineHeight: 1.5, margin: 0 }}>
+                        <p style={{ fontSize: '13px', color: 'var(--foreground-muted)', fontWeight: 300, lineHeight: 1.5, margin: 0 }}>
                             {projects[activeIdx].tagline}
                         </p>
 
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', margin: '16px 0' }}>
+                        {/* Tech tags */}
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', margin: '12px 0' }}>
                             {projects[activeIdx].tech.map((t) => (
-                                <span key={t} style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', padding: '3px 8px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', color: 'var(--foreground-muted)' }}>
-                                    {t}
+                                <span key={t} style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', color: 'var(--foreground-muted)' }}>
+                                    #{t}
                                 </span>
                             ))}
                         </div>
 
                         {/* CTA Links */}
-                        <div style={{ display: 'flex', gap: '16px' }}>
+                        <div style={{ display: 'flex', gap: '16px', marginTop: '12px' }}>
                             {projects[activeIdx].demo && (
                                 <a 
                                     href={projects[activeIdx].demo!} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
-                                    style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700, color: 'var(--accent-cyan)', textDecoration: 'none', borderBottom: '1px dashed var(--accent-cyan)' }}
+                                    style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 700, color: 'var(--accent-cyan)', textDecoration: 'none', borderBottom: '1px dashed var(--accent-cyan)' }}
                                 >
                                     CORE_DEMO
                                 </a>
@@ -346,7 +312,7 @@ export default function Projects() {
                                 href={projects[activeIdx].code} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700, color: '#fff', textDecoration: 'none', borderBottom: '1px dashed rgba(255,255,255,0.3)' }}
+                                style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 700, color: '#fff', textDecoration: 'none', borderBottom: '1px dashed rgba(255,255,255,0.3)' }}
                             >
                                 SYSTEM_CODE
                             </a>

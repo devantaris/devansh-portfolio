@@ -1,24 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  /* Editorial High-Science Palette (Hex and Raw HSL) */
-  --background: #05050a; /* Extreme cosmic black */
-  --foreground: #f6f5fa; /* Crisp white with silver undertones */
-  --foreground-muted: #8b889e; /* Slate lavender */
+  /* Premium Luxury Minimalist Palette (Raw HSL and Hex) */
+  --background: #020204;       /* Absolute pure void black */
+  --foreground: #f8f8fa;       /* Pure clean silver white */
+  --foreground-muted: #6e6d7a; /* Sophisticated muted charcoal grey */
   
-  /* High-Vibrancy Accents */
-  --accent-cyan: #00f5ff;      /* Radioactive Cyan - HSL(180, 100%, 50%) */
-  --accent-purple: #bd00ff;    /* Cosmic Electric Purple - HSL(285, 100%, 50%) */
-  --accent-blue: #3d00ff;      /* Deep Electric Blue - HSL(256, 100%, 50%) */
-  --accent-orange: #ff5700;    /* Radioactive Solar Orange */
+  /* Delicate Editorial Accents */
+  --accent-cyan: #00e5ff;      /* Whisper Cyan */
+  --accent-purple: #b500fa;    /* Delicate Purple */
+  --accent-orange: #ff5500;    /* Muted Amber */
   
-  /* Gradients */
-  --brutalist-gradient: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
-  --telemetry-gradient: linear-gradient(90deg, rgba(0, 245, 255, 0.15) 0%, rgba(189, 0, 255, 0.15) 50%, transparent 100%);
-  
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.16);
-  --glass-bg: rgba(5, 5, 10, 0.8);
+  /* Muted Luxury Dividers */
+  --border: rgba(255, 255, 255, 0.04);
+  --border-strong: rgba(255, 255, 255, 0.08);
 }
 
 @theme inline {
@@ -27,7 +22,6 @@
   --color-foreground-muted: var(--foreground-muted);
   --color-accent-cyan: var(--accent-cyan);
   --color-accent-purple: var(--accent-purple);
-  --color-accent-blue: var(--accent-blue);
   --color-accent-orange: var(--accent-orange);
   --color-border: var(--border);
   
@@ -66,30 +60,31 @@ body {
   }
 }
 
-/* Editorial Typography */
+/* Luxury Editorial Typography */
 h1, h2, h3, h4 {
   font-family: var(--font-serif);
-  font-weight: 700;
-  letter-spacing: -0.04em;
+  font-weight: 200; /* Whisper thin headers */
+  letter-spacing: -0.05em;
   line-height: 1.05;
 }
 
 .mono-tag {
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.15em;
+  font-size: 10px;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--accent-cyan);
+  color: var(--foreground-muted);
+  font-weight: 400;
 }
 
 /* Custom Text Selections */
 ::selection {
-  background: var(--accent-purple);
+  background: var(--border-strong);
   color: #fff;
 }
 
 ::-webkit-scrollbar {
-  width: 5px;
+  width: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -98,147 +93,56 @@ h1, h2, h3, h4 {
 
 ::-webkit-scrollbar-thumb {
   background: var(--border-strong);
-  border-radius: 99px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-cyan);
+  background: var(--foreground-muted);
 }
 
-/* Brutalist Editorial Grid Borders & Layouts */
-.editorial-grid {
+/* Minimalist Editorial Outlines */
+.minimal-divider {
+  height: 1px;
+  background: var(--border);
+  width: 100%;
+}
+
+.minimal-grid {
   display: grid;
-  border-top: 1px solid var(--border);
-  border-left: 1px solid var(--border);
+  grid-template-columns: 1fr;
+  gap: clamp(40px, 6vw, 80px);
 }
 
-.editorial-cell {
-  border-right: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 40px;
-  position: relative;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+@media (min-width: 1024px) {
+  .minimal-grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
-.editorial-cell::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 245, 255, 0.03) 0%, transparent 60%);
-  opacity: 0;
-  transition: opacity 0.3s;
-  pointer-events: none;
-}
-
-.editorial-cell:hover::after {
-  opacity: 1;
-}
-
-.editorial-cell:hover {
-  border-color: var(--accent-cyan);
-  z-index: 10;
-}
-
-/* High-Science Telemetry Borders */
+/* Telemetry Box Override (Luxury Restyle) */
 .telemetry-box {
-  position: relative;
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.01);
-  padding: 32px;
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.telemetry-box::before {
-  content: '+';
-  position: absolute;
-  top: 4px;
-  left: 6px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--border-strong);
-}
-
-.telemetry-box::after {
-  content: 'SYS.INIT';
-  position: absolute;
-  bottom: 6px;
-  right: 8px;
-  font-family: var(--font-mono);
-  font-size: 8px;
-  letter-spacing: 0.1em;
-  color: var(--foreground-muted);
+  padding: 40px;
+  background: transparent; /* Remove background card fills */
+  transition: border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .telemetry-box:hover {
-  border-color: var(--accent-purple);
-  box-shadow: 0 0 30px rgba(189, 0, 255, 0.08);
+  border-color: var(--border-strong);
 }
 
-/* Asymmetric Overlaps */
-@media (min-width: 1024px) {
-  .overlap-right {
-    margin-right: -100px;
-    z-index: 2;
-  }
-  .overlap-left {
-    margin-left: -100px;
-    z-index: 2;
-  }
-  .offset-down {
-    transform: translateY(60px);
-  }
-  .offset-up {
-    transform: translateY(-60px);
-  }
-}
-
-/* High vibrancy gradient texts */
-.text-science {
-  background: linear-gradient(to right, #ffffff, var(--accent-cyan));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.text-void {
-  background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-purple) 50%, var(--accent-orange) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
+/* Clean, Spacious Buttons */
 .glow-btn {
   font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.15em;
+  font-size: 10px;
+  letter-spacing: 0.2em;
   color: var(--foreground);
   border: 1px solid var(--border-strong);
-  padding: 12px 28px;
-  position: relative;
-  overflow: hidden;
+  padding: 10px 24px;
   background: transparent;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.glow-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.2), transparent);
-  transition: left 0.5s;
-}
-
-.glow-btn:hover::before {
-  left: 100%;
-}
-
 .glow-btn:hover {
-  border-color: var(--accent-cyan);
-  box-shadow: 0 0 15px rgba(0, 245, 255, 0.2);
-  transform: translateY(-2px);
+  border-color: var(--foreground);
+  transform: translateY(-1px);
 }

@@ -114,7 +114,7 @@ export default function LorenzAttractor() {
                         projectedPos.xy += normalize(ndcPos - uMouse) * (0.4 - dist) * 0.1 * projectedPos.w;
                     }
 
-                    gl_PointSize = sizeMultiplier * 2.8 * (300.0 / -mvPosition.z);
+                    gl_PointSize = sizeMultiplier * 1.1 * (300.0 / -mvPosition.z);
                     gl_Position = projectedPos;
                 }
             `,
@@ -263,7 +263,6 @@ export default function LorenzAttractor() {
                 width: '100%', 
                 height: '100%', 
                 display: 'block',
-                filter: 'drop-shadow(0 0 50px rgba(0, 245, 255, 0.15))'
             }} 
         />
     );

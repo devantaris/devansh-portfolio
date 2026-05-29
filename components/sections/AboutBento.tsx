@@ -1,204 +1,128 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 const fadeUp = (delay: number) => ({
     initial: { opacity: 0, y: 30 } as const,
     whileInView: { opacity: 1, y: 0 } as const,
     viewport: { once: true, margin: '-100px' } as const,
-    transition: { duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] as const },
+    transition: { duration: 1.0, delay, ease: [0.16, 1, 0.3, 1] as const },
 });
-
-const principles = [
-    { text: 'Risk-aware fraud architecture', type: 'CORE' },
-    { text: 'Cost-sensitive modeling', type: 'MATH' },
-    { text: 'Consequence-weighted thresholds', type: 'DECISION' },
-    { text: 'EDA-driven reasoning systems', type: 'LOGIC' },
-    { text: 'Layered decision node pipelines', type: 'ARCH' },
-    { text: 'The Extremity Principle', type: 'THEORY' },
-    { text: 'SIMPLY UNIVERSE - published book', type: 'LIT' },
-    { text: 'IEEE Bennett Chairperson', type: 'LEAD' },
-];
 
 export default function AboutBento() {
     return (
-        <section id="about" style={{ padding: 'clamp(80px, 12vw, 160px) 0', position: 'relative' }}>
-            {/* Background elements */}
-            <div style={{
-                position: 'absolute', top: '40%', right: '5%', width: '40vw', height: '40vw',
-                background: 'radial-gradient(circle, rgba(0, 245, 255, 0.02) 0%, transparent 60%)',
-                opacity: 0.8, filter: 'blur(100px)', pointerEvents: 'none', zIndex: 0
-            }} />
-
-            <div style={{ maxWidth: '1320px', margin: '0 auto', padding: '0 clamp(24px, 5vw, 96px)', position: 'relative', zIndex: 1 }}>
+        <section id="about" style={{ padding: 'clamp(100px, 15vw, 200px) 0', position: 'relative', background: '#020204' }}>
+            <div style={{ maxWidth: '1320px', margin: '0 auto', padding: '0 clamp(24px, 6vw, 96px)' }}>
                 
-                {/* Section Header */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '32px', marginBottom: '64px', alignItems: 'flex-end' }}>
-                    <motion.div {...fadeUp(0)}>
-                        <span className="mono-tag" style={{ color: 'var(--accent-purple)' }}>02 // DIAGNOSTIC PROFILE</span>
-                        <h2 style={{ fontSize: 'clamp(36px, 5vw, 64px)', fontWeight: 800, marginTop: '8px', color: '#fff' }}>
-                            Architecting <br />
-                            The <span className="text-science">Void</span>.
-                        </h2>
-                    </motion.div>
-                    <motion.p 
-                        {...fadeUp(0.1)} 
-                        style={{ fontSize: '15px', color: 'var(--foreground-muted)', lineHeight: 1.7, maxWidth: '480px', margin: 0, fontFamily: 'var(--font-sans)' }}
-                    >
-                        An engineer obsessed with system design. Building full-stack platforms, high-throughput fraud filters, gamified applications, and local-first microservices. INTJ reasoning applied to production pipelines.
-                    </motion.p>
-                </div>
-
-                {/* Asymmetric Overlapping Grid Layout */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                {/* Asymmetric Spacious Grid */}
+                <div style={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 480px), 1fr))', 
+                    gap: '100px',
+                    alignItems: 'flex-start'
+                }}>
                     
-                    {/* First Row: 2 unequal columns */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 450px), 1fr))', gap: '20px' }}>
+                    {/* Left Column: Monochrome Portrait Profile */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
                         
-                        {/* Biography / Intent Box */}
-                        <motion.div 
-                            {...fadeUp(0.15)} 
-                            className="telemetry-box" 
-                            style={{ 
-                                padding: '48px', 
-                                borderRight: '1px solid rgba(255, 255, 255, 0.1)',
-                                background: 'linear-gradient(135deg, rgba(255,255,255,0.015) 0%, transparent 100%)' 
-                            }}
-                        >
-                            <span className="mono-tag">BIOGRAPHY_TELEMETRY</span>
-                            <h3 style={{ fontSize: '24px', fontWeight: 700, color: '#fff', margin: '16px 0', letterSpacing: '-0.02em' }}>
-                                Who is Devansh Kumar?
-                            </h3>
-                            <p style={{ fontSize: '15px', color: 'var(--foreground-muted)', lineHeight: 1.8, marginBottom: '24px' }}>
-                                I design computational tools. Merging machine learning pipelines, relational schemas, and WebGL visualizations. I chair the IEEE Bennett Student branch, coordinating 100+ developers.
-                            </p>
-                            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                                <div style={{ border: '1px solid rgba(255,255,255,0.06)', padding: '12px 20px', background: 'rgba(255,255,255,0.01)', flex: '1 1 120px' }}>
-                                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', fontWeight: 700, color: 'var(--accent-cyan)' }}>100+</div>
-                                    <div className="mono-tag" style={{ fontSize: '8px', color: 'var(--foreground-muted)' }}>MEMBERS_MANAGED</div>
-                                </div>
-                                <div style={{ border: '1px solid rgba(255,255,255,0.06)', padding: '12px 20px', background: 'rgba(255,255,255,0.01)', flex: '1 1 120px' }}>
-                                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '20px', fontWeight: 700, color: 'var(--accent-purple)' }}>₹1.48L+</div>
-                                    <div className="mono-tag" style={{ fontSize: '8px', color: 'var(--foreground-muted)' }}>SPONSORSHIPS_SECURED</div>
-                                </div>
-                            </div>
+                        <motion.div {...fadeUp(0)}>
+                            <span className="mono-tag">02 // PROFILE_INDEX</span>
+                            <h2 style={{ fontSize: 'clamp(36px, 5vw, 56px)', fontWeight: 200, marginTop: '8px', color: '#fff', letterSpacing: '-0.04em' }}>
+                                Architecting <br />
+                                structural bounds.
+                            </h2>
                         </motion.div>
 
-                        {/* Engineering Philosophy List */}
+                        {/* Monochrome photo IMG_0166@9583858.JPG in a premium sleek vertical crop */}
                         <motion.div 
-                            {...fadeUp(0.25)} 
-                            className="telemetry-box offset-down" 
+                            {...fadeUp(0.15)}
                             style={{ 
-                                padding: '48px', 
-                                borderColor: 'rgba(255, 255, 255, 0.1)',
-                                background: 'linear-gradient(135deg, rgba(189, 0, 255, 0.01) 0%, transparent 100%)' 
+                                position: 'relative', 
+                                width: '100%', 
+                                height: '360px', 
+                                overflow: 'hidden', 
+                                border: '1px solid var(--border)' 
                             }}
                         >
-                            <span className="mono-tag">ENGINEERING_PHILOSOPHY</span>
-                            <h3 style={{ fontSize: '24px', fontWeight: 700, color: '#fff', margin: '16px 0', letterSpacing: '-0.02em' }}>
-                                Decisional Reasoning
-                            </h3>
-                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                                {[
-                                    { title: 'SYSTEMS OVER PREDICTIONS', desc: 'Architecture must insulate against mathematical threshold failures.' },
-                                    { title: 'ARCHITECTURE BEFORE CODE', desc: 'Draft rigid structural boundaries before allocating compute stacks.' },
-                                    { title: 'FAILURE BY DESIGN', desc: 'Optimize logic loops exclusively for non-ideal edge coordinates.' },
-                                    { title: 'QUANTIFIED TRADE-OFFS', desc: 'Explicitly balance execution speed against resource boundaries.' }
-                                ].map((phil, i) => (
-                                    <li key={i} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontFamily: 'var(--font-mono)', fontSize: '11px', fontWeight: 700, color: '#fff' }}>
-                                            <span style={{ width: '4px', height: '4px', background: 'var(--accent-purple)', borderRadius: '50%' }} />
-                                            {phil.title}
-                                        </div>
-                                        <div style={{ fontSize: '13px', color: 'var(--foreground-muted)', paddingLeft: '12px' }}>
-                                            {phil.desc}
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
+                            <Image
+                                src="/images/IMG_0166@9583858.JPG"
+                                alt="Devansh Kumar Monochrome Capture"
+                                fill
+                                style={{
+                                    objectFit: 'cover',
+                                    filter: 'grayscale(100%) contrast(1.1) brightness(0.95)' // Luxury desaturated portrait
+                                }}
+                            />
                         </motion.div>
 
+                        <motion.p 
+                            {...fadeUp(0.2)}
+                            style={{ fontSize: '15px', color: 'var(--foreground-muted)', fontWeight: 300, lineHeight: 1.7, margin: 0, fontFamily: 'var(--font-sans)', maxWidth: '440px' }}
+                        >
+                            Merging machine learning pipelines, secure relational database designs, and custom graphical visualizations. Applying INTJ systems reasoning directly into clean, robust production coordinates.
+                        </motion.p>
                     </div>
 
-                    {/* Second Row: Overlapping wider boxes */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 450px), 1fr))', gap: '20px', marginTop: '40px' }}>
+                    {/* Right Column: Spaced out parameters and values */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '64px', paddingTop: '40px' }}>
                         
-                        {/* Proof of Thinking Matrix */}
-                        <motion.div 
-                            {...fadeUp(0.35)} 
-                            className="telemetry-box" 
-                            style={{ 
-                                padding: '48px', 
-                                flex: '2 1 600px',
-                                background: 'linear-gradient(135deg, rgba(0, 245, 255, 0.015) 0%, transparent 100%)'
-                            }}
-                        >
-                            <span className="mono-tag">PROOF_OF_THINKING</span>
-                            <h3 style={{ fontSize: '24px', fontWeight: 700, color: '#fff', margin: '16px 0', letterSpacing: '-0.02em' }}>
-                                Active Principles
-                            </h3>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
-                                {principles.map((p, i) => (
-                                    <div key={i} style={{ border: '1px solid rgba(255,255,255,0.05)', padding: '16px', background: 'rgba(255,255,255,0.015)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', color: 'var(--accent-cyan)', letterSpacing: '0.1em' }}>
-                                            [{p.type}]
-                                        </span>
-                                        <span style={{ fontSize: '13px', color: '#f6f5fa', fontWeight: 500, fontFamily: 'var(--font-sans)' }}>
-                                            {p.text}
-                                        </span>
+                        {/* Biography Block */}
+                        <motion.div {...fadeUp(0.1)} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            <span className="mono-tag">THE_INTENT</span>
+                            <p style={{ fontSize: '16px', color: 'var(--foreground-muted)', fontWeight: 300, lineHeight: 1.8, margin: 0 }}>
+                                I design computational tools for complex operations. As the Chairperson of the IEEE Student Branch at Bennett University, I lead and coordinate a 100+ member vertical structure to construct local software products and lead international summits.
+                            </p>
+                        </motion.div>
+
+                        {/* Engineering Values Block */}
+                        <motion.div {...fadeUp(0.2)} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                            <span className="mono-tag">DECISIONAL_PRINCIPLES</span>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                {[
+                                    { title: 'SYSTEMS OVER PREDICTIONS', desc: 'Models fail; structural bounds must insulate against mathematical thresholds.' },
+                                    { title: 'ARCHITECTURE BEFORE CODE', desc: 'Establish strict structural interfaces before allocating computing stacks.' },
+                                    { title: 'FAILURE BY DESIGN', desc: 'Optimize loops exclusively for non-ideal, catastrophic coordinates.' },
+                                    { title: 'QUANTIFIED BOUNDARIES', desc: 'Explicitly balance execution latency thresholds against memory scale bounds.' }
+                                ].map((value, idx) => (
+                                    <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '4px', borderBottom: '1px solid var(--border)', paddingBottom: '16px' }}>
+                                        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', fontWeight: 600, color: '#fff' }}>
+                                            // {value.title}
+                                        </div>
+                                        <div style={{ fontSize: '13px', color: 'var(--foreground-muted)', fontWeight: 300, paddingLeft: '20px' }}>
+                                            {value.desc}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
                         </motion.div>
 
-                        {/* Systems Built Grid */}
-                        <motion.div 
-                            {...fadeUp(0.4)} 
-                            className="telemetry-box offset-up" 
-                            style={{ 
-                                padding: '48px', 
-                                flex: '1 1 400px',
-                                background: 'linear-gradient(135deg, rgba(255,255,255,0.01) 0%, transparent 100%)'
-                            }}
-                        >
-                            <span className="mono-tag">SYSTEMS_BUILD_INDEX</span>
-                            <h3 style={{ fontSize: '24px', fontWeight: 700, color: '#fff', margin: '16px 0', letterSpacing: '-0.02em' }}>
-                                Production Nodes
-                            </h3>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                        {/* Production Nodes Index */}
+                        <motion.div {...fadeUp(0.3)} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            <span className="mono-tag">PRODUCTION_NODES_BUILT</span>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                                 {[
-                                    'Risk Engines', 'Desktop Applications', 'Credit Economics', 'Authentication Nodes',
-                                    'Data Telemetry Dashboards', 'Cross-Platform Mobile Apps', 'REST APIs', 'Fraud Detection Models',
-                                    'Agile Sprint Cycles', 'IEEE Conference Directives'
-                                ].map((tag, i) => (
-                                    <span
-                                        key={i}
-                                        style={{
-                                            fontFamily: 'var(--font-mono)',
-                                            fontSize: '10px',
-                                            padding: '8px 16px',
-                                            background: 'rgba(255, 255, 255, 0.02)',
-                                            border: '1px solid rgba(255, 255, 255, 0.06)',
-                                            borderRadius: '0px',
-                                            color: '#fff',
-                                            transition: 'all 0.3s'
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            e.currentTarget.style.borderColor = 'var(--accent-cyan)';
-                                            e.currentTarget.style.background = 'rgba(0, 245, 255, 0.05)';
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.06)';
-                                            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)';
+                                    'Risk Engines', 'Desktop Micro-wrappers', 'Credit Economies', 'Secure Auth Matrices',
+                                    'FastAPI REST Architectures', '60fps Mobile Clients', 'Calibrated ML Booststraps'
+                                ].map((tag, idx) => (
+                                    <span 
+                                        key={idx}
+                                        style={{ 
+                                            fontFamily: 'var(--font-mono)', 
+                                            fontSize: '9px', 
+                                            padding: '4px 12px', 
+                                            border: '1px solid var(--border)', 
+                                            color: 'var(--foreground-muted)' 
                                         }}
                                     >
-                                        {tag}
+                                        {tag.toUpperCase()}
                                     </span>
                                 ))}
                             </div>
                         </motion.div>
 
                     </div>
+
                 </div>
             </div>
         </section>
