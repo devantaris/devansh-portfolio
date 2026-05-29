@@ -22,7 +22,7 @@ export default function Home() {
       <LoadingScreen onComplete={() => setIsLoading(false)} />
       
       {!isLoading && (
-        <main className="relative min-h-screen overflow-x-hidden">
+        <main className="relative min-h-screen">
           {/* Glowing mathematical background nodes */}
           <MultiLayerStarfield />
           
