@@ -90,8 +90,33 @@ export default function Navigation() {
                         ))}
                     </nav>
 
-                    {/* Right: Contact + Mobile hamburger */}
-                    <div className="flex items-center" style={{ gap: '12px' }}>
+                        {/* V2 Preview Link */}
+                        <a
+                            href="https://REPLACE_WITH_VERCEL_URL"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hidden md:flex items-center"
+                            style={{
+                                fontSize: '11px',
+                                fontWeight: 600,
+                                color: 'var(--accent-cyan)',
+                                border: '1px solid var(--accent-cyan)',
+                                borderRadius: '9999px',
+                                padding: '5px 14px',
+                                background: 'rgba(0,229,255,0.05)',
+                                cursor: 'pointer',
+                                letterSpacing: '0.06em',
+                                textDecoration: 'none',
+                                transition: 'background 0.2s',
+                                gap: '6px',
+                            }}
+                            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(0,229,255,0.12)')}
+                            onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(0,229,255,0.05)')}
+                        >
+                            <span style={{ fontSize: '9px', opacity: 0.7 }}>✦</span>
+                            V2 Portfolio
+                        </a>
+
                         <button
                             onClick={() => setIsContactModalOpen(true)}
                             className="hidden md:flex"
@@ -112,6 +137,7 @@ export default function Navigation() {
                         >
                             CONTACT
                         </button>
+
 
                         {/* Mobile hamburger */}
                         <button
