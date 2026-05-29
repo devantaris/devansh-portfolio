@@ -1,19 +1,54 @@
 @import "tailwindcss";
 
+/* Define smooth interpolatable CSS properties for dynamic color cycling */
+@property --accent-cyan {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #00e5ff;
+}
+
+@property --accent-purple {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #b500fa;
+}
+
+@property --accent-orange {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #ff5500;
+}
+
 :root {
   /* Premium Luxury Minimalist Palette (Raw HSL and Hex) */
   --background: #020204;       /* Absolute pure void black */
   --foreground: #f8f8fa;       /* Pure clean silver white */
   --foreground-muted: #6e6d7a; /* Sophisticated muted charcoal grey */
   
-  /* Delicate Editorial Accents */
-  --accent-cyan: #00e5ff;      /* Whisper Cyan */
-  --accent-purple: #b500fa;    /* Delicate Purple */
-  --accent-orange: #ff5500;    /* Muted Amber */
-  
   /* Muted Luxury Dividers */
   --border: rgba(255, 255, 255, 0.04);
   --border-strong: rgba(255, 255, 255, 0.08);
+
+  /* Set up dynamic color morph keyframes */
+  animation: accentCycle 28s infinite linear;
+}
+
+@keyframes accentCycle {
+  0%, 100% {
+    --accent-cyan: #00e5ff;     /* Whisper Cyan */
+    --accent-purple: #b500fa;   /* Cosmic Purple */
+    --accent-orange: #ff5500;   /* Solar Amber */
+  }
+  33% {
+    --accent-cyan: #ff007f;     /* Neon Pink */
+    --accent-purple: #00e5ff;   /* Whisper Cyan */
+    --accent-orange: #b500fa;   /* Cosmic Purple */
+  }
+  66% {
+    --accent-cyan: #ffaa00;     /* Vivid Gold */
+    --accent-purple: #ff007f;   /* Neon Pink */
+    --accent-orange: #00e5ff;   /* Whisper Cyan */
+  }
 }
 
 @theme inline {
