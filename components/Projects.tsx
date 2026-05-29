@@ -1,270 +1,370 @@
 'use client';
 
-import { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { motion, useScroll } from 'framer-motion';
+import * as THREE from 'three';
 
 const projects = [
     {
         emoji: '🛡️',
         number: '01',
         name: 'MARI — FRAUD ENGINE',
-        description: 'A three-layer real-time fraud filter trained on a highly dimensional 284,000 transaction telemetry database. Optimizes cost-sensitive thresholds to isolate anomalies.',
-        features: [
-            '5-member calibrated XGBoost bootstrap ensemble model',
-            'Isolation Forest anomaly detection pipeline',
-            'Sub-100ms real-time REST API inference framework',
-        ],
-        tech: ['Python', 'FastAPI', 'XGBoost', 'PostgreSQL'],
+        tagline: 'Three-layer XGBoost fraud anomaly filter trained on 284k telemetry records.',
+        tech: ['PYTHON', 'FASTAPI', 'XGBOOST', 'POSTGRESQL'],
         demo: 'https://mari-alpha.vercel.app',
         code: 'https://github.com/devantaris/mari',
+        color: '#00f5ff'
     },
     {
         emoji: '🎬',
         number: '02',
-        name: 'FLUTTER OTT STREAMING APP',
-        description: 'Cross-platform native cinematic application featuring localized secure authentication pipelines, asset offline caching, and responsive transition matrices.',
-        features: [
-            'BLoC-pattern architectural state management flow',
-            'SQLite-backed local secure persistence layers',
-            'Smooth 60fps rendering transitions and overlays',
-        ],
-        tech: ['Flutter', 'Dart', 'SQLite', 'BLoC'],
+        name: 'FLUTTER OTT STREAMER',
+        tagline: 'Cinematic cross-platform mobile client with SQLite auth persistence.',
+        tech: ['FLUTTER', 'DART', 'SQLITE', 'BLOC'],
         demo: null,
         code: 'https://github.com/devantaris/flutter-ott-app',
+        color: '#bd00ff'
     },
     {
         emoji: '🌿',
         number: '03',
-        name: 'BIOME SYSTEM PROGRESSION',
-        description: 'A world-building productivity application wrapping Pomodoro focus nodes with real-time progression systems, rarity logic layers, and interactive local leaderboards.',
-        features: [
-            'Firebase database scaling for real-time account synch',
-            'Electron-wrapped desktop wrapper with native hook bindings',
-            'Dynamic procedural state logic for progression models',
-        ],
-        tech: ['React', 'TypeScript', 'Firebase', 'Electron'],
+        name: 'BIOME DESKTOP APP',
+        tagline: 'Procedural focus world-builder wrapped inside secure native Electron hooks.',
+        tech: ['REACT', 'TYPESCRIPT', 'FIREBASE', 'ELECTRON'],
         demo: null,
         code: 'https://github.com/devantaris/Biome',
+        color: '#ff5700'
     },
     {
         emoji: '🔄',
         number: '04',
         name: 'SKILLSYNC PLATFORM',
-        description: 'A decentralized peer-to-peer skill economy platform where users transact system credits gained by teaching courses, securing validation through transactional scoring.',
-        features: [
-            'AI-powered course indexing and scoring logic',
-            'End-to-end payment capture using integrated Razorpay API',
-            'Strict Supabase RLS (Row Level Security) schemas',
-        ],
-        tech: ['React', 'Node.js', 'Supabase', 'Razorpay'],
+        tagline: 'Decentralized peer course credit exchange running on secure Supabase RLS.',
+        tech: ['REACT', 'NODE.JS', 'SUPABASE', 'RAZORPAY'],
         demo: 'https://skill-sync-steel-rho.vercel.app',
         code: 'https://github.com/devantaris/SkillSync',
+        color: '#ffffff'
     },
 ];
 
-const ExternalLinkIcon = () => (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
-        <polyline points="15,3 21,3 21,9" />
-        <line x1="10" y1="14" x2="21" y2="3" />
-    </svg>
-);
-
-const GithubIcon = () => (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
-    </svg>
-);
-
-function ProjectCard({ project, progress, index }: { project: typeof projects[0]; progress: any; index: number }) {
-    const cardY = useTransform(progress, [index * 0.25, (index + 1) * 0.25], [1000, 0]);
-    // Shrink and fade underlying cards slightly as new ones lock on top
-    const scale = useTransform(progress, [(index + 1) * 0.25, (index + 2) * 0.25], [1, 0.93]);
-    const opacity = useTransform(progress, [(index + 1) * 0.25, (index + 2) * 0.25], [1, 0.4]);
-
-    return (
-        <motion.div
-            style={{
-                y: index === 0 ? 0 : cardY,
-                scale,
-                opacity,
-                position: 'absolute',
-                top: 0,
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: index
-            }}
-        >
-            <div 
-                className="telemetry-box" 
-                style={{ 
-                    width: '100%', 
-                    maxWidth: '1000px', 
-                    background: '#06060c', 
-                    padding: 'clamp(24px, 4vw, 48px)',
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 360px), 1fr))',
-                    gap: '40px',
-                    alignItems: 'center',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    boxShadow: '0 20px 60px rgba(0,0,0,0.8)'
-                }}
-            >
-                {/* Asymmetric Technical Detail Column */}
-                <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '20px' }}>
-                    
-                    {/* Big Editorial Index Block */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <div style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(72px, 8vw, 110px)', fontWeight: 900, lineHeight: 0.8, color: 'var(--accent-purple)' }}>
-                            {project.number}
-                        </div>
-                        <div style={{ fontSize: '48px', filter: 'drop-shadow(0 0 15px rgba(255,255,255,0.15))' }}>
-                            {project.emoji}
-                        </div>
-                    </div>
-
-                    <div>
-                        <span className="mono-tag" style={{ color: 'var(--accent-cyan)' }}>PROJECT_TELEMETRY_VAL</span>
-                        <h3 style={{ fontSize: 'clamp(22px, 2.5vw, 28px)', color: '#fff', fontWeight: 800, margin: '8px 0 12px 0' }}>
-                            {project.name}
-                        </h3>
-                        <p style={{ fontSize: '14px', color: 'var(--foreground-muted)', lineHeight: 1.6 }}>
-                            {project.description}
-                        </p>
-                    </div>
-
-                    {/* Tech Stacks */}
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                        {project.tech.map((t) => (
-                            <span 
-                                key={t} 
-                                style={{ 
-                                    fontFamily: 'var(--font-mono)', 
-                                    fontSize: '9px', 
-                                    padding: '6px 14px', 
-                                    background: 'rgba(255,255,255,0.02)', 
-                                    border: '1px solid rgba(255,255,255,0.08)', 
-                                    color: '#fff' 
-                                }}
-                            >
-                                {t.toUpperCase()}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Asymmetric blueprint description column */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', borderLeft: '1px solid rgba(255,255,255,0.05)', paddingLeft: 'clamp(0px, 3vw, 32px)' }}>
-                    <div>
-                        <span className="mono-tag" style={{ color: 'var(--accent-orange)' }}>BLUEPRINT_SPECIFICATIONS</span>
-                        <ul style={{ listStyle: 'none', padding: 0, margin: '12px 0 0 0', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            {project.features.map((feat, i) => (
-                                <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', fontSize: '13px', color: 'var(--foreground-muted)', lineHeight: 1.5 }}>
-                                    <span style={{ color: 'var(--accent-cyan)', flexShrink: 0, marginTop: '2px' }}>&gt;</span>
-                                    <span>{feat}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    {/* Operational CTA anchors */}
-                    <div style={{ display: 'flex', gap: '16px', marginTop: '12px' }}>
-                        {project.demo && (
-                            <a 
-                                href={project.demo} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="glow-btn"
-                                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', background: 'linear-gradient(135deg, var(--accent-cyan), var(--accent-blue))', color: '#000', border: 'none' }}
-                            >
-                                <ExternalLinkIcon />
-                                LIVE_DEMO
-                            </a>
-                        )}
-                        <a 
-                            href={project.code} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="glow-btn"
-                            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderColor: 'rgba(255,255,255,0.1)' }}
-                        >
-                            <GithubIcon />
-                            VIEW_CODE
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </motion.div>
-    );
-}
-
 export default function Projects() {
-    const targetRef = useRef<HTMLDivElement>(null);
+    const sectionRef = useRef<HTMLDivElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [activeIdx, setActiveIdx] = useState(0);
+
     const { scrollYProgress } = useScroll({
-        target: targetRef
+        target: sectionRef,
+        offset: ["start start", "end end"]
     });
 
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        // Scene
+        const scene = new THREE.Scene();
+
+        // Camera
+        const camera = new THREE.PerspectiveCamera(50, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+        camera.position.set(0, 0, 75);
+
+        // Renderer
+        const renderer = new THREE.WebGLRenderer({
+            canvas,
+            antialias: true,
+            alpha: true,
+            powerPreference: 'high-performance'
+        });
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // Create 3D Project Screens
+        const projectGroups: THREE.Group[] = [];
+
+        projects.forEach((proj, idx) => {
+            const group = new THREE.Group();
+
+            // Main Screen Panel (asymmetrical proportion)
+            const panelGeo = new THREE.PlaneGeometry(36, 20);
+            const panelMat = new THREE.MeshBasicMaterial({
+                color: 0x05050a,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.8
+            });
+            const panel = new THREE.Mesh(panelGeo, panelMat);
+            group.add(panel);
+
+            // Glowing Outer Wireframe
+            const edges = new THREE.EdgesGeometry(panelGeo);
+            const wireframeLine = new THREE.LineBasicMaterial({ 
+                color: new THREE.Color(proj.color), 
+                linewidth: 2 
+            });
+            const wireframe = new THREE.LineSegments(edges, wireframeLine);
+            group.add(wireframe);
+
+            // Futuristic Blueprint Telemetry Grid behind card
+            const gridHelper = new THREE.GridHelper(30, 10, new THREE.Color(proj.color), new THREE.Color(0x222222));
+            gridHelper.rotation.x = Math.PI / 2;
+            gridHelper.position.z = -2;
+            group.add(gridHelper);
+
+            // Glow backing light
+            const lightGeo = new THREE.PlaneGeometry(42, 26);
+            const lightMat = new THREE.MeshBasicMaterial({
+                color: new THREE.Color(proj.color),
+                transparent: true,
+                opacity: 0.05,
+                blending: THREE.AdditiveBlending
+            });
+            const lightBack = new THREE.Mesh(lightGeo, lightMat);
+            lightBack.position.z = -3;
+            group.add(lightBack);
+
+            // Add dynamic floating orbits representing technology links
+            const ringGeo = new THREE.RingGeometry(22, 22.3, 32);
+            const ringMat = new THREE.MeshBasicMaterial({
+                color: new THREE.Color(proj.color),
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.15
+            });
+            const techRing = new THREE.Mesh(ringGeo, ringMat);
+            techRing.rotation.x = Math.PI / 3;
+            group.add(techRing);
+
+            // Shift position in space (layer them in 3D depth)
+            // Stagger coordinates so scrolling feels like travelling through a structural system
+            group.position.set(0, 0, -idx * 80);
+            scene.add(group);
+            projectGroups.push(group);
+        });
+
+        // Ambient Lights
+        const light = new THREE.DirectionalLight(0xffffff, 1.5);
+        light.position.set(0, 20, 50);
+        scene.add(light);
+
+        // Interaction coordinates
+        let mouseX = 0;
+        let mouseY = 0;
+        let scrollVal = 0;
+
+        const handleMouseMove = (e: MouseEvent) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = ((e.clientX - rect.left) / canvas.clientWidth) * 2 - 1;
+            mouseY = -((e.clientY - rect.top) / canvas.clientHeight) * 2 + 1;
+        };
+
+        window.addEventListener('mousemove', handleMouseMove, { passive: true });
+
+        // Scroll listener to update scrollVal
+        const unsubscribeScroll = scrollYProgress.on("change", (latest) => {
+            scrollVal = latest;
+        });
+
+        let animId: number;
+        const animate = () => {
+            animId = requestAnimationFrame(animate);
+
+            // Smoothly slide camera through 3D space based on scrollVal
+            // Range maps from z=75 down to z=-240 to explore the panels!
+            const targetCameraZ = 75 - scrollVal * 300;
+            camera.position.z += (targetCameraZ - camera.position.z) * 0.08;
+
+            // Camera looking slightly ahead with mouse parallax
+            camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
+            camera.position.y += (mouseY * 5 - camera.position.y) * 0.05;
+            camera.lookAt(0, 0, camera.position.z - 80);
+
+            // Rotate panels slowly in space
+            projectGroups.forEach((group, i) => {
+                group.rotation.y = Math.sin(performance.now() * 0.0005 + i) * 0.06;
+                group.rotation.x = Math.cos(performance.now() * 0.0004 + i) * 0.04;
+                
+                // Spin technology orbits
+                const ring = group.children[4];
+                if (ring) {
+                    ring.rotation.z += 0.005;
+                }
+            });
+
+            // Update active index based on camera location proximity
+            const currentZ = camera.position.z;
+            let currentActive = 0;
+            for (let i = 0; i < projectGroups.length; i++) {
+                const zDist = Math.abs(currentZ - (75 - i * 80));
+                if (zDist < 40) {
+                    currentActive = i;
+                    break;
+                }
+                if (currentZ < 75 - i * 80) {
+                    currentActive = i;
+                }
+            }
+            if (currentActive !== activeIdx) {
+                setActiveIdx(currentActive);
+            }
+
+            renderer.render(scene, camera);
+        };
+
+        animate();
+
+        const handleResize = () => {
+            const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height, false);
+        };
+
+        const resizeObserver = new ResizeObserver(() => handleResize());
+        resizeObserver.observe(canvas);
+
+        return () => {
+            cancelAnimationFrame(animId);
+            window.removeEventListener('mousemove', handleMouseMove);
+            unsubscribeScroll();
+            resizeObserver.disconnect();
+            
+            projectGroups.forEach((g) => {
+                g.children.forEach((c) => {
+                    if (c instanceof THREE.Mesh) {
+                        c.geometry.dispose();
+                        if (c.material instanceof THREE.Material) {
+                            c.material.dispose();
+                        }
+                    }
+                });
+            });
+            renderer.dispose();
+        };
+    }, [scrollYProgress, activeIdx]);
+
     return (
-        <section id="projects" ref={targetRef} style={{ height: '320vh', position: 'relative', overflow: 'visible' }}>
-            {/* Sticky portal viewport */}
+        <section ref={sectionRef} id="projects" style={{ height: '360vh', position: 'relative', overflow: 'visible' }}>
+            {/* Sticky screen container */}
             <div style={{
                 position: 'sticky',
                 top: 0,
                 height: '100vh',
                 display: 'flex',
-                flexDirection: 'column',
+                alignItems: 'center',
                 justifyContent: 'center',
-                padding: '0 clamp(24px, 5vw, 96px)',
                 overflow: 'hidden'
             }}>
                 
-                {/* Horizontal telemetry bars */}
-                <div style={{ 
-                    position: 'absolute', top: '10%', left: '4%', right: '4%', height: '1px', 
-                    background: 'linear-gradient(to right, rgba(255,255,255,0.06), rgba(0, 245, 255, 0.1), transparent)', 
-                    pointerEvents: 'none' 
+                {/* 3D WebGL Canvas Layer */}
+                <canvas
+                    ref={canvasRef}
+                    style={{
+                        position: 'absolute',
+                        inset: 0,
+                        width: '100%',
+                        height: '100%',
+                        zIndex: 1,
+                        pointerEvents: 'none'
+                    }}
+                />
+
+                {/* Grid Background Accents */}
+                <div style={{
+                    position: 'absolute',
+                    top: '10%', left: '4%', right: '4%', height: '1px',
+                    background: 'linear-gradient(to right, rgba(255,255,255,0.05), var(--accent-cyan), transparent)',
+                    pointerEvents: 'none',
+                    zIndex: 0
                 }} />
 
-                {/* Section Header inside sticky view */}
-                <div style={{ 
-                    width: '100%', 
-                    maxWidth: '1000px', 
-                    margin: '0 auto 40px auto', 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'flex-end',
-                    zIndex: 10
+                {/* Fullscreen Overlay containing Ultra-Minimalist Content */}
+                <div style={{
+                    position: 'relative',
+                    zIndex: 5,
+                    width: '100%',
+                    maxWidth: '1200px',
+                    height: '100%',
+                    padding: '0 clamp(24px, 5vw, 64px)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    paddingTop: '100px',
+                    paddingBottom: '64px',
+                    pointerEvents: 'none' // allow clicking canvas underneath
                 }}>
-                    <div>
-                        <span className="mono-tag" style={{ color: 'var(--accent-purple)' }}>04 // ARCHIVE LOCKER</span>
-                        <h2 style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 800, marginTop: '4px', color: '#fff' }}>
-                            Featured Systems.
-                        </h2>
+                    
+                    {/* Header */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div>
+                            <span className="mono-tag" style={{ color: 'var(--accent-purple)' }}>04 // WEBGL_PROJECT_VAULT</span>
+                            <h2 style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 800, marginTop: '4px', color: '#fff', letterSpacing: '-0.02em' }}>
+                                Featured Systems.
+                            </h2>
+                        </div>
+                        <span className="mono-tag" style={{ color: 'var(--foreground-muted)' }}>
+                            SCROLL_DOWN_TO_TRAVEL_3D
+                        </span>
                     </div>
-                    <span className="mono-tag" style={{ color: 'var(--foreground-muted)' }}>
-                        SCROLL_DOWN_TO_EXPLORE_DECK
-                    </span>
-                </div>
 
-                {/* Core overlapping absolute drawer viewport */}
-                <div style={{ 
-                    position: 'relative', 
-                    width: '100%', 
-                    height: '520px', 
-                    maxWidth: '1000px', 
-                    margin: '0 auto' 
-                }}>
-                    {projects.map((project, idx) => (
-                        <ProjectCard 
-                            key={project.name} 
-                            project={project} 
-                            progress={scrollYProgress} 
-                            index={idx} 
-                        />
-                    ))}
+                    {/* Active Project Highlight Block (Highly Minimalist) */}
+                    <div style={{ pointerEvents: 'auto', alignSelf: 'flex-start', maxWidth: '440px', background: 'rgba(5,5,10,0.8)', border: '1px solid rgba(255,255,255,0.08)', padding: '28px', backdropFilter: 'blur(10px)', borderLeft: `3px solid ${projects[activeIdx].color}` }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span className="mono-tag" style={{ color: projects[activeIdx].color }}>LOCK // {projects[activeIdx].number}</span>
+                            <span style={{ fontSize: '20px' }}>{projects[activeIdx].emoji}</span>
+                        </div>
+                        
+                        <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#fff', margin: '12px 0 6px 0' }}>
+                            {projects[activeIdx].name}
+                        </h3>
+                        
+                        <p style={{ fontSize: '13px', color: 'var(--foreground-muted)', lineHeight: 1.5, margin: 0 }}>
+                            {projects[activeIdx].tagline}
+                        </p>
+
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', margin: '16px 0' }}>
+                            {projects[activeIdx].tech.map((t) => (
+                                <span key={t} style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', padding: '3px 8px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', color: 'var(--foreground-muted)' }}>
+                                    {t}
+                                </span>
+                            ))}
+                        </div>
+
+                        {/* CTA Links */}
+                        <div style={{ display: 'flex', gap: '16px' }}>
+                            {projects[activeIdx].demo && (
+                                <a 
+                                    href={projects[activeIdx].demo!} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700, color: 'var(--accent-cyan)', textDecoration: 'none', borderBottom: '1px dashed var(--accent-cyan)' }}
+                                >
+                                    CORE_DEMO
+                                </a>
+                            )}
+                            <a 
+                                href={projects[activeIdx].code} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700, color: '#fff', textDecoration: 'none', borderBottom: '1px dashed rgba(255,255,255,0.3)' }}
+                            >
+                                SYSTEM_CODE
+                            </a>
+                        </div>
+                    </div>
+
+                    {/* Footer Progress Ticker */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--foreground-muted)' }}>
+                        <div>3D_SECTOR: P_0{activeIdx + 1} // ACTIVE</div>
+                        <div style={{ display: 'flex', gap: '12px' }}>
+                            {projects.map((p, idx) => (
+                                <span key={p.number} style={{ color: idx === activeIdx ? '#fff' : 'var(--foreground-muted)', fontWeight: idx === activeIdx ? 700 : 400 }}>
+                                    {p.number}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </section>

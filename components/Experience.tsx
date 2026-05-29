@@ -11,10 +11,9 @@ const experiences = [
         location: 'GURUGRAM, HARYANA',
         date: 'MAR 2026 – PRESENT',
         points: [
-            'Developing lead generation automation pipelines and REST API integrations for client acquisition workflows at a full-service digital agency.',
-            'Building client-facing web applications using modern JavaScript frameworks; contributing to backend system architecture and deployment.',
-            'Implementing internal dashboards and tooling to automate agency reporting and operational workflows using Python and SQL.',
-            'Working in agile sprint cycles with cross-functional delivery teams across multiple concurrent client projects.'
+            'Developing client lead acquisition pipelines and automation scripts using Python.',
+            'Building responsive JavaScript components for live production web platforms.',
+            'Integrating PostgreSQL and SQL databases to report operational agency metrics.'
         ]
     },
     {
@@ -24,10 +23,9 @@ const experiences = [
         location: 'NOIDA, UTTAR PRADESH',
         date: 'OCT 2025 – MAR 2026',
         points: [
-            'Delivered a production cross-platform mobile application (iOS, Android, Web) serving students and young professionals using Flutter and Dart.',
-            'Architected BLoC-pattern state management with secure local authentication, encrypted session handling, and SQLite-backed persistent storage.',
-            'Shipped 4+ iterative sprint releases over 5 months; contributed to feature scoping, QA testing, and sprint retrospectives in a lean 4-person agile team.',
-            'Optimised widget rendering and cross-platform UI transitions, achieving smooth 60fps performance across device targets.'
+            'Delivered a cross-platform mobile client serving local student networks.',
+            'Architected SQLite local storage schemas and secure session management.',
+            'Optimized Dart widget rendering coordinates for high-frame 60fps transitions.'
         ]
     },
     {
@@ -37,11 +35,9 @@ const experiences = [
         location: 'NOIDA, UTTAR PRADESH',
         date: 'SEP 2025 – PRESENT',
         points: [
-            'Lead 100+ member IEEE student branch; secured ₹1.48L+ in sponsorships across Triverse 3.0 and chapter events through end-to-end sponsor negotiation and contract management.',
-            'Organised Global AI Summit 1.0 & 2.0 — international AI conferences with 3,000–4,000+ total attendees across both editions, featuring industry leaders, researchers, and foreign dignitaries.',
-            'Directed Triverse 3.0, a 3-day inter-college technical and cultural fest with 1,000–2,000 participants across 15+ events.',
-            'Managed 5 cross-functional verticals — events, sponsorship, research, technology, and editorial — across a team of 100+ core members.',
-            'Led branch to 3rd place — IEEE UP Section Best Emerging Student Branch Award 2025.'
+            'Directing a 100+ member vertical hierarchy to compile tech products.',
+            'Secured ₹1.48L+ in operations contracts through structured vendor negotiations.',
+            'Organized Global AI Summit (4,000+ attendees) featuring industry researchers.'
         ]
     },
     {
@@ -51,7 +47,7 @@ const experiences = [
         location: 'NOIDA, UTTAR PRADESH',
         date: 'SEP 2024 – OCT 2025',
         points: [
-            'Contributed to technical event planning, speaker coordination, and member onboarding across IEEE and Computer Society of India chapters.'
+            'Supported technical onboarding operations and local research coordinate scoping.'
         ]
     }
 ];

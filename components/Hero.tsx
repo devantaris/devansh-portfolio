@@ -179,7 +179,7 @@ export default function Hero() {
                                 margin: 0
                             }}
                         >
-                            From real-time <span style={{ color: '#fff', fontWeight: 600 }}>fraud intelligence engines</span> calibrated on extreme dimensional bootstrap vectors, to decentralized peer learning systems and cross-platform mobile frameworks. Architecting for robustness, shipping clean, deterministic systems.
+                            Architecting systems that think. Calibrating real-time <span style={{ color: '#fff', fontWeight: 600 }}>fraud engines</span>, decentralized credit economies, and local-first microservices in high-science telemetry.
                         </motion.p>
 
                         {/* Asymmetrical HUD Telemetry Wrapper */}

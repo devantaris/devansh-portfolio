@@ -70,7 +70,7 @@ export default function AboutBento() {
                                 Who is Devansh Kumar?
                             </h3>
                             <p style={{ fontSize: '15px', color: 'var(--foreground-muted)', lineHeight: 1.8, marginBottom: '24px' }}>
-                                I construct computational tools. My work merges ML optimization pipelines, scalable relational database designs, and immersive visual layouts. I serve as the Chairperson of the IEEE Student Branch at Bennett University, leading over 100 developers in building local systems and global tech summits.
+                                I design computational tools. Merging machine learning pipelines, relational schemas, and WebGL visualizations. I chair the IEEE Bennett Student branch, coordinating 100+ developers.
                             </p>
                             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                                 <div style={{ border: '1px solid rgba(255,255,255,0.06)', padding: '12px 20px', background: 'rgba(255,255,255,0.01)', flex: '1 1 120px' }}>
@@ -100,10 +100,10 @@ export default function AboutBento() {
                             </h3>
                             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
                                 {[
-                                    { title: 'SYSTEMS OVER PREDICTIONS', desc: 'Models fail; architecture should insulate against mathematical thresholds.' },
-                                    { title: 'ARCHITECTURE BEFORE CODE', desc: 'Draft clean systems bounds before allocating computing stacks.' },
-                                    { title: 'FAILURE BY DESIGN', desc: 'Optimize pipelines for the non-ideal, catastrophic boundary cases.' },
-                                    { title: 'EXPLICIT TRADE-OFF WEIGHTS', desc: 'Balance scale bottlenecks against memory boundaries quantitatively.' }
+                                    { title: 'SYSTEMS OVER PREDICTIONS', desc: 'Architecture must insulate against mathematical threshold failures.' },
+                                    { title: 'ARCHITECTURE BEFORE CODE', desc: 'Draft rigid structural boundaries before allocating compute stacks.' },
+                                    { title: 'FAILURE BY DESIGN', desc: 'Optimize logic loops exclusively for non-ideal edge coordinates.' },
+                                    { title: 'QUANTIFIED TRADE-OFFS', desc: 'Explicitly balance execution speed against resource boundaries.' }
                                 ].map((phil, i) => (
                                     <li key={i} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontFamily: 'var(--font-mono)', fontSize: '11px', fontWeight: 700, color: '#fff' }}>
