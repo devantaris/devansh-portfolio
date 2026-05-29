@@ -146,3 +146,13 @@ h1, h2, h3, h4 {
   border-color: var(--foreground);
   transform: translateY(-1px);
 }
+
+/* Projects Section Responsive Helpers */
+@media (min-width: 1024px) {
+  .index-title {
+    display: inline-block !important;
+  }
+  .scroll-hint {
+    display: inline-block !important;
+  }
+}
