@@ -28,15 +28,21 @@ export default function Navigation() {
     }, [isOpen]);
 
     const menuItems = [
-        { name: 'ABOUT THE ENGINE', href: '#about', number: '01' },
+        { name: 'ABOUT & PROFILE', href: '#about', number: '01' },
         { name: 'FEATURED PROJECTS', href: '#projects', number: '02' },
-        { name: 'SYSTEM METRICS', href: '#stats', number: '03' },
-        { name: 'INTJ INTELLECTS', href: '#blog', number: '04' },
+        { name: 'CAREER CHRONOLOGY', href: '#experience', number: '03' },
+        { name: 'PUBLICATIONS & RESEARCH', href: '#blog', number: '04' },
+        { name: 'SYSTEM METRICS', href: '#stats', number: '05' },
+        { name: 'LIVE RESUME ↗', href: 'https://devantaris.github.io', number: '06', external: true },
     ];
 
-    const handleNavigate = (href: string) => {
+    const handleNavigate = (item: { href: string; external?: boolean }) => {
         setIsOpen(false);
-        const element = document.querySelector(href);
+        if (item.external) {
+            window.open(item.href, '_blank', 'noopener,noreferrer');
+            return;
+        }
+        const element = document.querySelector(item.href);
         if (element) {
             // Delay scrolling slightly to allow exit animation to begin
             setTimeout(() => {
@@ -99,59 +105,97 @@ export default function Navigation() {
                         DEVANSH.KUMAR // CORE
                     </button>
 
-                    {/* Kinetic Menu Trigger Button */}
-                    <button
-                        onClick={() => setIsOpen(!isOpen)}
-                        style={{
-                            pointerEvents: 'auto',
-                            width: '48px',
-                            height: '48px',
-                            borderRadius: '50%',
-                            border: '1px solid rgba(255,255,255,0.08)',
-                            background: 'rgba(5, 5, 10, 0.85)',
-                            backdropFilter: 'blur(12px)',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '4px',
-                            transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.borderColor = 'var(--accent-purple)';
-                            e.currentTarget.style.boxShadow = '0 0 15px rgba(189, 0, 255, 0.15)';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
-                            e.currentTarget.style.boxShadow = 'none';
-                        }}
-                    >
-                        <span style={{
-                            display: 'block',
-                            width: '16px',
-                            height: '2px',
-                            background: '#fff',
-                            transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                            transform: isOpen ? 'rotate(45deg) translateY(4.2px)' : 'none'
-                        }} />
-                        <span style={{
-                            display: 'block',
-                            width: '16px',
-                            height: '2px',
-                            background: '#fff',
-                            transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                            opacity: isOpen ? 0 : 1
-                        }} />
-                        <span style={{
-                            display: 'block',
-                            width: '16px',
-                            height: '2px',
-                            background: '#fff',
-                            transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                            transform: isOpen ? 'rotate(-45deg) translateY(-4.2px)' : 'none'
-                        }} />
-                    </button>
+                    {/* Right Controls: Resume Pill + Kinetic Menu Trigger Button */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', pointerEvents: 'auto' }}>
+                        <a
+                            href="https://devantaris.github.io"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                                fontFamily: 'var(--font-mono)',
+                                fontSize: '11px',
+                                fontWeight: 700,
+                                letterSpacing: '0.12em',
+                                color: 'var(--accent-cyan)',
+                                border: '1px solid rgba(0, 245, 255, 0.3)',
+                                borderRadius: '99px',
+                                padding: '10px 20px',
+                                background: 'rgba(5, 5, 10, 0.85)',
+                                backdropFilter: 'blur(12px)',
+                                cursor: 'pointer',
+                                textDecoration: 'none',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.borderColor = 'var(--accent-cyan)';
+                                e.currentTarget.style.boxShadow = '0 0 16px rgba(0, 245, 255, 0.25)';
+                                e.currentTarget.style.background = 'rgba(0, 245, 255, 0.1)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.borderColor = 'rgba(0, 245, 255, 0.3)';
+                                e.currentTarget.style.boxShadow = 'none';
+                                e.currentTarget.style.background = 'rgba(5, 5, 10, 0.85)';
+                            }}
+                        >
+                            RESUME ↗
+                        </a>
+
+                        <button
+                            onClick={() => setIsOpen(!isOpen)}
+                            aria-label="Toggle navigation menu"
+                            style={{
+                                width: '48px',
+                                height: '48px',
+                                borderRadius: '50%',
+                                border: '1px solid rgba(255,255,255,0.08)',
+                                background: 'rgba(5, 5, 10, 0.85)',
+                                backdropFilter: 'blur(12px)',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '4px',
+                                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.borderColor = 'var(--accent-purple)';
+                                e.currentTarget.style.boxShadow = '0 0 15px rgba(189, 0, 255, 0.15)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+                                e.currentTarget.style.boxShadow = 'none';
+                            }}
+                        >
+                            <span style={{
+                                display: 'block',
+                                width: '16px',
+                                height: '2px',
+                                background: '#fff',
+                                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                                transform: isOpen ? 'rotate(45deg) translateY(4.2px)' : 'none'
+                            }} />
+                            <span style={{
+                                display: 'block',
+                                width: '16px',
+                                height: '2px',
+                                background: '#fff',
+                                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                                opacity: isOpen ? 0 : 1
+                            }} />
+                            <span style={{
+                                display: 'block',
+                                width: '16px',
+                                height: '2px',
+                                background: '#fff',
+                                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                                transform: isOpen ? 'rotate(-45deg) translateY(-4.2px)' : 'none'
+                            }} />
+                        </button>
+                    </div>
                 </div>
             </motion.header>
 
@@ -209,7 +253,7 @@ export default function Navigation() {
                                     transition={{ duration: 0.6, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
                                 >
                                     <button
-                                        onClick={() => handleNavigate(item.href)}
+                                        onClick={() => handleNavigate(item)}
                                         style={{
                                             background: 'none',
                                             border: 'none',
@@ -291,11 +335,12 @@ export default function Navigation() {
                                 </button>
                             </div>
                             
-                            <div style={{ display: 'flex', gap: '20px' }}>
+                            <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
                                 <a 
                                     href="https://github.com/devantaris" 
                                     target="_blank" 
                                     rel="noopener noreferrer"
+                                    title="GitHub"
                                     style={{ color: '#8b889e', textDecoration: 'none', transition: 'color 0.2s' }}
                                     onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
                                     onMouseLeave={(e) => e.currentTarget.style.color = '#8b889e'}
@@ -303,14 +348,26 @@ export default function Navigation() {
                                     <GithubIcon />
                                 </a>
                                 <a 
-                                    href="https://www.linkedin.com/in/devansh-kumar-3b3701217/" 
+                                    href="https://linkedin.com/in/devansh-kumar-3b3701217" 
                                     target="_blank" 
                                     rel="noopener noreferrer"
+                                    title="LinkedIn"
                                     style={{ color: '#8b889e', textDecoration: 'none', transition: 'color 0.2s' }}
                                     onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
                                     onMouseLeave={(e) => e.currentTarget.style.color = '#8b889e'}
                                 >
                                     <LinkedInIcon />
+                                </a>
+                                <a 
+                                    href="https://leetcode.com/u/vantaris/" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    title="LeetCode"
+                                    style={{ color: '#8b889e', textDecoration: 'none', transition: 'color 0.2s' }}
+                                    onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
+                                    onMouseLeave={(e) => e.currentTarget.style.color = '#8b889e'}
+                                >
+                                    <LeetCodeIcon />
                                 </a>
                             </div>
                         </div>
@@ -322,6 +379,12 @@ export default function Navigation() {
         </>
     );
 }
+
+const LeetCodeIcon = () => (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.874 5.874 0 0 0 .349 1.017 5.938 5.938 0 0 0 .482.849l.015.02.003.003.006.007a5.975 5.975 0 0 0 2.213 1.968c.28.14.57.257.869.349.336.104.685.167 1.04.187.355.02.713-.002 1.066-.065.354-.063.698-.168 1.026-.312l3.41-1.636a1.375 1.375 0 0 0 .234-2.392 1.38 1.38 0 0 0-1.488-.04l-3.324 1.595a3.195 3.195 0 0 1-1.89.263 3.18 3.18 0 0 1-1.68-.973 3.193 3.193 0 0 1-.77-1.785 3.196 3.196 0 0 1 .425-2.007l3.633-3.89 4.795-5.132a1.377 1.377 0 0 0-.05-1.928A1.374 1.374 0 0 0 13.483 0zm1.75 6.842a1.376 1.376 0 0 0-.974.404L9.043 12.57a1.376 1.376 0 0 0 1.945 1.945l5.216-5.324a1.376 1.376 0 0 0-.971-2.349zM18.84 9.07a1.375 1.375 0 0 0-1.016.452l-7.79 8.35a1.376 1.376 0 1 0 2.012 1.876l7.79-8.35a1.375 1.375 0 0 0-.996-2.328z"/>
+    </svg>
+);
 
 const GithubIcon = () => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">

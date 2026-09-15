@@ -18,6 +18,12 @@ const LinkedInIcon = () => (
     </svg>
 );
 
+const LeetCodeIcon = () => (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.874 5.874 0 0 0 .349 1.017 5.938 5.938 0 0 0 .482.849l.015.02.003.003.006.007a5.975 5.975 0 0 0 2.213 1.968c.28.14.57.257.869.349.336.104.685.167 1.04.187.355.02.713-.002 1.066-.065.354-.063.698-.168 1.026-.312l3.41-1.636a1.375 1.375 0 0 0 .234-2.392 1.38 1.38 0 0 0-1.488-.04l-3.324 1.595a3.195 3.195 0 0 1-1.89.263 3.18 3.18 0 0 1-1.68-.973 3.193 3.193 0 0 1-.77-1.785 3.196 3.196 0 0 1 .425-2.007l3.633-3.89 4.795-5.132a1.377 1.377 0 0 0-.05-1.928A1.374 1.374 0 0 0 13.483 0zm1.75 6.842a1.376 1.376 0 0 0-.974.404L9.043 12.57a1.376 1.376 0 0 0 1.945 1.945l5.216-5.324a1.376 1.376 0 0 0-.971-2.349zM18.84 9.07a1.375 1.375 0 0 0-1.016.452l-7.79 8.35a1.376 1.376 0 1 0 2.012 1.876l7.79-8.35a1.375 1.375 0 0 0-.996-2.328z"/>
+    </svg>
+);
+
 const MailIcon = () => (
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <rect x="2" y="4" width="20" height="16" rx="2" />
@@ -49,7 +55,7 @@ export default function Hero() {
                 padding: 'clamp(80px, 12vw, 160px) 0'
             }}
         >
-            {/* Ambient attractor field situated perfectly in background */}
+            {/* Ambient attractor field situated in background */}
             <div style={{
                 position: 'absolute',
                 right: '10%',
@@ -90,7 +96,7 @@ export default function Hero() {
                             <div style={{ width: '32px', height: '1px', background: 'var(--border-strong)' }} />
                         </div>
 
-                        {/* Whisper-Thin Editorial Header (Fraunces weight 200) */}
+                        {/* Whisper-Thin Editorial Header */}
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -122,22 +128,22 @@ export default function Hero() {
                                 fontWeight: 300,
                                 lineHeight: 1.7,
                                 color: 'var(--foreground-muted)',
-                                maxWidth: '440px',
+                                maxWidth: '460px',
                                 margin: 0
                             }}
                         >
-                            Full-stack engineer with production ML, mobile, and systems work — from a 99.8%-precision fraud classifier serving 45ms p99 to a 60fps cross-platform OTT client. IEEE Student Branch Chair, leading a 100-person technical org.
+                            B.Tech CSE at Bennett University (CGPA 8.75) with production systems experience. First-author researcher on staged uncertainty-aware fraud decisioning (284K+ transactions, 100% DECLINE precision). IEEE Student Branch Chairperson leading 100+ engineers.
                         </motion.p>
 
                         {/* Telemetry Links in Space-Mono */}
-                        <div style={{ display: 'flex', gap: '24px', alignItems: 'center', fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--foreground-muted)' }}>
-                            <span>Python · TypeScript · Flutter · SQL</span>
+                        <div style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap', fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--foreground-muted)' }}>
+                            <span>Python · FastAPI · PostgreSQL · Docker · Next.js</span>
                             <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'var(--border-strong)' }} />
-                            <span>IEEE Chair · Open to roles</span>
+                            <span>IEEE BU Chair · Open to Opportunities</span>
                         </div>
 
-                        {/* Delicate CTA elements */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap', marginTop: '16px' }}>
+                        {/* CTAs */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', marginTop: '16px' }}>
                             <a 
                                 href="mailto:work.devanshkumar@gmail.com"
                                 className="glow-btn"
@@ -148,18 +154,30 @@ export default function Hero() {
                             </a>
 
                             <a 
-                                href="/Devansh_Kumar_Resume_1Page.pdf"
+                                href="https://devantaris.github.io"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="glow-btn"
-                                style={{ borderColor: 'var(--border)' }}
+                                style={{ borderColor: 'var(--accent-cyan)', color: 'var(--accent-cyan)', display: 'flex', alignItems: 'center', gap: '6px' }}
                             >
-                                Download Resume
+                                View Resume ↗
+                            </a>
+
+                            <a 
+                                href="/Devansh_Kumar_Resume_1Page.pdf"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                download="Devansh_Kumar_Resume.pdf"
+                                className="glow-btn"
+                                style={{ borderColor: 'var(--border)', color: 'var(--foreground-muted)' }}
+                                title="Download Offline 1-Page PDF"
+                            >
+                                PDF ↓
                             </a>
                         </div>
                     </div>
 
-                    {/* Right Column: Premium tall portrait photograph of Devansh (IMG_0119@8932004.JPG) */}
+                    {/* Right Column: Premium portrait photograph of Devansh */}
                     <div style={{ display: 'flex', justifyContent: 'flex-end', position: 'relative' }}>
                         <motion.div
                             initial={{ opacity: 0, scale: 0.98 }}
@@ -183,13 +201,14 @@ export default function Hero() {
                             {/* Vertical Frame layout */}
                             <div style={{ position: 'relative', width: '100%', height: '440px', overflow: 'hidden' }}>
                                 <Image
-                                    src="/images/IMG_0119@8932004.JPG"
+                                    src="/images/devansh-portrait.png"
                                     alt="Devansh Kumar Portrait"
                                     fill
                                     priority
                                     style={{
                                         objectFit: 'cover',
-                                        filter: 'grayscale(100%) contrast(1.05) brightness(0.92)' // Luxury editorial monochrome
+                                        objectPosition: 'center top',
+                                        filter: 'grayscale(100%) contrast(1.06) brightness(0.96)' // Luxury editorial monochrome
                                     }}
                                 />
                             </div>
@@ -200,15 +219,18 @@ export default function Hero() {
                                         DEVANSH KUMAR
                                     </div>
                                     <div style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', color: 'var(--foreground-muted)', marginTop: '2px' }}>
-                                        SYSTEMS INTEGRATION // 01
+                                        BENNETT UNIV // CGPA 8.75 // IEEE BU
                                     </div>
                                 </div>
-                                <div style={{ display: 'flex', gap: '12px' }}>
-                                    <a href="https://github.com/devantaris" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--foreground-muted)' }}>
+                                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                    <a href="https://github.com/devantaris" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--foreground-muted)', transition: 'color 0.2s' }} title="GitHub" onMouseEnter={(e) => e.currentTarget.style.color = '#fff'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--foreground-muted)'}>
                                         <GithubIcon />
                                     </a>
-                                    <a href="https://www.linkedin.com/in/devansh-kumar-3b3701217/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--foreground-muted)' }}>
+                                    <a href="https://linkedin.com/in/devansh-kumar-3b3701217" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--foreground-muted)', transition: 'color 0.2s' }} title="LinkedIn" onMouseEnter={(e) => e.currentTarget.style.color = '#fff'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--foreground-muted)'}>
                                         <LinkedInIcon />
+                                    </a>
+                                    <a href="https://leetcode.com/u/vantaris/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--foreground-muted)', transition: 'color 0.2s' }} title="LeetCode" onMouseEnter={(e) => e.currentTarget.style.color = '#fff'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--foreground-muted)'}>
+                                        <LeetCodeIcon />
                                     </a>
                                 </div>
                             </div>

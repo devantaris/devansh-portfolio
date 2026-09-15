@@ -2,67 +2,68 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 import * as THREE from 'three';
 
 const projects = [
     {
         number: '01',
-        name: 'MARI — ML Fraud Engine',
-        tagline: 'Real-time payment anomaly detection. 99.8% precision at 45ms p99 latency.',
-        tech: ['Python', 'XGBoost', 'FastAPI', 'PostgreSQL', 'Scikit-learn'],
+        name: 'MARI — Staged Fraud Engine',
+        tagline: 'Staged uncertainty-aware decisioning pipeline routing 284k+ transactions. 100% DECLINE precision.',
+        tech: ['Python', 'FastAPI', 'XGBoost', 'Calibrated SVM', 'Dempster-Shafer', 'SHAP', 'PostgreSQL'],
         demo: 'https://mari-alpha.vercel.app',
         code: 'https://github.com/devantaris/mari',
         color: '#00e5ff',
-        impact: '284k transactions · 99.8% precision · 45ms p99',
+        impact: '284k txns · 100% DECLINE precision · 86.73% recall · Sub-100ms',
         specs: [
-            'Trained XGBoost classifier on 284k labelled payment records; tuned via Bayesian hyperparameter search to achieve 99.8% precision and 0.2% false-positive rate.',
-            'Served predictions through a FastAPI async inference endpoint; benchmarked at 45ms p99 on t3.medium with connection-pooled PostgreSQL write-backs.',
-            'Engineered feature pipeline with StandardScaler normalisation and SMOTE oversampling to handle severe class imbalance (fraud ≈ 0.17% of dataset).',
+            'Architected a 4-component staged decisioning pipeline routing 284K+ transactions through distinct uncertainty layers: V1 (abstention-aware XGBoost ensemble router with Isolation Forest novelty detection), V2 (calibrated SVM second-opinion for epistemic uncertainty resolution), V3 (Dempster-Shafer belief fusion across 3 independent evidence sources), and V4 (SHAP-backed structured deferral replacing human queues).',
+            'Achieved 100% automation rate (101 → 92 → 72 → 0 human review cases across stages), 86.73% fraud recall, 100% DECLINE precision (zero false blocks on legitimate transactions); deployed FastAPI REST API with sub-100ms inference.',
+            'Designed cost-aware routing architecture with formal BPA-to-Belief/Plausibility/Ignorance extraction, isotonic calibration (74.4% Brier reduction), and machine-readable PEND reason codes per transaction.',
         ],
     },
     {
         number: '02',
-        name: 'Flutter OTT Platform',
-        tagline: 'Cross-platform streaming client shipping to Android & iOS with offline-first architecture.',
-        tech: ['Flutter', 'Dart', 'BLoC', 'SQLite', 'REST API'],
-        demo: null,
-        code: 'https://github.com/devantaris/flutter-ott-app',
-        color: '#b500fa',
-        impact: '60fps · Offline-first · BLoC state mgmt',
+        name: 'EduSupervision — AI Platform',
+        tagline: 'Scalable institutional platform for teacher training & evaluation with semantic vector search.',
+        tech: ['Next.js 14', 'React 19', 'FastAPI', 'PostgreSQL 16', 'pgvector', 'Redis', 'Celery', 'Docker'],
+        demo: 'https://edu-supervision.vercel.app',
+        code: 'https://github.com/devantaris/edu-supervision',
+        color: '#a0ff60',
+        impact: 'pgvector semantic search · Celery + Redis queues · RBAC · Docker Compose',
         specs: [
-            'Offline-first media client using SQLite WAL mode for zero-read-latency episode caching; cold launch under 800ms on mid-range Android.',
-            'Strict BLoC separation — UI layer carries zero business logic; state transitions are pure functions enabling deterministic unit tests.',
-            'Consistent 60fps on 120Hz displays via RepaintBoundary isolation and Flutter DevTools profiling; GPU frame budget under 6ms.',
+            'Built a scalable platform for teacher training & evaluation with async FastAPI backend, PostgreSQL with pgvector for semantic plagiarism detection, and Celery + Redis task queue for background AI inference and OCR jobs.',
+            'Designed RBAC system (Super Admin / Institution Admin / Teacher) with RS256 JWT auth, PgBouncer connection pooling, SQLAlchemy 2.0 async ORM; containerized full stack with Docker Compose.',
+            'Implemented real-time job status streaming, automated performance scorecard generation, and administrative audit logging.',
         ],
     },
     {
         number: '03',
-        name: 'Biome — Electron Desktop',
-        tagline: 'Procedural focus environment shipped as a native desktop app via Electron + React.',
-        tech: ['React', 'TypeScript', 'Electron', 'Firebase', 'Canvas API'],
+        name: 'CryptoFlow — Medical Pipeline',
+        tagline: '5-stage cryptographic pipeline for multimodal medical data with cross-modal HMAC binding.',
+        tech: ['Python', 'AES-256-GCM', 'HMAC-SHA-256', 'RSA-OAEP', 'DICOM', 'Pytest', 'Typer CLI'],
         demo: null,
-        code: 'https://github.com/devantaris/Biome',
+        code: 'https://github.com/devantaris/cryptoflow',
         color: '#ff5500',
-        impact: 'Native IPC bridge · Firestore sync · Procedural renderer',
+        impact: '120+ MB/s encryption · <0.1% overhead · 100% defense across 7 attack vectors',
         specs: [
-            'Bidirectional Electron IPC channel exposing OS-level idle detection and notification APIs to the React renderer without remote-module security holes.',
-            'Procedural world renderer using Canvas 2D API — generates deterministic environments from a user seed, ensuring identical scenes across sessions.',
-            'Firestore real-time listeners for cross-device session persistence; optimistic UI updates with rollback on snapshot conflict.',
+            'Engineered a 5-stage cryptographic pipeline for multimodal medical data (DICOM, EHR, reports) achieving 120+ MB/s encryption and 130+ MB/s decryption with <0.1% storage overhead.',
+            'Custom binary container format with cross-modal HMAC binding to prevent splicing attacks; RSA-OAEP digital envelope for secure key transit.',
+            'Built empirical threat simulator validating 100% defense across 7 attack vectors (bit flip, intra-bundle swap, cross-patient swap, truncation, injection, manifest forgery, key mismatch).',
         ],
     },
     {
         number: '04',
-        name: 'SkillSync — P2P Exchange',
-        tagline: 'Decentralised peer course-credit marketplace with RLS-secured ledger and Razorpay checkout.',
-        tech: ['React', 'Node.js', 'Supabase', 'PostgreSQL', 'Razorpay'],
-        demo: 'https://skill-sync-steel-rho.vercel.app',
-        code: 'https://github.com/devantaris/SkillSync',
-        color: '#a0ff60',
-        impact: 'RLS row security · Double-entry ledger · Webhook verified',
+        name: 'Raahi — Mobile Client',
+        tagline: 'Cross-platform mobile application shipped across 4+ sprints with BLoC state management and SQLite.',
+        tech: ['Flutter', 'Dart', 'BLoC', 'SQLite', 'REST APIs'],
+        demo: null,
+        code: 'https://github.com/devantaris/flutter-ott-app',
+        color: '#b500fa',
+        impact: '60fps rendering · Offline-first · BLoC state mgmt · 4+ sprint releases',
         specs: [
-            'Double-entry credit ledger in PostgreSQL with ACID transactions and trigger-enforced balance invariants — zero credit can be created or destroyed.',
-            'Supabase Row Level Security policies; users can only read/write their own rows, enforced at DB level independent of API logic.',
-            'Razorpay checkout with HMAC-SHA256 webhook signature verification; payment state machine prevents partial fulfilment on network failures.',
+            'Delivered a production cross-platform mobile app (iOS, Android, Web) with BLoC state management, secure auth, and SQLite persistence.',
+            'Shipped 4+ sprint releases in a lean team following full SDLC practices, integrating real-time telemetry and state caching.',
+            'Consistent 60fps on 120Hz displays via RepaintBoundary isolation; GPU frame budget under 6ms.',
         ],
     },
 ];
@@ -449,32 +450,66 @@ export default function Projects() {
                             ))}
                         </div>
 
-                        <button
-                            onClick={() => setInspectedProj(activeIdx)}
-                            style={{
-                                background: 'transparent',
-                                border: `1px solid ${proj.color}55`,
-                                color: proj.color,
-                                fontFamily: 'var(--font-mono)',
-                                fontSize: '9px',
-                                letterSpacing: '0.12em',
-                                padding: '9px 18px',
-                                cursor: 'pointer',
-                                borderRadius: '2px',
-                                transition: 'all 0.25s ease',
-                                textTransform: 'uppercase',
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.background = `${proj.color}18`;
-                                e.currentTarget.style.borderColor = proj.color;
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.background = 'transparent';
-                                e.currentTarget.style.borderColor = `${proj.color}55`;
-                            }}
-                        >
-                            View Technical Details
-                        </button>
+                        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+                            <button
+                                onClick={() => setInspectedProj(activeIdx)}
+                                style={{
+                                    background: 'transparent',
+                                    border: `1px solid ${proj.color}55`,
+                                    color: proj.color,
+                                    fontFamily: 'var(--font-mono)',
+                                    fontSize: '9px',
+                                    letterSpacing: '0.12em',
+                                    padding: '9px 18px',
+                                    cursor: 'pointer',
+                                    borderRadius: '2px',
+                                    transition: 'all 0.25s ease',
+                                    textTransform: 'uppercase',
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background = `${proj.color}18`;
+                                    e.currentTarget.style.borderColor = proj.color;
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background = 'transparent';
+                                    e.currentTarget.style.borderColor = `${proj.color}55`;
+                                }}
+                            >
+                                View Technical Details
+                            </button>
+
+                            <Link
+                                href="/projects"
+                                style={{
+                                    background: 'rgba(255,255,255,0.03)',
+                                    border: '1px solid rgba(255,255,255,0.14)',
+                                    color: 'rgba(255,255,255,0.7)',
+                                    fontFamily: 'var(--font-mono)',
+                                    fontSize: '9px',
+                                    letterSpacing: '0.12em',
+                                    padding: '9px 18px',
+                                    borderRadius: '2px',
+                                    textDecoration: 'none',
+                                    transition: 'all 0.25s ease',
+                                    textTransform: 'uppercase',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '6px'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+                                    e.currentTarget.style.color = '#fff';
+                                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                                    e.currentTarget.style.color = 'rgba(255,255,255,0.7)';
+                                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.14)';
+                                }}
+                            >
+                                All Projects Archive →
+                            </Link>
+                        </div>
                     </motion.div>
 
                     {/* Footer progress dots */}

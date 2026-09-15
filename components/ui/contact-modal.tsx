@@ -174,6 +174,18 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                                         </div>
                                     </a>
                                 </div>
+
+                                <div className="text-center pt-2 border-t border-white/5 flex items-center justify-center gap-2">
+                                    <span className="text-xs text-zinc-500">Need full credentials & academic records?</span>
+                                    <a
+                                        href="https://devantaris.github.io"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-xs text-cyan-400 hover:text-cyan-300 font-mono flex items-center gap-1 transition-colors"
+                                    >
+                                        devantaris.github.io ↗
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </motion.div>

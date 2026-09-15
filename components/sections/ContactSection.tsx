@@ -14,6 +14,12 @@ const LinkedInIcon = () => (
     </svg>
 );
 
+const LeetCodeIcon = () => (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.874 5.874 0 0 0 .349 1.017 5.938 5.938 0 0 0 .482.849l.015.02.003.003.006.007a5.975 5.975 0 0 0 2.213 1.968c.28.14.57.257.869.349.336.104.685.167 1.04.187.355.02.713-.002 1.066-.065.354-.063.698-.168 1.026-.312l3.41-1.636a1.375 1.375 0 0 0 .234-2.392 1.38 1.38 0 0 0-1.488-.04l-3.324 1.595a3.195 3.195 0 0 1-1.89.263 3.18 3.18 0 0 1-1.68-.973 3.193 3.193 0 0 1-.77-1.785 3.196 3.196 0 0 1 .425-2.007l3.633-3.89 4.795-5.132a1.377 1.377 0 0 0-.05-1.928A1.374 1.374 0 0 0 13.483 0zm1.75 6.842a1.376 1.376 0 0 0-.974.404L9.043 12.57a1.376 1.376 0 0 0 1.945 1.945l5.216-5.324a1.376 1.376 0 0 0-.971-2.349zM18.84 9.07a1.375 1.375 0 0 0-1.016.452l-7.79 8.35a1.376 1.376 0 1 0 2.012 1.876l7.79-8.35a1.375 1.375 0 0 0-.996-2.328z"/>
+    </svg>
+);
+
 export default function ContactSection() {
     return (
         <footer 
@@ -81,28 +87,49 @@ export default function ContactSection() {
                         {/* Social telemetries */}
                         <div>
                             <span className="mono-tag" style={{ color: 'var(--foreground-muted)', display: 'block', marginBottom: '16px' }}>NETWORK_HANDSHAKES</span>
-                            <div style={{ display: 'flex', gap: '16px' }}>
+                            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                                 <a
                                     href="https://github.com/devantaris"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="glow-btn"
-                                    style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 120px', justifyContent: 'center' }}
+                                    style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 100px', justifyContent: 'center' }}
                                     aria-label="GitHub"
                                 >
                                     <GithubIcon />
                                     GITHUB
                                 </a>
                                 <a
-                                    href="https://www.linkedin.com/in/devansh-kumar-3b3701217/"
+                                    href="https://linkedin.com/in/devansh-kumar-3b3701217"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="glow-btn"
-                                    style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 120px', justifyContent: 'center', borderColor: 'var(--border-strong)' }}
+                                    style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 100px', justifyContent: 'center', borderColor: 'var(--border-strong)' }}
                                     aria-label="LinkedIn"
                                 >
                                     <LinkedInIcon />
                                     LINKEDIN
+                                </a>
+                                <a
+                                    href="https://leetcode.com/u/vantaris/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="glow-btn"
+                                    style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 100px', justifyContent: 'center', borderColor: 'var(--border-strong)' }}
+                                    aria-label="LeetCode"
+                                >
+                                    <LeetCodeIcon />
+                                    LEETCODE
+                                </a>
+                                <a
+                                    href="https://devantaris.github.io"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="glow-btn"
+                                    style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: '1 1 120px', justifyContent: 'center', borderColor: 'var(--accent-cyan)', color: 'var(--accent-cyan)' }}
+                                    aria-label="Live Resume"
+                                >
+                                    RESUME ↗
                                 </a>
                             </div>
                         </div>

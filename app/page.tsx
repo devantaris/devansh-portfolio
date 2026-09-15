@@ -13,9 +13,14 @@ import GitHubStats from '@/components/sections/GitHubStats';
 import Blog from '@/components/sections/Blog';
 import ContactSection from '@/components/sections/ContactSection';
 import LoadingScreen from '@/components/LoadingScreen';
+import CommandPalette from '@/components/ui/CommandPalette';
+import MariSimulatorModal from '@/components/ui/MariSimulatorModal';
+import ContactModal from '@/components/ui/contact-modal';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
+  const [isMariOpen, setIsMariOpen] = useState(false);
+  const [isContactOpen, setIsContactOpen] = useState(false);
 
   return (
     <>
@@ -50,11 +55,29 @@ export default function Home() {
           {/* Open source telemetry charts */}
           <GitHubStats />
           
-          {/* Intellectual published articles list */}
+          {/* Intellectual published articles & research */}
           <Blog />
           
           {/* Communication encryption node footer */}
           <ContactSection />
+
+          {/* Quick Command Palette (Cmd+K) */}
+          <CommandPalette 
+            onOpenMariSimulator={() => setIsMariOpen(true)}
+            onOpenContactModal={() => setIsContactOpen(true)}
+          />
+
+          {/* Interactive MARI Decision Simulator Modal */}
+          <MariSimulatorModal 
+            isOpen={isMariOpen}
+            onClose={() => setIsMariOpen(false)}
+          />
+
+          {/* Secure Contact Channel Modal */}
+          <ContactModal 
+            isOpen={isContactOpen}
+            onClose={() => setIsContactOpen(false)}
+          />
         </main>
       )}
     </>

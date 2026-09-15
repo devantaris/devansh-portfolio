@@ -34,7 +34,7 @@ export default function AboutBento() {
                             </h2>
                         </motion.div>
 
-                        {/* Monochrome photo IMG_0166@9583858.JPG in a premium sleek vertical crop */}
+                        {/* Real photo devansh-award.png in a premium sleek crop */}
                         <motion.div 
                             {...fadeUp(0.15)}
                             style={{ 
@@ -42,25 +42,41 @@ export default function AboutBento() {
                                 width: '100%', 
                                 height: '360px', 
                                 overflow: 'hidden', 
-                                border: '1px solid var(--border)' 
+                                border: '1px solid var(--border)',
+                                background: '#07070b'
                             }}
                         >
                             <Image
-                                src="/images/IMG_0166@9583858.JPG"
-                                alt="Devansh Kumar Monochrome Capture"
+                                src="/images/devansh-award.png"
+                                alt="Devansh Kumar Academic Recognition at Bennett University"
                                 fill
                                 style={{
                                     objectFit: 'cover',
+                                    objectPosition: 'center 30%',
                                     filter: 'grayscale(100%) contrast(1.1) brightness(0.95)' // Luxury desaturated portrait
                                 }}
                             />
+                            <div style={{
+                                position: 'absolute',
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                padding: '8px 12px',
+                                background: 'linear-gradient(to top, rgba(2,2,4,0.95), transparent)',
+                                fontFamily: 'var(--font-mono)',
+                                fontSize: '8px',
+                                color: 'var(--accent-cyan)',
+                                letterSpacing: '0.1em'
+                            }}>
+                                // BENNETT UNIVERSITY · ACADEMIC RECOGNITION
+                            </div>
                         </motion.div>
 
                         <motion.p 
                             {...fadeUp(0.2)}
                             style={{ fontSize: '15px', color: 'var(--foreground-muted)', fontWeight: 300, lineHeight: 1.7, margin: 0, fontFamily: 'var(--font-sans)', maxWidth: '440px' }}
                         >
-                            Merging machine learning pipelines, secure relational database designs, and custom graphical visualizations. Applying INTJ systems reasoning directly into clean, robust production coordinates.
+                            B.Tech Computer Science student at Bennett University (CGPA 8.75/10.0). Architecting high-throughput backend services, cryptographic pipelines, and uncertainty-aware ML frameworks.
                         </motion.p>
                     </div>
 
@@ -71,7 +87,7 @@ export default function AboutBento() {
                         <motion.div {...fadeUp(0.1)} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <span className="mono-tag">THE_INTENT</span>
                             <p style={{ fontSize: '16px', color: 'var(--foreground-muted)', fontWeight: 300, lineHeight: 1.8, margin: 0 }}>
-                                I design computational tools for complex operations. As the Chairperson of the IEEE Student Branch at Bennett University, I lead and coordinate a 100+ member vertical structure to construct local software products and lead international summits.
+                                I design computational tools for complex operations. As the Chairperson of the IEEE Student Branch at Bennett University, I lead and coordinate a 100+ member vertical structure to construct software products, secure sponsorships (₹1.48L+), and spearhead international events like the Global AI Summit 2.0 (3,000–4,000+ attendees) and Triverse 3.0. First-author of a research manuscript on staged uncertainty-aware fraud decisioning targeting IEEE TDSC.
                             </p>
                         </motion.div>
 

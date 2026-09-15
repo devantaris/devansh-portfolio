@@ -11,9 +11,9 @@ const experiences = [
         location: 'Gurugram, Haryana',
         date: 'MAR 2026 – PRESENT',
         points: [
-            'Developing client lead acquisition pipelines and automation scripts using Python.',
-            'Building responsive JavaScript components for live production web platforms.',
-            'Integrating PostgreSQL and SQL databases to report operational agency metrics.'
+            'Built lead generation automation pipelines and REST API integrations processing 500+ leads/week.',
+            'Developed internal dashboards with SQL-driven analytics using Python and PostgreSQL.',
+            'Shipped client-facing web applications across agile sprint cycles with continuous integration.'
         ]
     },
     {
@@ -23,31 +23,34 @@ const experiences = [
         location: 'Noida, Uttar Pradesh',
         date: 'OCT 2025 – MAR 2026',
         points: [
-            'Delivered a cross-platform mobile client serving local student networks.',
-            'Architected SQLite local storage schemas and secure session management.',
-            'Optimized Dart widget rendering coordinates for high-frame 60fps transitions.'
+            'Delivered a production cross-platform mobile app (iOS, Android, Web) with BLoC state management, secure auth, and SQLite persistence.',
+            'Shipped 4+ sprint releases in a lean team following full SDLC practices and rigorous testing.',
+            'Architected SQLite WAL mode caching for sub-800ms cold launches and 60fps frame rate budgets.'
         ]
     },
     {
         id: 'ieee-chair',
         role: 'Student Branch Chairperson',
-        company: 'IEEE STUDENT BRANCH',
-        location: 'Noida, Uttar Pradesh',
+        company: 'IEEE STUDENT BRANCH, BENNETT UNIVERSITY',
+        location: 'Greater Noida, Uttar Pradesh',
         date: 'SEP 2025 – PRESENT',
         points: [
-            'Directing a 100+ member vertical hierarchy to compile tech products.',
-            'Secured ₹1.48L+ in operations contracts through structured vendor negotiations.',
-            'Organized Global AI Summit (4,000+ attendees) featuring industry researchers.'
+            'Lead 100+ member branch across technical tracks, software divisions, and flagship initiatives.',
+            'Secured ₹1.48L+ in sponsorships through structured partnership outreach.',
+            'Organised Global AI Summit 2.0 (3,000–4,000+ attendees) and Triverse 3.0 (600+ participants).',
+            'Led branch to 3rd place — IEEE UP Section Best Emerging Student Branch Award 2025.'
         ]
     },
     {
-        id: 'csi',
-        role: 'Junior Core — Tech & Research',
-        company: 'IEEE / CSI',
-        location: 'Noida, Uttar Pradesh',
-        date: 'SEP 2024 – OCT 2025',
+        id: 'education',
+        role: 'B.Tech — Computer Science & Engineering (CGPA 8.75)',
+        company: 'BENNETT UNIVERSITY',
+        location: 'Greater Noida, Uttar Pradesh',
+        date: 'AUG 2024 – AUG 2028',
         points: [
-            'Supported technical onboarding operations and local research coordinate scoping.'
+            'B.Tech CSE with 8.75 / 10.0 CGPA; focused on systems design, algorithms, and applied machine learning.',
+            'Core Coursework: Data Structures & Algorithms, OOP, Database Management Systems, Operating Systems, Computer Networks, Software Engineering.',
+            'Secondary School: Sunbeam School Varuna, Varanasi — Grade 10: 95% | Grade 12: 89% (Physics, Chemistry & Math).'
         ]
     }
 ];
