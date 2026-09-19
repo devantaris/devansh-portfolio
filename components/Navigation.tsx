@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import ContactModal from '@/components/ui/contact-modal';
 import { profile } from '@/lib/content';
 
 export default function Navigation() {
+    const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const [isContactOpen, setIsContactOpen] = useState(false);
 
@@ -27,13 +29,18 @@ export default function Navigation() {
         { name: 'CAREER CHRONOLOGY', href: '#experience', number: '03' },
         { name: 'PUBLICATIONS & RESEARCH', href: '#blog', number: '04' },
         { name: 'SYSTEM METRICS', href: '#stats', number: '05' },
-        { name: 'LIVE RESUME ↗', href: profile.resumeSite, number: '06', external: true },
+        { name: 'THE SYSTEM ◈', href: '/universe', number: '06', internal: true },
+        { name: 'LIVE RESUME ↗', href: profile.resumeSite, number: '07', external: true },
     ];
 
-    const handleNavigate = (item: { href: string; external?: boolean }) => {
+    const handleNavigate = (item: { href: string; external?: boolean; internal?: boolean }) => {
         setIsOpen(false);
         if (item.external) {
             window.open(item.href, '_blank', 'noopener,noreferrer');
+            return;
+        }
+        if (item.internal) {
+            router.push(item.href);
             return;
         }
         const element = document.querySelector(item.href);
@@ -99,8 +106,42 @@ export default function Navigation() {
                         DEVANSH.KUMAR // CORE
                     </button>
 
-                    {/* Right Controls: Resume Pill + Kinetic Menu Trigger Button */}
+                    {/* Right Controls: System Pill + Resume Pill + Kinetic Menu Trigger Button */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', pointerEvents: 'auto' }}>
+                        <a
+                            href="/universe"
+                            style={{
+                                fontFamily: 'var(--font-mono)',
+                                fontSize: '11px',
+                                fontWeight: 700,
+                                letterSpacing: '0.12em',
+                                color: 'var(--accent-purple)',
+                                border: '1px solid rgba(189, 0, 255, 0.3)',
+                                borderRadius: '99px',
+                                padding: '10px 20px',
+                                background: 'rgba(5, 5, 10, 0.85)',
+                                backdropFilter: 'blur(12px)',
+                                cursor: 'pointer',
+                                textDecoration: 'none',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.borderColor = 'var(--accent-purple)';
+                                e.currentTarget.style.boxShadow = '0 0 16px rgba(189, 0, 255, 0.25)';
+                                e.currentTarget.style.background = 'rgba(189, 0, 255, 0.1)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.borderColor = 'rgba(189, 0, 255, 0.3)';
+                                e.currentTarget.style.boxShadow = 'none';
+                                e.currentTarget.style.background = 'rgba(5, 5, 10, 0.85)';
+                            }}
+                        >
+                            SYSTEM ◈
+                        </a>
+
                         <a
                             href={profile.resumeSite}
                             target="_blank"

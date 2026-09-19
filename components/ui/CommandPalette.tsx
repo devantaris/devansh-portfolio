@@ -14,8 +14,9 @@ import {
     BookOpen, 
     BarChart3, 
     Mail, 
-    Code2, 
-    X
+    Code2,
+    X,
+    Rocket
 } from 'lucide-react';
 import { profile, withBasePath } from '@/lib/content';
 import { useRouter } from 'next/navigation';
@@ -51,6 +52,17 @@ export default function CommandPalette({ onOpenMariSimulator, onOpenContactModal
     }, [router]);
 
     const commands: CommandItem[] = [
+        {
+            id: 'universe-enter',
+            title: 'Enter the Devantaris System (3D Universe)',
+            subtitle: 'Navigable WebGL star system — projects as orbiting moons',
+            category: 'ACTIONS',
+            icon: Rocket,
+            action: () => {
+                setIsOpen(false);
+                router.push('/universe');
+            }
+        },
         {
             id: 'resume-live',
             title: 'Open Live Resume (devantaris.github.io)',

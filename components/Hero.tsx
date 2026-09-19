@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { profile, withBasePath } from '@/lib/content';
 import { useMotionCapable } from '@/hooks/useMotionCapable';
@@ -165,7 +166,16 @@ export default function Hero() {
                                 View Resume ↗
                             </a>
 
-                            <a 
+                            <Link
+                                href="/universe"
+                                className="glow-btn"
+                                style={{ borderColor: 'var(--accent-purple)', color: 'var(--accent-purple)', display: 'flex', alignItems: 'center', gap: '6px' }}
+                                title="Enter the navigable 3D Devantaris System"
+                            >
+                                ENTER THE SYSTEM ◈
+                            </Link>
+
+                            <a
                                 href={withBasePath(profile.resumePdf)}
                                 target="_blank"
                                 rel="noopener noreferrer"

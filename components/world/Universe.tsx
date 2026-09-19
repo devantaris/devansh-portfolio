@@ -335,6 +335,9 @@ export default function Universe() {
                     {profile.name.split(' ')[0].toUpperCase()}.SYSTEM
                 </button>
                 <div style={{ display: 'flex', gap: '10px', pointerEvents: 'auto' }}>
+                    <Link href="/" className="glow-btn" style={{ background: 'rgba(3,3,8,0.6)', backdropFilter: 'blur(10px)', borderRadius: '99px' }}>
+                        ← BASE
+                    </Link>
                     <a href={profile.resumeSite} target="_blank" rel="noopener noreferrer" className="glow-btn" style={{ borderColor: 'var(--accent-cyan)', color: 'var(--accent-cyan)', background: 'rgba(3,3,8,0.6)', backdropFilter: 'blur(10px)', borderRadius: '99px' }}>
                         RESUME ↗
                     </a>
