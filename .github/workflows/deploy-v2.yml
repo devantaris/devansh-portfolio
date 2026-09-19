@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - creative-redesign
+      - main
 
 permissions:
   contents: read
