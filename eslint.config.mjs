@@ -15,6 +15,7 @@ const eslintConfig = defineConfig([
     // Local AI-tooling scripts, not part of the app:
     ".gemini/**",
     ".zcode/**",
+    ".preview/**",
   ]),
 ]);
 
