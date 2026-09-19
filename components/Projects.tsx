@@ -4,69 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import * as THREE from 'three';
-
-const projects = [
-    {
-        number: '01',
-        name: 'MARI — Staged Fraud Engine',
-        tagline: 'Staged uncertainty-aware decisioning pipeline routing 284k+ transactions. 100% DECLINE precision.',
-        tech: ['Python', 'FastAPI', 'XGBoost', 'Calibrated SVM', 'Dempster-Shafer', 'SHAP', 'PostgreSQL'],
-        demo: 'https://mari-alpha.vercel.app',
-        code: 'https://github.com/devantaris/mari',
-        color: '#00e5ff',
-        impact: '284k txns · 100% DECLINE precision · 86.73% recall · Sub-100ms',
-        specs: [
-            'Architected a 4-component staged decisioning pipeline routing 284K+ transactions through distinct uncertainty layers: V1 (abstention-aware XGBoost ensemble router with Isolation Forest novelty detection), V2 (calibrated SVM second-opinion for epistemic uncertainty resolution), V3 (Dempster-Shafer belief fusion across 3 independent evidence sources), and V4 (SHAP-backed structured deferral replacing human queues).',
-            'Achieved 100% automation rate (101 → 92 → 72 → 0 human review cases across stages), 86.73% fraud recall, 100% DECLINE precision (zero false blocks on legitimate transactions); deployed FastAPI REST API with sub-100ms inference.',
-            'Designed cost-aware routing architecture with formal BPA-to-Belief/Plausibility/Ignorance extraction, isotonic calibration (74.4% Brier reduction), and machine-readable PEND reason codes per transaction.',
-        ],
-    },
-    {
-        number: '02',
-        name: 'EduSupervision — AI Platform',
-        tagline: 'Scalable institutional platform for teacher training & evaluation with semantic vector search.',
-        tech: ['Next.js 14', 'React 19', 'FastAPI', 'PostgreSQL 16', 'pgvector', 'Redis', 'Celery', 'Docker'],
-        demo: 'https://edu-supervision.vercel.app',
-        code: 'https://github.com/devantaris/edu-supervision',
-        color: '#a0ff60',
-        impact: 'pgvector semantic search · Celery + Redis queues · RBAC · Docker Compose',
-        specs: [
-            'Built a scalable platform for teacher training & evaluation with async FastAPI backend, PostgreSQL with pgvector for semantic plagiarism detection, and Celery + Redis task queue for background AI inference and OCR jobs.',
-            'Designed RBAC system (Super Admin / Institution Admin / Teacher) with RS256 JWT auth, PgBouncer connection pooling, SQLAlchemy 2.0 async ORM; containerized full stack with Docker Compose.',
-            'Implemented real-time job status streaming, automated performance scorecard generation, and administrative audit logging.',
-        ],
-    },
-    {
-        number: '03',
-        name: 'CryptoFlow — Medical Pipeline',
-        tagline: '5-stage cryptographic pipeline for multimodal medical data with cross-modal HMAC binding.',
-        tech: ['Python', 'AES-256-GCM', 'HMAC-SHA-256', 'RSA-OAEP', 'DICOM', 'Pytest', 'Typer CLI'],
-        demo: null,
-        code: 'https://github.com/devantaris/cryptoflow',
-        color: '#ff5500',
-        impact: '120+ MB/s encryption · <0.1% overhead · 100% defense across 7 attack vectors',
-        specs: [
-            'Engineered a 5-stage cryptographic pipeline for multimodal medical data (DICOM, EHR, reports) achieving 120+ MB/s encryption and 130+ MB/s decryption with <0.1% storage overhead.',
-            'Custom binary container format with cross-modal HMAC binding to prevent splicing attacks; RSA-OAEP digital envelope for secure key transit.',
-            'Built empirical threat simulator validating 100% defense across 7 attack vectors (bit flip, intra-bundle swap, cross-patient swap, truncation, injection, manifest forgery, key mismatch).',
-        ],
-    },
-    {
-        number: '04',
-        name: 'Raahi — Mobile Client',
-        tagline: 'Cross-platform mobile application shipped across 4+ sprints with BLoC state management and SQLite.',
-        tech: ['Flutter', 'Dart', 'BLoC', 'SQLite', 'REST APIs'],
-        demo: null,
-        code: 'https://github.com/devantaris/flutter-ott-app',
-        color: '#b500fa',
-        impact: '60fps rendering · Offline-first · BLoC state mgmt · 4+ sprint releases',
-        specs: [
-            'Delivered a production cross-platform mobile app (iOS, Android, Web) with BLoC state management, secure auth, and SQLite persistence.',
-            'Shipped 4+ sprint releases in a lean team following full SDLC practices, integrating real-time telemetry and state caching.',
-            'Consistent 60fps on 120Hz displays via RepaintBoundary isolation; GPU frame budget under 6ms.',
-        ],
-    },
-];
+import { featuredProjects as projects } from '@/lib/content';
+import { useMotionCapable } from '@/hooks/useMotionCapable';
 
 const SPACING = 120; // Z-distance between panels in 3D space
 
@@ -78,6 +17,7 @@ export default function Projects() {
     const activeIdxRef = useRef(0);
     const [activeIdx, setActiveIdx] = useState(0);
     const [inspectedProj, setInspectedProj] = useState<number | null>(null);
+    const motionCapable = useMotionCapable();
 
     // Scroll to a specific project
     const scrollToProject = (idx: number) => {
@@ -93,6 +33,8 @@ export default function Projects() {
         const canvas = canvasRef.current;
         const section = sectionRef.current;
         if (!canvas || !section) return;
+        // Skip the WebGL engine on mobile, touch, and reduced-motion devices
+        if (!motionCapable) return;
 
         const scene = new THREE.Scene();
 
@@ -275,9 +217,57 @@ export default function Projects() {
             );
             renderer.dispose();
         };
-    }, []); // ← EMPTY deps — engine starts once and never rebuilds
+    }, [motionCapable]); // engine (re)starts once motion capability is known
 
     const proj = projects[activeIdx];
+
+    // Mobile / reduced-motion fallback: plain stacked cards, no WebGL, no scroll-jack
+    if (!motionCapable) {
+        return (
+            <section id="projects" style={{ background: '#020204', padding: 'clamp(80px, 12vw, 120px) 0', position: 'relative' }}>
+                <div style={{ maxWidth: '1320px', margin: '0 auto', padding: '0 clamp(24px, 6vw, 96px)' }}>
+                    <span className="mono-tag" style={{ color: 'rgba(255,255,255,0.35)' }}>04 // ENGINEERING WORK</span>
+                    <h2 style={{ fontSize: 'clamp(26px, 7vw, 42px)', fontWeight: 200, marginTop: '6px', color: '#fff', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: '40px' }}>
+                        Shipped systems.
+                    </h2>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                        {projects.map((p) => (
+                            <div
+                                key={p.id}
+                                style={{
+                                    border: `1px solid ${p.color}30`,
+                                    borderLeft: `2px solid ${p.color}`,
+                                    padding: '24px',
+                                    background: '#050508',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '12px',
+                                }}
+                            >
+                                <span className="mono-tag" style={{ color: p.color }}>{p.impact}</span>
+                                <h3 style={{ fontSize: '18px', fontWeight: 300, color: '#fff', margin: 0, fontFamily: 'var(--font-serif)' }}>{p.name}</h3>
+                                <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.55)', fontWeight: 300, lineHeight: 1.65, margin: 0 }}>{p.tagline}</p>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                                    {p.tech.slice(0, 5).map((t) => (
+                                        <span key={t} className="mono-tag" style={{ fontSize: '8px', border: '1px solid rgba(255,255,255,0.08)', padding: '3px 8px' }}>{t}</span>
+                                    ))}
+                                </div>
+                                <div style={{ display: 'flex', gap: '12px', marginTop: '4px', flexWrap: 'wrap' }}>
+                                    <Link href="/projects" style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.12em', color: p.color, textDecoration: 'none', border: `1px solid ${p.color}55`, padding: '8px 14px', textTransform: 'uppercase' }}>
+                                        Details →
+                                    </Link>
+                                    {p.demo && (
+                                        <a href={p.demo} target="_blank" rel="noopener noreferrer" className="glow-btn" style={{ padding: '8px 14px' }}>Demo</a>
+                                    )}
+                                    <a href={p.code} target="_blank" rel="noopener noreferrer" className="glow-btn" style={{ padding: '8px 14px' }}>Code</a>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+        );
+    }
 
     return (
         <section
@@ -329,7 +319,7 @@ export default function Projects() {
                     </span>
                     {projects.map((p, i) => (
                         <button
-                            key={p.number}
+                            key={p.id}
                             onClick={() => scrollToProject(i)}
                             style={{
                                 background: 'none',
@@ -355,7 +345,7 @@ export default function Projects() {
                                 color: i === activeIdx ? '#fff' : 'rgba(255,255,255,0.22)',
                                 transition: 'color 0.3s ease',
                             }}>
-                                {p.number}
+                                {String(i + 1).padStart(2, "0")}
                             </span>
                         </button>
                     ))}
@@ -576,7 +566,7 @@ export default function Projects() {
                         >
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '16px' }}>
                                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', letterSpacing: '0.18em', color: projects[inspectedProj].color, textTransform: 'uppercase' }}>
-                                    Technical Breakdown — {projects[inspectedProj].number}
+                                    Technical Breakdown — {String((inspectedProj ?? 0) + 1).padStart(2, "0")}
                                 </span>
                                 <button
                                     onClick={() => setInspectedProj(null)}

@@ -2,58 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-const experiences = [
-    {
-        id: 'buildit',
-        role: 'Software Developer Intern',
-        company: 'BUILDIT SERVICE',
-        location: 'Gurugram, Haryana',
-        date: 'MAR 2026 – PRESENT',
-        points: [
-            'Built lead generation automation pipelines and REST API integrations processing 500+ leads/week.',
-            'Developed internal dashboards with SQL-driven analytics using Python and PostgreSQL.',
-            'Shipped client-facing web applications across agile sprint cycles with continuous integration.'
-        ]
-    },
-    {
-        id: 'raahi',
-        role: 'Application Developer (Flutter)',
-        company: 'RAAHI',
-        location: 'Noida, Uttar Pradesh',
-        date: 'OCT 2025 – MAR 2026',
-        points: [
-            'Delivered a production cross-platform mobile app (iOS, Android, Web) with BLoC state management, secure auth, and SQLite persistence.',
-            'Shipped 4+ sprint releases in a lean team following full SDLC practices and rigorous testing.',
-            'Architected SQLite WAL mode caching for sub-800ms cold launches and 60fps frame rate budgets.'
-        ]
-    },
-    {
-        id: 'ieee-chair',
-        role: 'Student Branch Chairperson',
-        company: 'IEEE STUDENT BRANCH, BENNETT UNIVERSITY',
-        location: 'Greater Noida, Uttar Pradesh',
-        date: 'SEP 2025 – PRESENT',
-        points: [
-            'Lead 100+ member branch across technical tracks, software divisions, and flagship initiatives.',
-            'Secured ₹1.48L+ in sponsorships through structured partnership outreach.',
-            'Organised Global AI Summit 2.0 (3,000–4,000+ attendees) and Triverse 3.0 (600+ participants).',
-            'Led branch to 3rd place — IEEE UP Section Best Emerging Student Branch Award 2025.'
-        ]
-    },
-    {
-        id: 'education',
-        role: 'B.Tech — Computer Science & Engineering (CGPA 8.75)',
-        company: 'BENNETT UNIVERSITY',
-        location: 'Greater Noida, Uttar Pradesh',
-        date: 'AUG 2024 – AUG 2028',
-        points: [
-            'B.Tech CSE with 8.75 / 10.0 CGPA; focused on systems design, algorithms, and applied machine learning.',
-            'Core Coursework: Data Structures & Algorithms, OOP, Database Management Systems, Operating Systems, Computer Networks, Software Engineering.',
-            'Secondary School: Sunbeam School Varuna, Varanasi — Grade 10: 95% | Grade 12: 89% (Physics, Chemistry & Math).'
-        ]
-    }
-];
+import { experience } from '@/lib/content';
 
 export default function Experience() {
     const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -92,7 +41,7 @@ export default function Experience() {
 
                 {/* Spacious Editorial Chronology list */}
                 <div style={{ display: 'flex', flexDirection: 'column', borderTop: '1px solid var(--border)' }}>
-                    {experiences.map((exp, idx) => {
+                    {experience.map((exp, idx) => {
                         const isExpanded = expandedId === exp.id;
                         return (
                             <motion.div
@@ -147,7 +96,7 @@ export default function Experience() {
                                                 <ul style={{ listStyle: 'none', padding: '12px 0 0 0', margin: 0, display: 'flex', flexDirection: 'column', gap: '10px', borderLeft: '1px solid rgba(0, 229, 255, 0.2)', paddingLeft: '16px' }}>
                                                     {exp.points.map((pt, i) => (
                                                         <li key={i} style={{ display: 'flex', alignItems: 'baseline', gap: '12px', fontSize: '14px', color: 'rgba(255,255,255,0.7)', fontWeight: 300, lineHeight: 1.6 }}>
-                                                            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-cyan)' }}>//</span>
+                                                            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-cyan)' }}>{'//'}</span>
                                                             <span>{pt}</span>
                                                         </li>
                                                     ))}

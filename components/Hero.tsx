@@ -1,9 +1,14 @@
 'use client';
 
 import { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Image from 'next/image';
-import LorenzAttractor from './LorenzAttractor';
+import dynamic from 'next/dynamic';
+import { profile, withBasePath } from '@/lib/content';
+import { useMotionCapable } from '@/hooks/useMotionCapable';
+
+// three.js canvas — client-only, kept out of the initial bundle
+const LorenzAttractor = dynamic(() => import('./LorenzAttractor'), { ssr: false });
 
 /* ─── Social Icons ─── */
 const GithubIcon = () => (
@@ -34,12 +39,7 @@ const MailIcon = () => (
 export default function Hero() {
     const containerRef = useRef<HTMLDivElement>(null);
     
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start start", "end end"]
-    });
-
-    const scaleFactor = useTransform(scrollYProgress, [0, 1], [1, 0.96]);
+    const motionCapable = useMotionCapable();
 
     return (
         <section
@@ -55,7 +55,8 @@ export default function Hero() {
                 padding: 'clamp(80px, 12vw, 160px) 0'
             }}
         >
-            {/* Ambient attractor field situated in background */}
+            {/* Ambient attractor field situated in background (desktop only) */}
+            {motionCapable && (
             <div style={{
                 position: 'absolute',
                 right: '10%',
@@ -67,6 +68,7 @@ export default function Hero() {
             }}>
                 <LorenzAttractor />
             </div>
+            )}
 
             {/* Core Editorial Container */}
             <div
@@ -132,20 +134,20 @@ export default function Hero() {
                                 margin: 0
                             }}
                         >
-                            B.Tech CSE at Bennett University (CGPA 8.75) with production systems experience. First-author researcher on staged uncertainty-aware fraud decisioning (284K+ transactions, 100% DECLINE precision). IEEE Student Branch Chairperson leading 100+ engineers.
+                            {profile.tagline}
                         </motion.p>
 
                         {/* Telemetry Links in Space-Mono */}
                         <div style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap', fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--foreground-muted)' }}>
-                            <span>Python · FastAPI · PostgreSQL · Docker · Next.js</span>
+                            <span>{profile.heroMeta}</span>
                             <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'var(--border-strong)' }} />
-                            <span>IEEE BU Chair · Open to Opportunities</span>
+                            <span>{profile.heroStatus}</span>
                         </div>
 
                         {/* CTAs */}
                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', marginTop: '16px' }}>
                             <a 
-                                href="mailto:work.devanshkumar@gmail.com"
+                                href={`mailto:${profile.email}`}
                                 className="glow-btn"
                                 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
                             >
@@ -154,7 +156,7 @@ export default function Hero() {
                             </a>
 
                             <a 
-                                href="https://devantaris.github.io"
+                                href={profile.resumeSite}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="glow-btn"
@@ -164,7 +166,7 @@ export default function Hero() {
                             </a>
 
                             <a 
-                                href="/Devansh_Kumar_Resume_1Page.pdf"
+                                href={withBasePath(profile.resumePdf)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 download="Devansh_Kumar_Resume.pdf"
@@ -186,7 +188,7 @@ export default function Hero() {
                             style={{
                                 width: '100%',
                                 maxWidth: '380px',
-                                height: '540px',
+                                height: 'clamp(440px, 60vh, 540px)',
                                 position: 'relative',
                                 border: '1px solid var(--border)',
                                 padding: '12px',
@@ -201,7 +203,7 @@ export default function Hero() {
                             {/* Vertical Frame layout */}
                             <div style={{ position: 'relative', width: '100%', height: '440px', overflow: 'hidden' }}>
                                 <Image
-                                    src="/images/devansh-portrait.png"
+                                    src={withBasePath('/images/devansh-portrait.webp')}
                                     alt="Devansh Kumar Portrait"
                                     fill
                                     priority
@@ -219,17 +221,17 @@ export default function Hero() {
                                         DEVANSH KUMAR
                                     </div>
                                     <div style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', color: 'var(--foreground-muted)', marginTop: '2px' }}>
-                                        BENNETT UNIV // CGPA 8.75 // IEEE BU
+                                        {profile.portraitCardMeta}
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                                    <a href="https://github.com/devantaris" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--foreground-muted)', transition: 'color 0.2s' }} title="GitHub" onMouseEnter={(e) => e.currentTarget.style.color = '#fff'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--foreground-muted)'}>
+                                    <a href={profile.socials.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub" style={{ color: 'var(--foreground-muted)', transition: 'color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.color = '#fff'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--foreground-muted)'}>
                                         <GithubIcon />
                                     </a>
-                                    <a href="https://linkedin.com/in/devansh-kumar-3b3701217" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--foreground-muted)', transition: 'color 0.2s' }} title="LinkedIn" onMouseEnter={(e) => e.currentTarget.style.color = '#fff'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--foreground-muted)'}>
+                                    <a href={profile.socials.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" style={{ color: 'var(--foreground-muted)', transition: 'color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.color = '#fff'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--foreground-muted)'}>
                                         <LinkedInIcon />
                                     </a>
-                                    <a href="https://leetcode.com/u/vantaris/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--foreground-muted)', transition: 'color 0.2s' }} title="LeetCode" onMouseEnter={(e) => e.currentTarget.style.color = '#fff'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--foreground-muted)'}>
+                                    <a href={profile.socials.leetcode} target="_blank" rel="noopener noreferrer" aria-label="LeetCode" style={{ color: 'var(--foreground-muted)', transition: 'color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.color = '#fff'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--foreground-muted)'}>
                                         <LeetCodeIcon />
                                     </a>
                                 </div>

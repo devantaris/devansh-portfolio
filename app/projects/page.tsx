@@ -8,16 +8,14 @@ import { X, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import Navigation from '@/components/Navigation';
 import MultiLayerStarfield from '@/components/StarfieldBackground';
-import NebulaBackground from '@/components/NebulaBackground';
 import CustomCursor from '@/components/CustomCursor';
+import { projects as projectData } from '@/lib/content';
 
 interface Project {
     id: number;
     title: string;
     description: string;
     tech: string[];
-    image: string;
-    gallery: string[];
     fullDescription: string;
     github?: string;
     demo?: string;
@@ -26,86 +24,21 @@ interface Project {
 export default function AllProjectsPage() {
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-    const projects: Project[] = [
-        {
-            id: 1,
-            title: 'MARI — Staged Fraud Decisioning Framework',
-            description: '4-component staged decisioning pipeline routing 284K+ transactions through distinct uncertainty layers. 100% DECLINE precision.',
-            tech: ['Python', 'FastAPI', 'XGBoost', 'Calibrated SVM', 'Dempster-Shafer', 'SHAP', 'PostgreSQL', 'Docker'],
-            image: '',
-            gallery: [],
-            fullDescription: 'MARI is an uncertainty-aware decisioning pipeline that evaluates 284K+ transactions through distinct stages: V1 (abstention-aware XGBoost ensemble router with Isolation Forest novelty detection), V2 (calibrated SVM second-opinion for epistemic uncertainty resolution), V3 (Dempster-Shafer belief fusion across 3 independent evidence sources), and V4 (SHAP-backed structured deferral replacing human queues). Achieved 100% automation rate (101 → 92 → 72 → 0 deferrals), 86.73% fraud recall, and 100% DECLINE precision with sub-100ms inference latency.',
-            github: 'https://github.com/devantaris/mari',
-            demo: 'https://mari-alpha.vercel.app',
-        },
-        {
-            id: 2,
-            title: 'EduSupervision — AI-Powered Institutional Platform',
-            description: 'Scalable institutional platform for teacher evaluation with semantic vector search and distributed task queues.',
-            tech: ['Next.js 14', 'React 19', 'FastAPI', 'PostgreSQL 16', 'pgvector', 'Redis', 'Celery', 'Docker Compose'],
-            image: '',
-            gallery: [],
-            fullDescription: 'EduSupervision is a scalable platform for teacher training & evaluation. Features an async FastAPI backend, PostgreSQL with pgvector for semantic plagiarism detection, and a Celery + Redis distributed task queue for asynchronous background AI inference and OCR jobs. Designed with an enterprise RBAC system (Super Admin / Institution Admin / Teacher) using RS256 JWT auth, PgBouncer connection pooling, and SQLAlchemy 2.0 async ORM, all fully containerized with Docker Compose.',
-            github: 'https://github.com/devantaris/edu-supervision',
-            demo: 'https://edu-supervision.vercel.app',
-        },
-        {
-            id: 3,
-            title: 'CryptoFlow — Medical Data Cryptographic Pipeline',
-            description: '5-stage cryptographic pipeline for multimodal medical data (DICOM, EHR) achieving 120+ MB/s throughput.',
-            tech: ['Python', 'AES-256-GCM', 'HMAC-SHA-256', 'RSA-OAEP', 'DICOM', 'Pytest', 'Typer CLI'],
-            image: '',
-            gallery: [],
-            fullDescription: 'CryptoFlow is an engineered 5-stage cryptographic pipeline for multimodal medical data (DICOM imaging, EHR records, diagnostic reports) achieving 120+ MB/s encryption and 130+ MB/s decryption with <0.1% storage overhead. Features a custom binary container format with cross-modal HMAC binding to prevent splicing attacks and an RSA-OAEP digital envelope for secure key transit. Includes an empirical threat simulator validating 100% defense across 7 attack vectors (bit flip, intra-bundle swap, cross-patient swap, truncation, injection, manifest forgery, key mismatch).',
-            github: 'https://github.com/devantaris/cryptoflow',
-        },
-        {
-            id: 4,
-            title: 'Raahi — Production Cross-Platform Mobile Client',
-            description: 'Production cross-platform mobile application (iOS, Android, Web) with BLoC state management and SQLite persistence.',
-            tech: ['Flutter', 'Dart', 'BLoC', 'SQLite', 'REST APIs'],
-            image: '',
-            gallery: [],
-            fullDescription: 'Delivered a production cross-platform mobile app (iOS, Android, Web) for Raahi with BLoC state management, secure auth, and SQLite persistence. Shipped 4+ sprint releases in a lean team following full SDLC practices. Built with SQLite WAL mode caching for zero-read-latency caching, cold launch under 800ms on mid-range Android, and consistent 60fps on 120Hz displays via RepaintBoundary isolation.',
-            github: 'https://github.com/devantaris/flutter-ott-app',
-        },
-        {
-            id: 5,
-            title: 'SkillSync — Peer Skill Economy',
-            description: 'Decentralized peer course-credit marketplace with RLS-secured ledger and Razorpay checkout.',
-            tech: ['React', 'Node.js', 'Supabase', 'PostgreSQL', 'Razorpay', 'Zustand'],
-            image: '',
-            gallery: [],
-            fullDescription: 'SkillSync is a peer-powered skill economy platform where users share knowledge through courses, earn credits, and spend credits to learn. Features a double-entry credit ledger in PostgreSQL with ACID transactions and trigger-enforced balance invariants, Supabase Row Level Security policies, and Razorpay checkout with HMAC-SHA256 webhook signature verification.',
-            github: 'https://github.com/devantaris/SkillSync',
-            demo: 'https://skill-sync-steel-rho.vercel.app',
-        },
-        {
-            id: 6,
-            title: 'Biome — Focus Forest',
-            description: 'A world-building productivity desktop app built with Electron, React, and procedural generation.',
-            tech: ['TypeScript', 'React', 'Electron', 'Firebase', 'Vite', 'Canvas API'],
-            image: '',
-            gallery: [],
-            fullDescription: 'Biome is a gamified productivity desktop app where deep work leaves a tangible, beautiful trace. Complete focus sessions to earn plants with a rarity system, then place them on your personal world grid. Features territory expansion, real-time global leaderboard, XP levels, 30+ achievements, and bidirectional Electron IPC communication.',
-            github: 'https://github.com/devantaris/Biome',
-        },
-        {
-            id: 7,
-            title: 'Devansh Portfolio — Core Telemetry System',
-            description: 'Minimal, high-performance portfolio with Three.js attractor fields, Lenis smooth scrolling, and live telemetry.',
-            tech: ['Next.js 16', 'TypeScript', 'Three.js', 'Framer Motion', 'Tailwind CSS'],
-            image: '',
-            gallery: [],
-            fullDescription: 'This portfolio site features a Three.js Lorenz attractor dynamic hero, multi-layer starfield background, kinetic orbital tech stack visualizer, responsive contact matrix, and live GitHub contribution telemetry. Built with Next.js 16 and Lenis for silky-smooth physics and zero layout shifts.',
-            github: 'https://github.com/devantaris/devansh-portfolio',
-        },
-    ];
+    // Single source of truth: data/projects.json
+    const projects: Project[] = projectData.map((p, i) => ({
+        id: i + 1,
+        title: p.name,
+        description: p.tagline,
+        tech: p.tech,
+        fullDescription: p.specs.join(' '),
+        github: p.code,
+        demo: p.demo ?? undefined,
+    }));
+
 
     return (
         <main className="relative min-h-screen">
             <MultiLayerStarfield />
-            <NebulaBackground />
             <CustomCursor />
             <Navigation />
 
@@ -126,7 +59,7 @@ export default function AllProjectsPage() {
                             All Projects
                         </h1>
                         <p className="text-xl text-foreground-muted max-w-2xl">
-                            A comprehensive showcase of systems, platforms, and tools I've built.
+                            A comprehensive showcase of systems, platforms, and tools I&rsquo;ve built.
                         </p>
                     </div>
 
@@ -155,17 +88,9 @@ export default function AllProjectsPage() {
                                         }}
                                     />
                                     <div className="relative h-full overflow-hidden rounded-2xl border border-white/10 bg-background/40 backdrop-blur-sm flex flex-col">
-                                        {project.image ? (
-                                            <img
-                                                src={project.image}
-                                                alt={project.title}
-                                                className="h-48 w-full object-cover grayscale duration-700 group-hover:grayscale-0"
-                                            />
-                                        ) : (
-                                            <div className="h-48 w-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #18181b, #09090b)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                                <span className="text-5xl font-bold" style={{ color: 'rgba(59, 130, 246, 0.2)' }}>{project.title.charAt(0)}</span>
-                                            </div>
-                                        )}
+                                        <div className="h-48 w-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #18181b, #09090b)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                            <span className="text-5xl font-bold" style={{ color: 'rgba(59, 130, 246, 0.2)' }}>{project.title.charAt(0)}</span>
+                                        </div>
                                         <div className="p-5 flex-1 flex flex-col">
                                             <h3 className="text-xl font-bold mb-2 text-foreground">
                                                 {project.title}
@@ -219,19 +144,6 @@ export default function AllProjectsPage() {
                             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
                                 {selectedProject.title}
                             </h2>
-
-                            {selectedProject.gallery.length > 0 && (
-                                <div className="grid grid-cols-3 gap-4 mb-6">
-                                    {selectedProject.gallery.map((img, idx) => (
-                                        <img
-                                            key={idx}
-                                            src={img}
-                                            alt={`${selectedProject.title} ${idx + 1}`}
-                                            className="w-full h-32 object-cover rounded-lg"
-                                        />
-                                    ))}
-                                </div>
-                            )}
 
                             <p className="text-lg text-foreground-muted mb-6 leading-relaxed">
                                 {selectedProject.fullDescription}

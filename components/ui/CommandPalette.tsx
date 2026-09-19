@@ -15,9 +15,9 @@ import {
     BarChart3, 
     Mail, 
     Code2, 
-    X,
-    Command
+    X
 } from 'lucide-react';
+import { profile, withBasePath } from '@/lib/content';
 import { useRouter } from 'next/navigation';
 
 interface CommandPaletteProps {
@@ -59,7 +59,7 @@ export default function CommandPalette({ onOpenMariSimulator, onOpenContactModal
             icon: FileText,
             action: () => {
                 setIsOpen(false);
-                window.open('https://devantaris.github.io', '_blank', 'noopener,noreferrer');
+                window.open(profile.resumeSite, '_blank', 'noopener,noreferrer');
             }
         },
         {
@@ -71,7 +71,7 @@ export default function CommandPalette({ onOpenMariSimulator, onOpenContactModal
             action: () => {
                 setIsOpen(false);
                 const link = document.createElement('a');
-                link.href = '/Devansh_Kumar_Resume_1Page.pdf';
+                link.href = withBasePath(profile.resumePdf);
                 link.download = 'Devansh_Kumar_Resume.pdf';
                 link.click();
             }
@@ -146,7 +146,7 @@ export default function CommandPalette({ onOpenMariSimulator, onOpenContactModal
             icon: Code2,
             action: () => {
                 setIsOpen(false);
-                window.open('https://leetcode.com/u/vantaris/', '_blank', 'noopener,noreferrer');
+                window.open(profile.socials.leetcode, '_blank', 'noopener,noreferrer');
             }
         },
         {
@@ -157,7 +157,7 @@ export default function CommandPalette({ onOpenMariSimulator, onOpenContactModal
             icon: ExternalLink,
             action: () => {
                 setIsOpen(false);
-                window.open('https://github.com/devantaris', '_blank', 'noopener,noreferrer');
+                window.open(profile.socials.github, '_blank', 'noopener,noreferrer');
             }
         },
         {

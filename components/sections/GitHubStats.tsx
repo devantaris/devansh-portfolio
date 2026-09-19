@@ -1,22 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { profile } from '@/lib/content';
 
-const stats = [
-    { label: 'PUBLIC REPOS', value: '7' },
-    { label: 'FOLLOWERS', value: '1' },
-    { label: 'FOLLOWING', value: '2' },
-    { label: 'YEARS ACTIVE', value: '2+' },
-];
+const stats = profile.githubStats.totals;
 
-const languages = [
-    { name: 'JAVASCRIPT', pct: 30 },
-    { name: 'TYPESCRIPT', pct: 28 },
-    { name: 'PYTHON', pct: 22 },
-    { name: 'DART', pct: 12 },
-    { name: 'C++', pct: 5 },
-    { name: 'HTML', pct: 3 },
-];
+const languages = profile.githubStats.languages;
 
 export default function GitHubStats() {
     return (
@@ -60,7 +49,7 @@ export default function GitHubStats() {
                     >
                         <span className="mono-tag">TOTALS // DIAGNOSTIC</span>
                         <div style={{ display: 'flex', flexDirection: 'column', borderTop: '1px solid var(--border)' }}>
-                            {stats.map((s, idx) => (
+                            {stats.map((s) => (
                                 <div key={s.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 0', borderBottom: '1px solid var(--border)' }}>
                                     <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--foreground-muted)' }}>{s.label}</span>
                                     <span style={{ fontFamily: 'var(--font-mono)', fontSize: '32px', fontWeight: 200, color: '#fff', lineHeight: 1 }}>{s.value}</span>
@@ -79,7 +68,7 @@ export default function GitHubStats() {
                     >
                         <span className="mono-tag">COMPILATION // DENSITIES</span>
                         <div style={{ display: 'flex', flexDirection: 'column', borderTop: '1px solid var(--border)' }}>
-                            {languages.map((lang, idx) => (
+                            {languages.map((lang) => (
                                 <div key={lang.name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 0', borderBottom: '1px solid var(--border)' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                         <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: '#fff', fontWeight: 600 }}>{lang.name}</span>
@@ -132,7 +121,7 @@ export default function GitHubStats() {
                         
                         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '12px' }}>
                             <a
-                                href="https://github.com/devantaris"
+                                href={profile.socials.github}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="glow-btn"

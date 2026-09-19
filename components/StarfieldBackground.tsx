@@ -280,8 +280,13 @@ export default function MultiLayerStarfield() {
     // ── Animation loop ──
     let animationId: number;
 
+    // Reduced-motion users get one static frame instead of an endless loop
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     const animate = () => {
       animationId = requestAnimationFrame(animate);
+      // Skip rendering while the tab is hidden — saves battery
+      if (document.hidden) return;
       const time = performance.now() * 0.001;
 
       nebulaMat.uniforms.time.value = time;
@@ -317,7 +322,11 @@ export default function MultiLayerStarfield() {
       composer.render();
     };
 
-    animate();
+    if (reducedMotion) {
+      composer.render(); // single static frame
+    } else {
+      animate();
+    }
 
     // ── Resize ──
     const handleResize = () => {

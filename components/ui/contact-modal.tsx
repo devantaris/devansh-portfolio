@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, Instagram, MessageCircle, Copy, Check, ArrowUpRight, Linkedin } from 'lucide-react';
+import { profile } from '@/lib/content';
 
 interface ContactModalProps {
     isOpen: boolean;
@@ -13,7 +14,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
     const [copied, setCopied] = useState(false);
 
     const handleCopyEmail = () => {
-        navigator.clipboard.writeText('work.devanshkumar@gmail.com');
+        navigator.clipboard.writeText(profile.email);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
@@ -128,7 +129,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
 
                                     {/* LinkedIn */}
                                     <a
-                                        href="https://www.linkedin.com/in/devansh-kumar-3b3701217/"
+                                        href={profile.socials.linkedin}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="group relative flex flex-col items-center justify-center p-6 py-10 w-full md:w-[160px] rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all overflow-hidden aspect-square"
@@ -178,7 +179,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                                 <div className="text-center pt-2 border-t border-white/5 flex items-center justify-center gap-2">
                                     <span className="text-xs text-zinc-500">Need full credentials & academic records?</span>
                                     <a
-                                        href="https://devantaris.github.io"
+                                        href={profile.resumeSite}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-xs text-cyan-400 hover:text-cyan-300 font-mono flex items-center gap-1 transition-colors"

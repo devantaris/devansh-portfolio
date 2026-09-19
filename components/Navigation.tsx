@@ -3,17 +3,11 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ContactModal from '@/components/ui/contact-modal';
+import { profile } from '@/lib/content';
 
 export default function Navigation() {
-    const [isScrolled, setIsScrolled] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [isContactOpen, setIsContactOpen] = useState(false);
-
-    useEffect(() => {
-        const handleScroll = () => setIsScrolled(window.scrollY > 50);
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
 
     // Prevent body scrolling when menu is full screen
     useEffect(() => {
@@ -33,7 +27,7 @@ export default function Navigation() {
         { name: 'CAREER CHRONOLOGY', href: '#experience', number: '03' },
         { name: 'PUBLICATIONS & RESEARCH', href: '#blog', number: '04' },
         { name: 'SYSTEM METRICS', href: '#stats', number: '05' },
-        { name: 'LIVE RESUME ↗', href: 'https://devantaris.github.io', number: '06', external: true },
+        { name: 'LIVE RESUME ↗', href: profile.resumeSite, number: '06', external: true },
     ];
 
     const handleNavigate = (item: { href: string; external?: boolean }) => {
@@ -108,7 +102,7 @@ export default function Navigation() {
                     {/* Right Controls: Resume Pill + Kinetic Menu Trigger Button */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', pointerEvents: 'auto' }}>
                         <a
-                            href="https://devantaris.github.io"
+                            href={profile.resumeSite}
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{
@@ -235,7 +229,7 @@ export default function Navigation() {
                             userSelect: 'none'
                         }}>
                             {Array.from({ length: 15 }).map((_, i) => (
-                                <div key={i} style={{ marginBottom: '24px' }}>MODEL_STABILITY_LOCK_VAL_{(Math.random() * 100).toFixed(4)}</div>
+                                <div key={i} style={{ marginBottom: '24px' }}>MODEL_STABILITY_LOCK_VAL_{(i * 7.3183 % 100).toFixed(4)}</div>
                             ))}
                         </div>
 
@@ -337,10 +331,10 @@ export default function Navigation() {
                             
                             <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
                                 <a 
-                                    href="https://github.com/devantaris" 
+                                    href={profile.socials.github} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
-                                    title="GitHub"
+                                    aria-label="GitHub"
                                     style={{ color: '#8b889e', textDecoration: 'none', transition: 'color 0.2s' }}
                                     onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
                                     onMouseLeave={(e) => e.currentTarget.style.color = '#8b889e'}
@@ -348,10 +342,10 @@ export default function Navigation() {
                                     <GithubIcon />
                                 </a>
                                 <a 
-                                    href="https://linkedin.com/in/devansh-kumar-3b3701217" 
+                                    href={profile.socials.linkedin} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
-                                    title="LinkedIn"
+                                    aria-label="LinkedIn"
                                     style={{ color: '#8b889e', textDecoration: 'none', transition: 'color 0.2s' }}
                                     onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
                                     onMouseLeave={(e) => e.currentTarget.style.color = '#8b889e'}
@@ -359,10 +353,10 @@ export default function Navigation() {
                                     <LinkedInIcon />
                                 </a>
                                 <a 
-                                    href="https://leetcode.com/u/vantaris/" 
+                                    href={profile.socials.leetcode} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
-                                    title="LeetCode"
+                                    aria-label="LeetCode"
                                     style={{ color: '#8b889e', textDecoration: 'none', transition: 'color 0.2s' }}
                                     onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
                                     onMouseLeave={(e) => e.currentTarget.style.color = '#8b889e'}

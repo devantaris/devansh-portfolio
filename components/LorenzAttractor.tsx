@@ -25,8 +25,8 @@ export default function LorenzAttractor() {
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 
         // Lorenz Attractor Parameters
-        let sigma = 10;
-        let beta = 8/3;
+        const sigma = 10;
+        const beta = 8/3;
         let rho = 28;
         let targetRho = 28;
 
@@ -53,7 +53,7 @@ export default function LorenzAttractor() {
             positions[i * 3 + 2] = coords[i].z;
 
             const mixRatio = i / numParticles;
-            let color = new THREE.Color();
+            const color = new THREE.Color();
             if (mixRatio < 0.5) {
                 color.copy(colorPalette[0]).lerp(colorPalette[1], mixRatio * 2);
             } else {
@@ -138,8 +138,6 @@ export default function LorenzAttractor() {
         let isDragging = false;
         let previousMousePosition = { x: 0, y: 0 };
         
-        let targetRotX = 0;
-        let targetRotY = 0;
         let rotSpeedX = 0;
         let rotSpeedY = 0;
 

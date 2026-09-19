@@ -65,7 +65,9 @@ export default function MariSimulatorModal({ isOpen, onClose }: MariSimulatorMod
             }
         }
 
-        const simulatedLatency = (32 + Math.random() * 14).toFixed(1);
+        // Deterministic pseudo-latency from the inputs — keeps the useMemo pure
+        const latencySeed = ((amount * 31 + velocity * 17 + entropy * 97 + anomaly * 53) % 14);
+        const simulatedLatency = (32 + latencySeed).toFixed(1);
 
         return {
             normalizedRisk: (normalizedRisk * 100).toFixed(1),
@@ -274,7 +276,7 @@ export default function MariSimulatorModal({ isOpen, onClose }: MariSimulatorMod
                                         {/* Reason box if any */}
                                         {evaluation.shapReason && (
                                             <div className="p-3 rounded bg-white/[0.03] border border-white/5 text-[11px] font-mono text-zinc-300">
-                                                <span className="text-cyan-400 block font-bold mb-1">// EXPLANATION VECTOR:</span>
+                                                <span className="text-cyan-400 block font-bold mb-1">{'//'} EXPLANATION VECTOR:</span>
                                                 {evaluation.shapReason}
                                             </div>
                                         )}

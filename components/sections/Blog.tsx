@@ -1,45 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-
-const publications = [
-    {
-        number: '01',
-        title: '"Knowing When Not to Decide: A Staged Uncertainty-Aware Framework for Fraud Decisioning"',
-        badge: 'FIRST AUTHOR // RESEARCH MANUSCRIPT',
-        status: 'TARGETING IEEE TDSC & CONFERENCES',
-        description: 'Architected a staged decisioning framework routing 284K+ transactions through distinct uncertainty layers: abstention-aware XGBoost ensemble router, calibrated SVM second-opinion for epistemic uncertainty, Dempster-Shafer belief fusion across 3 evidence sources, and SHAP-backed structured deferral. Achieved 100% DECLINE precision and 100% automation rate.',
-        link: 'https://mari-alpha.vercel.app',
-        linkText: 'VIEW MARI FRAMEWORK →'
-    },
-    {
-        number: '02',
-        title: 'Simply Universe',
-        badge: 'PUBLISHED BOOK // CO-AUTHOR',
-        status: 'POTHI PUBLICATIONS',
-        description: 'Co-authored published book breaking down cosmological phenomena, astrophysics principles, and systemic models for scientific enthusiasts. Explores theoretical bounds and foundational laws governing physical architectures.',
-        link: 'https://devantaris.github.io',
-        linkText: 'SEE CITATION →'
-    },
-    {
-        number: '03',
-        title: 'IBM Machine Learning Professional Certificate',
-        badge: 'PROFESSIONAL ACCREDITATION',
-        status: 'CREDENTIAL: TYJU31W22CSJ // FEB 2026',
-        description: 'Professional validation spanning supervised and unsupervised machine learning, deep learning, hyperparameter calibration, feature engineering with SMOTE/StandardScaler, and production model evaluation.',
-        link: 'https://www.coursera.org/account/accomplishments/specialization/TYJU31W22CSJ',
-        linkText: 'VERIFY CREDENTIAL →'
-    },
-    {
-        number: '04',
-        title: 'FastAPI & Backend Development Specialization',
-        badge: 'BACKEND SPECIALIZATION',
-        status: 'PACKT / COURSERA // MAR 2026',
-        description: 'Advanced asynchronous API architectures, SQLAlchemy 2.0 ORM, PgBouncer connection pooling, Redis caching patterns, Celery background worker queues, and Dockerized microservice deployments.',
-        link: 'https://devantaris.github.io',
-        linkText: 'VIEW CURRICULUM →'
-    },
-];
+import { publications, profile } from '@/lib/content';
 
 export default function Blog() {
     return (
@@ -147,7 +109,7 @@ export default function Blog() {
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '40px', gap: '16px' }}>
                     <a
-                        href="https://devantaris.github.io"
+                        href={profile.resumeSite}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="glow-btn"
@@ -156,7 +118,7 @@ export default function Blog() {
                         VIEW FULL ACADEMIC RESUME ↗
                     </a>
                     <a
-                        href="https://linkedin.com/in/devansh-kumar-3b3701217"
+                        href={profile.socials.linkedin}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="glow-btn"

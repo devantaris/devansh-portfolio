@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { profile } from '@/lib/content';
 
 const GithubIcon = () => (
     <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
@@ -59,7 +60,7 @@ export default function ContactSection() {
                         <div>
                             <span className="mono-tag" style={{ color: 'var(--foreground-muted)' }}>PRIMARY_CHANNEL</span>
                             <motion.a
-                                href="mailto:work.devanshkumar@gmail.com"
+                                href={`mailto:${profile.email}`}
                                 whileHover={{ scale: 1.01 }}
                                 style={{
                                     display: 'block',
@@ -80,7 +81,7 @@ export default function ContactSection() {
                                     e.currentTarget.style.color = '#fff';
                                 }}
                             >
-                                work.devanshkumar <br />@gmail.com
+                                {profile.email.split('@')[0]} <br />@{profile.email.split('@')[1]}
                             </motion.a>
                         </div>
 
@@ -89,7 +90,7 @@ export default function ContactSection() {
                             <span className="mono-tag" style={{ color: 'var(--foreground-muted)', display: 'block', marginBottom: '16px' }}>NETWORK_HANDSHAKES</span>
                             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                                 <a
-                                    href="https://github.com/devantaris"
+                                    href={profile.socials.github}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="glow-btn"
@@ -100,7 +101,7 @@ export default function ContactSection() {
                                     GITHUB
                                 </a>
                                 <a
-                                    href="https://linkedin.com/in/devansh-kumar-3b3701217"
+                                    href={profile.socials.linkedin}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="glow-btn"
@@ -111,7 +112,7 @@ export default function ContactSection() {
                                     LINKEDIN
                                 </a>
                                 <a
-                                    href="https://leetcode.com/u/vantaris/"
+                                    href={profile.socials.leetcode}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="glow-btn"
@@ -122,7 +123,7 @@ export default function ContactSection() {
                                     LEETCODE
                                 </a>
                                 <a
-                                    href="https://devantaris.github.io"
+                                    href={profile.resumeSite}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="glow-btn"

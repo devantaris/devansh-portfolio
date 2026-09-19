@@ -5,8 +5,14 @@ import Lenis from 'lenis';
 
 export default function LenisProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
+        // Native scrolling on touch devices and for reduced-motion users —
+        // hijacking mobile scroll hurts both performance and usability.
+        const isTouch = window.matchMedia('(pointer: coarse)').matches;
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (isTouch || reduced) return;
+
         const lenis = new Lenis({
-            duration: 1.4,
+            duration: 1.1,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             touchMultiplier: 2,
             infinite: false,

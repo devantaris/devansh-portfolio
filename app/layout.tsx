@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Fraunces, Plus_Jakarta_Sans, Space_Mono } from "next/font/google";
 import "./globals.css";
-import { Analytics } from "@vercel/analytics/react";
 import LenisProvider from "@/components/LenisProvider";
+import { SITE, withBasePath } from "@/lib/content";
 
 // Brutalist editorial header font
 const fraunces = Fraunces({
@@ -27,20 +27,33 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Devansh Kumar — Creative Technologist",
-  description: "Architecting systems that think. From ML-driven fraud models and real-time P2P learning platforms to immersive custom graphics wrappers.",
-  keywords: ["Devansh Kumar", "Creative Technologist", "Software Engineer", "MARI", "Biome", "SkillSync", "XGBoost", "Three.js", "React Three Fiber", "IEEE Chairperson", "INTJ Systems"],
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? SITE.url),
+  title: SITE.title,
+  description: SITE.description,
+  keywords: ["Devansh Kumar", "Software Engineer", "MARI", "SatyaLabel", "CryptoFlow", "XGBoost", "FastAPI", "IEEE Chairperson", "Bennett University"],
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
-    title: "Devansh Kumar — Creative Technologist",
-    description: "Architecting systems that think. From ML-driven fraud models and real-time P2P learning platforms to immersive custom graphics wrappers.",
-    url: "https://devantaris.vercel.app",
-    siteName: "Devansh Kumar",
+    title: SITE.title,
+    description: SITE.description,
+    url: "/",
+    siteName: SITE.name,
     type: "website",
+    images: [
+      {
+        url: withBasePath("/images/og-image.jpg"),
+        width: 1200,
+        height: 630,
+        alt: SITE.name,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Devansh Kumar — Creative Technologist",
-    description: "Architecting systems that think. From ML-driven fraud models and real-time P2P learning platforms to immersive custom graphics wrappers.",
+    title: SITE.title,
+    description: SITE.description,
+    images: [withBasePath("/images/og-image.jpg")],
   },
 };
 
@@ -55,7 +68,6 @@ export default function RootLayout({
         <LenisProvider>
           {children}
         </LenisProvider>
-        <Analytics />
       </body>
     </html>
   );
