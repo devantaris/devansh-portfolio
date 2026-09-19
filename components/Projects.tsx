@@ -599,6 +599,32 @@ export default function Projects() {
                                 {projects[inspectedProj].impact}
                             </div>
 
+                            {/* Media slot: video > poster > pending frame */}
+                            {projects[inspectedProj].video ? (
+                                <video
+                                    src={projects[inspectedProj].video}
+                                    poster={projects[inspectedProj].poster ?? undefined}
+                                    controls
+                                    playsInline
+                                    style={{ width: '100%', aspectRatio: '16 / 9', background: '#000', border: `1px solid ${projects[inspectedProj].color}35`, borderRadius: '2px', objectFit: 'cover' }}
+                                />
+                            ) : projects[inspectedProj].poster ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                    src={projects[inspectedProj].poster}
+                                    alt={`${projects[inspectedProj].name} preview`}
+                                    style={{ width: '100%', aspectRatio: '16 / 9', objectFit: 'cover', border: `1px solid ${projects[inspectedProj].color}35`, borderRadius: '2px' }}
+                                />
+                            ) : (
+                                <div style={{
+                                    width: '100%', aspectRatio: '16 / 9', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                                    border: `1px dashed ${projects[inspectedProj].color}30`, borderRadius: '2px', background: 'rgba(255,255,255,0.01)',
+                                }}>
+                                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.3)' }}>TRANSMISSION PENDING</span>
+                                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '7px', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.18)' }}>{'// SET "VIDEO" OR "POSTER" IN data/projects.json'}</span>
+                                </div>
+                            )}
+
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase' }}>
                                     Engineering Details

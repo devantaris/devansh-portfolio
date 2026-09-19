@@ -5,8 +5,8 @@
   "description": "Architecting systems that think. From ML-driven fraud models and real-time P2P learning platforms to immersive custom graphics wrappers.",
   "tagline": "B.Tech CSE at Bennett University (CGPA 8.75) with production systems experience. First-author researcher on staged uncertainty-aware fraud decisioning (284K+ transactions, 100% DECLINE precision). IEEE Student Branch Chairperson leading 100+ engineers.",
   "heroMeta": "Python · FastAPI · PostgreSQL · Docker · Next.js",
-  "heroStatus": "IEEE BU Chair · Open to Opportunities",
-  "portraitCardMeta": "BENNETT UNIV // CGPA 8.75 // IEEE BU",
+  "heroStatus": "Open to Opportunities",
+  "portraitCardMeta": "BENNETT UNIV // CGPA 8.75",
   "email": "work.devanshkumar@gmail.com",
   "phone": "+91 7007484933",
   "siteUrl": "https://devantaris.github.io/devansh-portfolio",
@@ -23,7 +23,7 @@
   "about": {
     "heading": ["Architecting", "structural bounds."],
     "shortBio": "B.Tech Computer Science student at Bennett University (CGPA 8.75/10.0). Architecting high-throughput backend services, cryptographic pipelines, and uncertainty-aware ML frameworks.",
-    "longBio": "I design computational tools for complex operations. As the Chairperson of the IEEE Student Branch at Bennett University, I lead and coordinate a 100+ member vertical structure to construct software products, secure sponsorships (₹1.48L+), and spearhead international events like the Global AI Summit 2.0 (3,000–4,000+ attendees) and Triverse 3.0. First-author of a research manuscript on staged uncertainty-aware fraud decisioning targeting IEEE TDSC.",
+    "longBio": "I design computational tools for complex operations. As the outgoing Chairperson of the IEEE Student Branch at Bennett University (2025–26 tenure), I led a 100+ member vertical structure to construct software products, secure sponsorships (₹1.48L+), and spearhead international events like the Global AI Summit 2.0 (3,000–4,000+ attendees) and Triverse 3.0. First-author of a research manuscript on staged uncertainty-aware fraud decisioning targeting IEEE TDSC.",
     "values": [
       { "title": "SYSTEMS OVER PREDICTIONS", "desc": "Models fail; structural bounds must insulate against mathematical thresholds." },
       { "title": "ARCHITECTURE BEFORE CODE", "desc": "Establish strict structural interfaces before allocating computing stacks." },

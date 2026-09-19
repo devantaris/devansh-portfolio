@@ -7,6 +7,8 @@
     "demo": "https://mari-alpha.vercel.app",
     "code": "https://github.com/devantaris/mari",
     "color": "#00e5ff",
+    "poster": null,
+    "video": null,
     "impact": "284k txns · 100% DECLINE precision · 86.73% recall · Sub-100ms",
     "specs": [
       "Architected a 4-component staged decisioning pipeline routing 284K+ transactions through distinct uncertainty layers: V1 (abstention-aware XGBoost ensemble router with Isolation Forest novelty detection), V2 (calibrated SVM second-opinion for epistemic uncertainty resolution), V3 (Dempster-Shafer belief fusion across 3 independent evidence sources), and V4 (SHAP-backed structured deferral replacing human queues).",
@@ -23,6 +25,8 @@
     "demo": "https://edu-supervision.vercel.app",
     "code": "https://github.com/devantaris/edu-supervision",
     "color": "#a0ff60",
+    "poster": null,
+    "video": null,
     "impact": "pgvector semantic search · Celery + Redis queues · RBAC · Docker Compose",
     "specs": [
       "Built a scalable platform for teacher training & evaluation with async FastAPI backend, PostgreSQL with pgvector for semantic plagiarism detection, and Celery + Redis task queue for background AI inference and OCR jobs.",
@@ -39,6 +43,8 @@
     "demo": "https://cryptoflow-beta.vercel.app",
     "code": "https://github.com/devantaris/cryptoflow",
     "color": "#ff5500",
+    "poster": null,
+    "video": null,
     "impact": "120+ MB/s encryption · <0.1% overhead · 100% defense across 7 attack vectors",
     "specs": [
       "Engineered a 5-stage cryptographic pipeline for multimodal medical data (DICOM, EHR, reports) achieving 120+ MB/s encryption and 130+ MB/s decryption with <0.1% storage overhead.",
@@ -55,6 +61,8 @@
     "demo": null,
     "code": "https://github.com/devantaris/SatyaLabel",
     "color": "#ffaa00",
+    "poster": null,
+    "video": null,
     "impact": "Dual-engine OCR · Explainable rule engine · PostGIS geo-tagging",
     "specs": [
       "Built a Legal Metrology label compliance scanner combining dual-engine OCR with OpenCV preprocessing to extract and validate mandated label fields.",
@@ -71,6 +79,8 @@
     "demo": null,
     "code": "https://github.com/devantaris/flutter-ott-app",
     "color": "#b500fa",
+    "poster": null,
+    "video": null,
     "impact": "60fps rendering · Offline-first · BLoC state mgmt · 4+ sprint releases",
     "specs": [
       "Delivered a production cross-platform mobile app (iOS, Android, Web) with BLoC state management, secure auth, and SQLite persistence.",
@@ -87,6 +97,8 @@
     "demo": "https://skill-sync-steel-rho.vercel.app",
     "code": "https://github.com/devantaris/SkillSync",
     "color": "#00e5ff",
+    "poster": null,
+    "video": null,
     "impact": "ACID credit ledger · RLS policies · HMAC-verified webhooks",
     "specs": [
       "Peer-powered skill economy platform where users share knowledge through courses, earn credits, and spend credits to learn.",
@@ -103,6 +115,8 @@
     "demo": null,
     "code": "https://github.com/devantaris/Biome",
     "color": "#a0ff60",
+    "poster": null,
+    "video": null,
     "impact": "Territory expansion · Global leaderboard · 30+ achievements",
     "specs": [
       "Gamified productivity desktop app where deep work leaves a tangible, beautiful trace — complete focus sessions to earn plants with a rarity system, then place them on your personal world grid.",
@@ -118,6 +132,8 @@
     "demo": null,
     "code": "https://github.com/devantaris/devansh-portfolio",
     "color": "#b500fa",
+    "poster": null,
+    "video": null,
     "impact": "Next.js 16 · Static export · Zero layout shift",
     "specs": [
       "This portfolio site features a Three.js Lorenz attractor dynamic hero, multi-layer starfield background, kinetic orbital tech stack visualizer, responsive contact matrix, and live GitHub contribution telemetry.",

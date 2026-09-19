@@ -12,6 +12,10 @@ export interface Project {
     demo: string | null;
     code: string;
     color: string;
+    /** Optional screenshot/preview image (path under /public or absolute URL) */
+    poster: string | null;
+    /** Optional demo video (path under /public or absolute URL) */
+    video: string | null;
     impact: string;
     specs: string[];
     featured: boolean;
