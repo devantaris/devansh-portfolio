@@ -6,6 +6,8 @@ import Link from 'next/link';
 import * as THREE from 'three';
 import { featuredProjects as projects } from '@/lib/content';
 import { useMotionCapable } from '@/hooks/useMotionCapable';
+import { createProjectHudCanvas, renderProjectHud } from '@/lib/projectHudRenderer';
+import ProjectHudPreview from '@/components/ui/ProjectHudPreview';
 
 const SPACING = 120; // Z-distance between panels in 3D space
 
@@ -44,8 +46,8 @@ export default function Projects() {
         });
         const { w, h } = getSize();
 
-        const camera = new THREE.PerspectiveCamera(50, w / h, 0.1, 2000);
-        camera.position.set(0, 0, 60);
+        const camera = new THREE.PerspectiveCamera(42, w / h, 0.1, 2000);
+        camera.position.set(0, 0, 52);
 
         const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
         renderer.setSize(w, h, false);
@@ -56,16 +58,29 @@ export default function Projects() {
         const artifactMeshes: THREE.Mesh[] = [];
         const wireframeMats: THREE.LineBasicMaterial[] = [];
         const backLightMats: THREE.MeshBasicMaterial[] = [];
+        const hudCanvases: HTMLCanvasElement[] = [];
+        const hudTextures: THREE.CanvasTexture[] = [];
 
         projects.forEach((proj, idx) => {
             const group = new THREE.Group();
-            const isLeft = idx % 2 === 0;
-            const xPos = isLeft ? -8 : 8;
+            // Firmly positioned on the right stage (+14) so it never collides with text or clips at 100% zoom
+            const xPos = 14;
 
-            // Background panel
-            const panelGeo = new THREE.PlaneGeometry(38, 22);
+            // Generate procedural telemetry HUD canvas texture
+            const hudCanvas = createProjectHudCanvas(1520, 880);
+            const hudCtx = hudCanvas.getContext('2d');
+            if (hudCtx) {
+                renderProjectHud(hudCtx, proj, hudCanvas.width, hudCanvas.height, 0);
+            }
+            const hudTexture = new THREE.CanvasTexture(hudCanvas);
+            hudTexture.colorSpace = THREE.SRGBColorSpace;
+            hudCanvases.push(hudCanvas);
+            hudTextures.push(hudTexture);
+
+            // Background panel with project HUD visual (24 x 13.9 preserves crisp 16:9 ratio)
+            const panelGeo = new THREE.PlaneGeometry(24, 13.9);
             const panelMat = new THREE.MeshBasicMaterial({
-                color: 0x020204,
+                map: hudTexture,
                 side: THREE.DoubleSide,
                 transparent: true,
                 opacity: 0.95,
@@ -89,26 +104,26 @@ export default function Projects() {
                 opacity: idx === 0 ? 0.05 : 0.003,
                 blending: THREE.AdditiveBlending,
             });
-            const bl = new THREE.Mesh(new THREE.PlaneGeometry(44, 28), blMat);
+            const bl = new THREE.Mesh(new THREE.PlaneGeometry(28, 17.5), blMat);
             bl.position.z = -1;
             group.add(bl);
             backLightMats.push(blMat);
 
-            // Floating geometry artifact
+            // Floating geometry artifact placed gracefully above the card's right edge
             const artGeos: THREE.BufferGeometry[] = [
-                new THREE.IcosahedronGeometry(4.5, 1),
-                new THREE.TorusKnotGeometry(2.8, 0.9, 80, 8),
-                new THREE.OctahedronGeometry(4.5, 0),
-                new THREE.DodecahedronGeometry(4.2, 0),
+                new THREE.IcosahedronGeometry(2.5, 1),
+                new THREE.TorusKnotGeometry(1.6, 0.5, 80, 8),
+                new THREE.OctahedronGeometry(2.5, 0),
+                new THREE.DodecahedronGeometry(2.3, 0),
             ];
             const artMat = new THREE.MeshBasicMaterial({
                 color: new THREE.Color(proj.color),
                 wireframe: true,
                 transparent: true,
-                opacity: 0.45,
+                opacity: 0.5,
             });
             const art = new THREE.Mesh(artGeos[idx % artGeos.length], artMat);
-            art.position.set(isLeft ? 22 : -22, 0, 3);
+            art.position.set(12, 7.5, 2);
             group.add(art);
             artifactMeshes.push(art);
 
@@ -155,19 +170,34 @@ export default function Projects() {
             const frac = sv * (total - 1);
             const cur = Math.min(Math.round(frac), total - 1);
 
-            // Camera Z travels through the panels
-            const targetZ = 60 - frac * SPACING;
-            // Camera X gently pans to current panel's side
-            const sideX = cur % 2 === 0 ? -4 : 4;
-            const targetX = sideX + mouseX * 2.5;
-            const targetY = mouseY * 1.5;
+            // Camera Z travels through the panels (responsive 0.14 lerp)
+            const targetZ = 52 - frac * SPACING;
+            // Subtle mouse parallax centered on stage
+            const targetX = mouseX * 1.2;
+            const targetY = mouseY * 0.8;
 
-            camera.position.z += (targetZ - camera.position.z) * 0.08;
-            camera.position.x += (targetX - camera.position.x) * 0.05;
-            camera.position.y += (targetY - camera.position.y) * 0.05;
+            camera.position.z += (targetZ - camera.position.z) * 0.14;
+            camera.position.x += (targetX - camera.position.x) * 0.08;
+            camera.position.y += (targetY - camera.position.y) * 0.08;
 
-            // Look slightly ahead of current position
-            camera.lookAt(camera.position.x * 0.4, 0, camera.position.z - 50);
+            // Straight-ahead camera angle focused on stage
+            camera.lookAt(0, 0, camera.position.z - 50);
+
+            // Distance fade to prevent panels from ever blowing up in the user's face when scrolling
+            projectGroups.forEach((g) => {
+                const distToCam = g.position.z - camera.position.z;
+                // Visible window: -110 to -14
+                let alpha = 1;
+                if (distToCam > -22) {
+                    alpha = Math.max(0, (-distToCam) / 22);
+                } else if (distToCam < -90) {
+                    alpha = Math.max(0, 1 - (-distToCam - 90) / 40);
+                }
+                const panelMesh = g.children[0] as THREE.Mesh;
+                if (panelMesh && panelMesh.material) {
+                    (panelMesh.material as THREE.MeshBasicMaterial).opacity = 0.95 * alpha;
+                }
+            });
 
             // Spin artifacts
             artifactMeshes.forEach((m, i) => {
@@ -183,14 +213,33 @@ export default function Projects() {
                 mat.opacity += ((i === cur ? 0.06 : 0.003) - mat.opacity) * 0.08;
             });
 
+            // Animate active project's telemetry HUD texture (silky 30fps refresh)
+            hudFrameCount++;
+            if (hudFrameCount % 2 === 0 && hudCanvases[cur]) {
+                const ctx = hudCanvases[cur].getContext('2d');
+                if (ctx) {
+                    renderProjectHud(ctx, projects[cur], 1520, 880, performance.now() * 0.001);
+                    hudTextures[cur].needsUpdate = true;
+                }
+            }
+
             // Update React UI only when index flips
             if (cur !== activeIdxRef.current) {
                 activeIdxRef.current = cur;
                 setActiveIdx(cur);
+                // Immediately render new active project's HUD
+                if (hudCanvases[cur]) {
+                    const ctx = hudCanvases[cur].getContext('2d');
+                    if (ctx) {
+                        renderProjectHud(ctx, projects[cur], 1520, 880, performance.now() * 0.001);
+                        hudTextures[cur].needsUpdate = true;
+                    }
+                }
             }
 
             renderer.render(scene, camera);
         };
+        let hudFrameCount = 0;
         animate();
 
         // ── Resize ────────────────────────────────────────────────────────────
@@ -208,6 +257,7 @@ export default function Projects() {
             window.removeEventListener('scroll', updateScroll);
             window.removeEventListener('mousemove', onMouse);
             ro.disconnect();
+            hudTextures.forEach((t) => t.dispose());
             projectGroups.forEach((g) =>
                 g.children.forEach((c: THREE.Object3D) => {
                     const mesh = c as THREE.Mesh;
@@ -305,17 +355,17 @@ export default function Projects() {
                 <nav
                     style={{
                         position: 'absolute',
-                        left: 'clamp(20px, 4vw, 56px)',
+                        left: 'clamp(14px, 2vw, 32px)',
                         top: '50%',
                         transform: 'translateY(-50%)',
-                        zIndex: 6,
+                        zIndex: 12,
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: '22px',
+                        gap: '20px',
                     }}
                 >
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '7px', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                        Projects
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '7px', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', marginBottom: '2px' }}>
+                        PRJ
                     </span>
                     {projects.map((p, i) => (
                         <button
@@ -328,14 +378,14 @@ export default function Projects() {
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '10px',
+                                gap: '8px',
                             }}
                         >
                             <span style={{
-                                width: i === activeIdx ? '20px' : '8px',
+                                width: i === activeIdx ? '16px' : '6px',
                                 height: '1px',
                                 background: i === activeIdx ? p.color : 'rgba(255,255,255,0.18)',
-                                transition: 'all 0.4s ease',
+                                transition: 'all 0.3s ease',
                                 display: 'block',
                             }} />
                             <span style={{
@@ -345,7 +395,7 @@ export default function Projects() {
                                 color: i === activeIdx ? '#fff' : 'rgba(255,255,255,0.22)',
                                 transition: 'color 0.3s ease',
                             }}>
-                                {String(i + 1).padStart(2, "0")}
+                                0{i + 1}
                             </span>
                         </button>
                     ))}
@@ -356,62 +406,67 @@ export default function Projects() {
                     style={{
                         position: 'absolute',
                         inset: 0,
-                        zIndex: 5,
+                        zIndex: 10,
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'space-between',
-                        padding: 'clamp(80px, 10vh, 110px) clamp(24px, 6vw, 96px) clamp(36px, 5vh, 56px)',
+                        padding: 'clamp(56px, 7vh, 88px) clamp(24px, 4.5vw, 72px) clamp(24px, 4vh, 44px)',
                         pointerEvents: 'none',
+                        maxWidth: '1520px',
+                        margin: '0 auto',
+                        left: 0,
+                        right: 0,
                     }}
                 >
                     {/* Section header */}
-                    <div style={{ paddingLeft: 'clamp(56px, 8vw, 110px)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div style={{ paddingLeft: 'clamp(36px, 4vw, 56px)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div>
-                            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase' }}>
-                                04 // Engineering Work
+                            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>
+                                04 // ENGINEERING WORK
                             </span>
-                            <h2 style={{ fontSize: 'clamp(26px, 3.5vw, 42px)', fontWeight: 200, marginTop: '6px', color: '#fff', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
+                            <h2 style={{ fontSize: 'clamp(24px, 3.2vw, 40px)', fontWeight: 200, marginTop: '6px', color: '#fff', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
                                 Shipped systems.
                             </h2>
                         </div>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', color: 'rgba(255,255,255,0.2)', letterSpacing: '0.12em' }}>
-                            SCROLL TO EXPLORE
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.14em' }}>
+                            SCROLL TO EXPLORE ↓
                         </span>
                     </div>
 
                     {/* Active project card */}
-                    <motion.div
+                    <div
                         key={activeIdx}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                         style={{
-                            paddingLeft: 'clamp(56px, 8vw, 110px)',
+                            paddingLeft: 'clamp(36px, 4vw, 56px)',
+                            maxWidth: 'min(450px, 42vw)',
                             pointerEvents: 'auto',
-                            maxWidth: '460px',
+                            transition: 'opacity 0.25s ease',
                         }}
                     >
                         {/* Impact badge */}
                         <div style={{
-                            display: 'inline-block',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
                             fontFamily: 'var(--font-mono)',
                             fontSize: '8px',
                             letterSpacing: '0.1em',
                             color: proj.color,
                             border: `1px solid ${proj.color}50`,
-                            padding: '3px 10px',
+                            padding: '4px 10px',
                             borderRadius: '2px',
                             marginBottom: '14px',
-                            background: `${proj.color}0a`,
+                            background: `${proj.color}0e`,
                         }}>
+                            <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: proj.color }} />
                             {proj.impact}
                         </div>
 
                         <h3 style={{
-                            fontSize: 'clamp(17px, 1.8vw, 22px)',
+                            fontSize: 'clamp(18px, 2vw, 26px)',
                             fontWeight: 300,
                             color: '#fff',
-                            margin: '0 0 8px 0',
+                            margin: '0 0 10px 0',
                             fontFamily: 'var(--font-serif)',
                             letterSpacing: '-0.01em',
                             lineHeight: 1.2,
@@ -419,21 +474,22 @@ export default function Projects() {
                             {proj.name}
                         </h3>
 
-                        <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', fontWeight: 300, lineHeight: 1.65, margin: '0 0 18px 0' }}>
+                        <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', fontWeight: 300, lineHeight: 1.65, margin: '0 0 18px 0' }}>
                             {proj.tagline}
                         </p>
 
                         {/* Tech pills */}
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '20px' }}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '22px' }}>
                             {proj.tech.map((t) => (
                                 <span key={t} style={{
                                     fontFamily: 'var(--font-mono)',
                                     fontSize: '8px',
                                     letterSpacing: '0.06em',
-                                    color: 'rgba(255,255,255,0.45)',
-                                    border: '1px solid rgba(255,255,255,0.08)',
+                                    color: 'rgba(255,255,255,0.5)',
+                                    border: '1px solid rgba(255,255,255,0.1)',
                                     padding: '3px 8px',
                                     borderRadius: '2px',
+                                    background: 'rgba(255,255,255,0.02)',
                                 }}>
                                     {t}
                                 </span>
@@ -450,7 +506,7 @@ export default function Projects() {
                                     fontFamily: 'var(--font-mono)',
                                     fontSize: '9px',
                                     letterSpacing: '0.12em',
-                                    padding: '9px 18px',
+                                    padding: '10px 18px',
                                     cursor: 'pointer',
                                     borderRadius: '2px',
                                     transition: 'all 0.25s ease',
@@ -473,11 +529,11 @@ export default function Projects() {
                                 style={{
                                     background: 'rgba(255,255,255,0.03)',
                                     border: '1px solid rgba(255,255,255,0.14)',
-                                    color: 'rgba(255,255,255,0.7)',
+                                    color: 'rgba(255,255,255,0.75)',
                                     fontFamily: 'var(--font-mono)',
                                     fontSize: '9px',
                                     letterSpacing: '0.12em',
-                                    padding: '9px 18px',
+                                    padding: '10px 18px',
                                     borderRadius: '2px',
                                     textDecoration: 'none',
                                     transition: 'all 0.25s ease',
@@ -493,24 +549,24 @@ export default function Projects() {
                                 }}
                                 onMouseLeave={(e) => {
                                     e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
-                                    e.currentTarget.style.color = 'rgba(255,255,255,0.7)';
+                                    e.currentTarget.style.color = 'rgba(255,255,255,0.75)';
                                     e.currentTarget.style.borderColor = 'rgba(255,255,255,0.14)';
                                 }}
                             >
                                 All Projects Archive →
                             </Link>
                         </div>
-                    </motion.div>
+                    </div>
 
                     {/* Footer progress dots */}
                     <div style={{
-                        paddingLeft: 'clamp(56px, 8vw, 110px)',
+                        paddingLeft: 'clamp(36px, 4vw, 56px)',
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
                     }}>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', color: 'rgba(255,255,255,0.22)', letterSpacing: '0.1em' }}>
-                            {activeIdx + 1} / {projects.length}
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.12em' }}>
+                            0{activeIdx + 1} / 0{projects.length}
                         </span>
                         <div style={{ display: 'flex', gap: '8px', pointerEvents: 'auto' }}>
                             {projects.map((_, i) => (
@@ -518,7 +574,7 @@ export default function Projects() {
                                     key={i}
                                     onClick={() => scrollToProject(i)}
                                     style={{
-                                        width: i === activeIdx ? '28px' : '7px',
+                                        width: i === activeIdx ? '32px' : '8px',
                                         height: '2px',
                                         borderRadius: '1px',
                                         background: i === activeIdx ? proj.color : 'rgba(255,255,255,0.15)',
@@ -616,13 +672,7 @@ export default function Projects() {
                                     style={{ width: '100%', aspectRatio: '16 / 9', objectFit: 'cover', border: `1px solid ${projects[inspectedProj].color}35`, borderRadius: '2px' }}
                                 />
                             ) : (
-                                <div style={{
-                                    width: '100%', aspectRatio: '16 / 9', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                                    border: `1px dashed ${projects[inspectedProj].color}30`, borderRadius: '2px', background: 'rgba(255,255,255,0.01)',
-                                }}>
-                                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.3)' }}>TRANSMISSION PENDING</span>
-                                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '7px', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.18)' }}>{'// SET "VIDEO" OR "POSTER" IN data/projects.json'}</span>
-                                </div>
+                                <ProjectHudPreview project={projects[inspectedProj]} />
                             )}
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
