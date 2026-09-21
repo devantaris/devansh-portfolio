@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import * as THREE from 'three';
-import { BODIES, bodyPosition, createAsteroidBelt, createBody, createNebulae, createOrbitRing, createStars, createSun, type BuiltBody } from './scene';
+import { BODIES, bodyPosition, createAsteroidBelt, createBody, createNebulae, createOrbitRing, createStars, createSun, createProjectMoon, type BuiltBody } from './scene';
 import { StopPanel, accentFor } from './panels';
 import { profile, featuredProjects } from '@/lib/content';
 
@@ -35,7 +35,7 @@ export default function Universe() {
         selectedMoon: number;
     }>({
         targetIndex: OVERVIEW,
-        camPos: new THREE.Vector3(0, 120, 300),
+        camPos: new THREE.Vector3(0, 190, 420),
         camLook: new THREE.Vector3(0, 0, 0),
         mouse: { x: 0, y: 0 },
         warpCooldownUntil: 0,
@@ -101,16 +101,12 @@ export default function Universe() {
         const moonGroup = new THREE.Group();
         machines.group.add(moonGroup);
         const moons = featuredProjects.slice(0, 4).map((p, i) => {
-            const m = new THREE.Mesh(
-                new THREE.IcosahedronGeometry(0.85, 1),
-                new THREE.MeshBasicMaterial({ color: new THREE.Color(p.color), wireframe: true, transparent: true, opacity: 0.85 }),
-            );
-            m.userData.projectIndex = i;
+            const m = createProjectMoon(p.color, i);
             moonGroup.add(m);
             return m;
         });
 
-        scene.add(new THREE.AmbientLight(0x223344, 1.4));
+        scene.add(new THREE.AmbientLight(0x3e4758, 1.8));
 
         /* ── Interaction listeners ── */
         const raycaster = new THREE.Raycaster();
@@ -141,6 +137,10 @@ export default function Universe() {
         renderer.domElement.addEventListener('click', onClick);
 
         const onWheel = (e: WheelEvent) => {
+            const target = e.target as HTMLElement | null;
+            if (target && target.closest('.world-panel-aside, aside, .world-panel-scroll, .custom-scrollbar')) {
+                return; // Allow smooth, natural scrolling inside the dossier panel!
+            }
             if (Math.abs(e.deltaY) < 8) return;
             if (performance.now() < world.current.warpCooldownUntil) return;
             step(e.deltaY > 0 ? 1 : -1);
@@ -181,16 +181,28 @@ export default function Universe() {
             const dt = Math.min(0.05, 1 / 60);
             const w = world.current;
 
-            // Sun pulse + starfield time
+            // Sun pulse + starfield time + solar granulation turbulence
             sun.core.scale.setScalar(1 + Math.sin(t * 1.4) * 0.02);
             sun.glow.material.opacity = 0.75 + Math.sin(t * 1.4) * 0.12;
-            (stars.material as THREE.ShaderMaterial).uniforms.uTime.value = t;
+            if ((sun.core.material as THREE.ShaderMaterial).uniforms?.uTime) {
+                (sun.core.material as THREE.ShaderMaterial).uniforms.uTime.value = t;
+            }
+            if ((stars.material as THREE.ShaderMaterial).uniforms?.uTime) {
+                (stars.material as THREE.ShaderMaterial).uniforms.uTime.value = t;
+            }
 
             // Bodies on orbits
             bodies.forEach((b, i) => {
                 bodyPosition(b.def, t, b.group.position);
                 b.mesh.rotation.y += dt * (0.15 + i * 0.05);
-                b.mats.forEach((m) => { m.uniforms.uTime.value = t; });
+                if (b.clouds) {
+                    b.clouds.rotation.y += dt * 0.22;
+                }
+                b.mats.forEach((m) => {
+                    if (m.uniforms?.uTime) {
+                        m.uniforms.uTime.value = t;
+                    }
+                });
                 if (b.ringPulse) {
                     if (b.def.kind === 'pulsar') {
                         const p = (t * 0.35) % 1;
@@ -200,7 +212,7 @@ export default function Universe() {
                         b.ringPulse.rotation.y += dt * 0.4;
                     }
                 }
-                b.glow.material.opacity = 0.4 + Math.sin(t * 0.8 + i) * 0.1;
+                b.glow.material.opacity = (b.def.id === 'origin' ? 0.08 : 0.16) + Math.sin(t * 0.8 + i) * 0.02;
             });
 
             belt.rotation.y = t * 0.01;
@@ -211,8 +223,7 @@ export default function Universe() {
                 m.position.set(Math.cos(a) * (machines.def.size + 4.5 + i * 1.4), Math.sin(a * 0.7) * 1.2, Math.sin(a) * (machines.def.size + 4.5 + i * 1.4));
                 m.rotation.y += dt;
                 const isSel = w.selectedMoon === i && selectedRef.current !== null;
-                m.scale.setScalar(isSel ? 1.5 : 1);
-                (m.material as THREE.MeshBasicMaterial).opacity = isSel ? 1 : 0.7;
+                m.scale.setScalar(isSel ? 1.4 : 1);
             });
 
             // Raycast hover (desktop affordance)
@@ -226,21 +237,38 @@ export default function Universe() {
 
             // ── Camera rig ──
             if (w.targetIndex === OVERVIEW) {
-                const a = t * 0.04;
-                desired.set(Math.cos(a) * 200, 85 + Math.sin(t * 0.1) * 8, Math.sin(a) * 200);
+                const a = t * 0.035;
+                // Extended radius (420) and elevation (190) ensures all bodies out to Beacon (286) fit at 100% default zoom
+                desired.set(Math.cos(a) * 420, 190 + Math.sin(t * 0.08) * 8, Math.sin(a) * 420);
                 lookDesired.set(0, 0, 0);
             } else {
                 const b = bodies[w.targetIndex];
                 bodyPosition(b.def, t, tmp);
-                const dist = b.def.size * 6 + 14;
-                // hover at an offset angle that slowly drifts
-                const drift = t * 0.05;
+
+                // Position camera on the sunward side so the planet's illuminated daylight hemisphere faces the viewer!
+                // Vector pointing from planet toward the central star (0,0,0)
+                const planetToSun = new THREE.Vector3(-tmp.x, 0, -tmp.z).normalize();
+                // Perpendicular horizontal tangent along orbital direction
+                const tangent = new THREE.Vector3(-planetToSun.z, 0, planetToSun.x);
+                // 33-degree sun offset creates an ~80% gibbous phase (shows terrain, oceans & terminator line)
+                const sunAngle = 0.58;
+                const viewDir = new THREE.Vector3()
+                    .copy(planetToSun)
+                    .multiplyScalar(Math.cos(sunAngle))
+                    .addScaledVector(tangent, Math.sin(sunAngle))
+                    .normalize();
+
+                const dist = b.def.size * 5.0 + 13;
                 desired.set(
-                    tmp.x + Math.cos(drift) * dist + w.mouse.x * 3,
-                    tmp.y + b.def.size * 1.4 + w.mouse.y * 2.2,
-                    tmp.z + Math.sin(drift) * dist,
+                    tmp.x + viewDir.x * dist + w.mouse.x * 2.2,
+                    tmp.y + b.def.size * 0.9 + w.mouse.y * 1.8,
+                    tmp.z + viewDir.z * dist
                 );
-                lookDesired.copy(tmp);
+                // Offset camera look target to the right so the planet is framed gracefully in the left half of the screen,
+                // leaving the right half open for the HUD dossier panel
+                const camDir = new THREE.Vector3().subVectors(tmp, desired).normalize();
+                const camRight = new THREE.Vector3().crossVectors(camDir, new THREE.Vector3(0, 1, 0)).normalize();
+                lookDesired.copy(tmp).addScaledVector(camRight, dist * 0.28);
             }
             const ease = 1 - Math.exp(-dt * 2.6);
             w.camPos.lerp(desired, ease);
@@ -351,7 +379,7 @@ export default function Universe() {
             {!activeStop && booted && (
                 <div style={{ position: 'absolute', left: '50%', bottom: '110px', transform: 'translateX(-50%)', zIndex: 30, pointerEvents: 'none', textAlign: 'center' }}>
                     <span className="mono-tag" style={{ fontSize: '9px', color: 'rgba(255,255,255,0.45)' }}>
-                        SCROLL / CLICK A BODY TO NAVIGATE — [1–6] JUMP — DRIFT IS NORMAL OUT HERE
+                        EXPLORE BODIES VIA SCROLL OR CLICK — [1–6] DIRECT JUMP — ESC TO RETURN
                     </span>
                 </div>
             )}
@@ -379,7 +407,7 @@ export default function Universe() {
                 opacity: booted ? 0 : 1, transition: 'opacity 1.2s ease',
             }}>
                 <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)' }}>
-                    <span className="mono-tag" style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)' }}>CALIBRATING OPTICS…</span>
+                    <span className="mono-tag" style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)' }}>INITIALIZING CELESTIAL SYSTEM…</span>
                 </div>
             </div>
         </div>

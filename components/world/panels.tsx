@@ -20,6 +20,7 @@ export function accentFor(id: string): string {
 function PanelShell({ children, accent, onClose }: { children: React.ReactNode; accent: string; onClose: () => void }) {
     return (
         <motion.aside
+            className="world-panel-aside"
             initial={{ x: 80, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: 80, opacity: 0 }}
@@ -29,35 +30,45 @@ function PanelShell({ children, accent, onClose }: { children: React.ReactNode; 
                 top: 0,
                 right: 0,
                 bottom: 0,
-                width: 'min(46vw, 560px)',
-                minWidth: '420px',
-                padding: '96px 40px 40px',
-                overflowY: 'auto',
-                background: 'linear-gradient(to left, rgba(2,2,6,0.92) 65%, rgba(2,2,6,0))',
+                width: 'min(48vw, 580px)',
+                minWidth: '400px',
+                padding: '88px 32px 32px',
+                background: 'linear-gradient(to left, rgba(2,2,6,0.95) 75%, rgba(2,2,6,0))',
                 zIndex: 20,
-            }}
-        >
-            <div style={{
-                border: `1px solid ${accent}30`,
-                borderRight: `2px solid ${accent}`,
-                background: 'rgba(3,3,8,0.72)',
-                backdropFilter: 'blur(18px)',
-                padding: '32px',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '24px',
-                maxHeight: '100%',
-            }}>
+                pointerEvents: 'auto',
+            }}
+        >
+            <div
+                className="world-panel-scroll custom-scrollbar"
+                onWheel={(e) => e.stopPropagation()}
+                style={{
+                    flex: 1,
+                    overflowY: 'auto',
+                    overscrollBehavior: 'contain',
+                    border: `1px solid ${accent}35`,
+                    borderRight: `2px solid ${accent}`,
+                    background: 'rgba(3,3,8,0.85)',
+                    backdropFilter: 'blur(20px)',
+                    padding: '32px 28px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '24px',
+                    borderRadius: '4px',
+                }}
+            >
                 {children}
             </div>
             <button
                 onClick={onClose}
                 aria-label="Close panel"
                 style={{
-                    position: 'absolute', top: '64px', right: '24px', background: 'rgba(3,3,8,0.7)',
-                    border: '1px solid rgba(255,255,255,0.14)', color: 'rgba(255,255,255,0.6)',
+                    position: 'absolute', top: '56px', right: '32px', background: 'rgba(3,3,8,0.8)',
+                    border: '1px solid rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.7)',
                     fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.15em',
-                    padding: '6px 12px', cursor: 'pointer', borderRadius: '2px',
+                    padding: '7px 14px', cursor: 'pointer', borderRadius: '3px',
+                    backdropFilter: 'blur(10px)',
                 }}
             >
                 [ ESC ]
@@ -74,7 +85,7 @@ function Tag({ children, accent }: { children: React.ReactNode; accent: string }
 function OriginPanel({ accent, onClose }: { accent: string; onClose: () => void }) {
     return (
         <PanelShell accent={accent} onClose={onClose}>
-            <Tag accent={accent}>01 // ORIGIN — PROFILE_INDEX</Tag>
+            <Tag accent={accent}>01 // ORIGIN — Core Dossier</Tag>
             <h2 style={{ fontFamily: 'var(--font-serif)', fontWeight: 200, fontSize: '34px', letterSpacing: '-0.03em', lineHeight: 1.1, color: '#fff', margin: 0 }}>
                 {profile.name}
             </h2>
@@ -82,13 +93,13 @@ function OriginPanel({ accent, onClose }: { accent: string; onClose: () => void 
                 {profile.tagline}
             </p>
             <div style={{ borderTop: '1px solid var(--border)', paddingTop: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <Tag accent="var(--foreground-muted)">THE_INTENT</Tag>
+                <Tag accent="var(--foreground-muted)">The Philosophy</Tag>
                 <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.55)', fontWeight: 300, lineHeight: 1.75, margin: 0 }}>
                     {profile.about.longBio}
                 </p>
             </div>
             <div style={{ borderTop: '1px solid var(--border)', paddingTop: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                <Tag accent="var(--foreground-muted)">DIAGNOSTIC_TOTALS</Tag>
+                <Tag accent="var(--foreground-muted)">Key Metrics</Tag>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                     {profile.githubStats.totals.map((s) => (
                         <div key={s.label} style={{ border: '1px solid var(--border)', padding: '12px 14px' }}>
@@ -99,7 +110,7 @@ function OriginPanel({ accent, onClose }: { accent: string; onClose: () => void 
                 </div>
             </div>
             <div style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
-                <Tag accent="var(--foreground-muted)">COORDINATES</Tag>
+                <Tag accent="var(--foreground-muted)">Direct Channels</Tag>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '12px' }}>
                     {[
                         ['GITHUB', profile.socials.github],
@@ -125,10 +136,10 @@ function MachinesPanel({ accent, selected, onSelect, onClose }: { accent: string
     if (!proj) {
         return (
             <PanelShell accent={accent} onClose={onClose}>
-                <Tag accent={accent}>02 // MACHINES — ENGINEERING_WORK</Tag>
+                <Tag accent={accent}>02 // MACHINES — Shipped Architecture</Tag>
                 <h2 style={{ fontFamily: 'var(--font-serif)', fontWeight: 200, fontSize: '30px', letterSpacing: '-0.03em', color: '#fff', margin: 0 }}>Shipped systems.</h2>
-                <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', margin: 0 }}>
-                    {'// CLICK A MOON IN ORBIT — OR A RECORD BELOW — TO OPEN ITS DOSSIER'}
+                <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', margin: 0 }}>
+                    Click an orbital body or select below to inspect dossier
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                     {projects.map((p) => (
@@ -202,8 +213,8 @@ function MachinesPanel({ accent, selected, onSelect, onClose }: { accent: string
 function TrajectoryPanel({ accent, onClose }: { accent: string; onClose: () => void }) {
     return (
         <PanelShell accent={accent} onClose={onClose}>
-            <Tag accent={accent}>03 // TRAJECTORY — CHRONOLOGY</Tag>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontWeight: 200, fontSize: '30px', letterSpacing: '-0.03em', color: '#fff', margin: 0 }}>Flight record.</h2>
+            <Tag accent={accent}>03 // TRAJECTORY — Leadership & Chronology</Tag>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontWeight: 200, fontSize: '30px', letterSpacing: '-0.03em', color: '#fff', margin: 0 }}>Career record.</h2>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
                 {experience.map((exp) => (
                     <div key={exp.id} style={{ borderTop: '1px solid var(--border)', padding: '18px 0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -228,8 +239,8 @@ function TrajectoryPanel({ accent, onClose }: { accent: string; onClose: () => v
 function SignalsPanel({ accent, onClose }: { accent: string; onClose: () => void }) {
     return (
         <PanelShell accent={accent} onClose={onClose}>
-            <Tag accent={accent}>04 // SIGNALS — RESEARCH_TRANSMISSIONS</Tag>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontWeight: 200, fontSize: '30px', letterSpacing: '-0.03em', color: '#fff', margin: 0 }}>Signals sent.</h2>
+            <Tag accent={accent}>04 // SIGNALS — Research & Publications</Tag>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontWeight: 200, fontSize: '30px', letterSpacing: '-0.03em', color: '#fff', margin: 0 }}>Research output.</h2>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
                 {publications.map((pub) => (
                     <div key={pub.number} style={{ borderTop: '1px solid var(--border)', padding: '18px 0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -251,8 +262,8 @@ function SignalsPanel({ accent, onClose }: { accent: string; onClose: () => void
 function ArsenalPanel({ accent, onClose }: { accent: string; onClose: () => void }) {
     return (
         <PanelShell accent={accent} onClose={onClose}>
-            <Tag accent={accent}>05 // ARSENAL — TECHNICAL_CONSTELLATION</Tag>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontWeight: 200, fontSize: '30px', letterSpacing: '-0.03em', color: '#fff', margin: 0 }}>Loadout.</h2>
+            <Tag accent={accent}>05 // ARSENAL — Technical Constellation</Tag>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontWeight: 200, fontSize: '30px', letterSpacing: '-0.03em', color: '#fff', margin: 0 }}>Core stack.</h2>
             {skillCategories.map((cat) => (
                 <div key={cat.id} style={{ borderTop: '1px solid var(--border)', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <Tag accent="var(--foreground-muted)">{cat.title}</Tag>
@@ -279,8 +290,8 @@ function ArsenalPanel({ accent, onClose }: { accent: string; onClose: () => void
 function BeaconPanel({ accent, onClose }: { accent: string; onClose: () => void }) {
     return (
         <PanelShell accent={accent} onClose={onClose}>
-            <Tag accent={accent}>06 // BEACON — CONTACT_SECURE</Tag>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontWeight: 200, fontSize: '30px', letterSpacing: '-0.03em', color: '#fff', margin: 0 }}>Open a channel.</h2>
+            <Tag accent={accent}>06 // BEACON — Inquiries & Collaboration</Tag>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontWeight: 200, fontSize: '30px', letterSpacing: '-0.03em', color: '#fff', margin: 0 }}>Open a dialogue.</h2>
             <a href={`mailto:${profile.email}`} className="glow-btn"
                 style={{ borderColor: accent, color: accent, fontSize: '11px', padding: '14px 20px', textAlign: 'center', letterSpacing: '0.14em' }}>
                 {profile.email}
