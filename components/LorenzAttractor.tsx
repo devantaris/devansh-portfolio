@@ -75,6 +75,7 @@ export default function LorenzAttractor() {
                 uMouse: { value: new THREE.Vector2(0, 0) }
             },
             vertexShader: `
+                attribute vec3 color;
                 uniform float uTime;
                 uniform vec2 uMouse;
                 
@@ -97,12 +98,12 @@ export default function LorenzAttractor() {
                     vDist = dist;
 
                     float sizeMultiplier = 1.0;
-                    if (dist < 0.4) {
+                    if (dist < 0.4 && dist > 0.001) {
                         sizeMultiplier = 1.0 + (0.4 - dist) * 2.5;
                         projectedPos.xy += normalize(ndcPos - uMouse) * (0.4 - dist) * 0.08 * projectedPos.w;
                     }
 
-                    gl_PointSize = sizeMultiplier * 1.1 * (300.0 / -mvPosition.z);
+                    gl_PointSize = sizeMultiplier * 1.1 * (300.0 / max(0.1, -mvPosition.z));
                     gl_Position = projectedPos;
                 }
             `,
@@ -218,11 +219,18 @@ export default function LorenzAttractor() {
 
         // Animation Loop
         let animId: number;
+        let isVisible = true;
+        const intersectionObserver = new IntersectionObserver(([entry]) => {
+            isVisible = entry.isIntersecting;
+        }, { threshold: 0.02 });
+        intersectionObserver.observe(canvas);
+
         const clock = new THREE.Clock();
         const dt = 0.007;
 
         const animate = () => {
             animId = requestAnimationFrame(animate);
+            if (!isVisible) return;
             const time = clock.getElapsedTime();
 
             rho += (targetRho - rho) * 0.05;
@@ -287,6 +295,7 @@ export default function LorenzAttractor() {
 
         return () => {
             cancelAnimationFrame(animId);
+            intersectionObserver.disconnect();
             canvas.removeEventListener('mousedown', handleMouseDown);
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('mouseup', handleMouseUp);

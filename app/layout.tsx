@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Fraunces, Plus_Jakarta_Sans, Space_Mono } from "next/font/google";
 import "./globals.css";
 import LenisProvider from "@/components/LenisProvider";
+import CustomCursor from "@/components/CustomCursor";
 import { SITE, withBasePath } from "@/lib/content";
 
 // Brutalist editorial header font
@@ -65,6 +66,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${fraunces.variable} ${spaceMono.variable} ${plusJakarta.variable}`}>
       <body className="antialiased font-sans text-foreground bg-background">
+        <CustomCursor />
         <LenisProvider>
           {children}
         </LenisProvider>

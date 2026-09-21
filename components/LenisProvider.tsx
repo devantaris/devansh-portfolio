@@ -12,9 +12,10 @@ export default function LenisProvider({ children }: { children: React.ReactNode 
         if (isTouch || reduced) return;
 
         const lenis = new Lenis({
-            duration: 1.1,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            touchMultiplier: 2,
+            duration: 0.75,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -8 * t)),
+            wheelMultiplier: 1.15,
+            touchMultiplier: 1.5,
             infinite: false,
         });
 

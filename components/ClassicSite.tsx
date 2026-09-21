@@ -4,7 +4,6 @@ import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import Navigation from '@/components/Navigation';
 import Hero from '@/components/Hero';
-import CustomCursor from '@/components/CustomCursor';
 import AboutBento from '@/components/sections/AboutBento';
 import TechStack from '@/components/sections/TechStack';
 import Experience from '@/components/Experience';
@@ -26,7 +25,6 @@ export default function ClassicSite() {
   return (
     <main className="relative min-h-screen">
       <MultiLayerStarfield />
-      <CustomCursor />
       <Navigation />
       <Hero />
       <AboutBento />

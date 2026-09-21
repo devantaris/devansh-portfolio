@@ -85,13 +85,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Hide native cursor on pointer devices */
+/* Hide native cursor on pointer devices when custom cursor is active */
 @media (pointer: fine) {
-  body {
+  body.has-custom-cursor,
+  body.has-custom-cursor * {
     cursor: none;
-  }
-  body * {
-    cursor: none !important;
   }
 }
 
@@ -242,4 +240,22 @@ h1, h2, h3, h4 {
 /* World panels: slim scrollbars inside dossiers */
 .world-row:hover {
   background: rgba(255, 255, 255, 0.025);
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 99px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
 }

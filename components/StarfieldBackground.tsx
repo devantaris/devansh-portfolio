@@ -212,7 +212,7 @@ export default function MultiLayerStarfield() {
             float distToMouse = length(screenPos - uMouse);
             float repulsionRadius = 250.0;
             
-            if (distToMouse < repulsionRadius) {
+            if (distToMouse < repulsionRadius && distToMouse > 0.001) {
               float force = (repulsionRadius - distToMouse) / repulsionRadius;
               vec2 dir = normalize(screenPos - uMouse);
               
@@ -229,7 +229,7 @@ export default function MultiLayerStarfield() {
             
             vOpacity = twinkleFactor;
 
-            float baseSize = size * (300.0 / -mvPosition.z);
+            float baseSize = size * (300.0 / max(0.1, -mvPosition.z));
             gl_PointSize = baseSize * twinkleFactor;
             
             gl_Position = projectedPos;
