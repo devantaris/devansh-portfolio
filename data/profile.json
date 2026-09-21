@@ -37,18 +37,19 @@
   },
   "githubStats": {
     "totals": [
-      { "label": "PUBLIC REPOS", "value": "18" },
+      { "label": "PUBLIC REPOSITORIES", "value": "18" },
+      { "label": "ANNUAL CONTRIBUTIONS", "value": "370+" },
       { "label": "YEARS ACTIVE", "value": "2+" },
-      { "label": "PUBLICATIONS", "value": "2" },
-      { "label": "EVENT ATTENDEES LED", "value": "3K+" }
+      { "label": "RESEARCH CITATIONS", "value": "15+" }
     ],
     "languages": [
-      { "name": "TYPESCRIPT", "pct": 32 },
-      { "name": "PYTHON", "pct": 26 },
-      { "name": "DART", "pct": 16 },
-      { "name": "JAVASCRIPT", "pct": 14 },
-      { "name": "C++", "pct": 8 },
-      { "name": "JAVA", "pct": 4 }
+      { "name": "TYPESCRIPT", "pct": 39 },
+      { "name": "C++", "pct": 17 },
+      { "name": "PYTHON", "pct": 11 },
+      { "name": "DART", "pct": 11 },
+      { "name": "HTML", "pct": 11 },
+      { "name": "JAVASCRIPT", "pct": 6 },
+      { "name": "JAVA", "pct": 5 }
     ]
   }
 }
