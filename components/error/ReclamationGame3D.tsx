@@ -88,8 +88,8 @@ export default function ReclamationGame3D({
       maxShields: 200,
       empCooldownRate: 1 / 3.2,
       zombieCount: 20,
-      zombieBaseSpeed: 2.8,
-      chaseRadius: 24,
+      zombieBaseSpeed: 1.8,
+      chaseRadius: 22,
       beaconCount: 3,
       fogDensity: 0.0035,
     },
@@ -97,8 +97,8 @@ export default function ReclamationGame3D({
       maxShields: 100,
       empCooldownRate: 1 / 5.5,
       zombieCount: 36,
-      zombieBaseSpeed: 4.2,
-      chaseRadius: 32,
+      zombieBaseSpeed: 2.6,
+      chaseRadius: 30,
       beaconCount: 4,
       fogDensity: 0.0055,
     },
@@ -106,8 +106,8 @@ export default function ReclamationGame3D({
       maxShields: 60,
       empCooldownRate: 1 / 8.5,
       zombieCount: 56,
-      zombieBaseSpeed: 6.0,
-      chaseRadius: 44,
+      zombieBaseSpeed: 3.6,
+      chaseRadius: 40,
       beaconCount: 5,
       fogDensity: 0.008,
     },
@@ -1279,16 +1279,18 @@ export default function ReclamationGame3D({
         }
       }
 
-      // Drone flight dynamics
-      const maxSpeed = isBoosting ? 26 : 14;
-      const accel = isBoosting ? 42 : 24;
+      // Drone flight dynamics (tuned for slow, smooth, cinematic and controlled flight)
+      const maxForwardSpeed = isBoosting ? 12.0 : 6.8;
+      const maxReverseSpeed = -3.2;
+      const accel = isBoosting ? 16 : 8.5;
 
       speed += forwardInput * accel * delta;
-      speed *= Math.pow(0.86, delta * 60);
-      yaw -= turnInput * 2.8 * delta;
+      speed *= Math.pow(0.80, delta * 60);
+      speed = Math.max(maxReverseSpeed, Math.min(maxForwardSpeed, speed));
+      yaw -= turnInput * 2.0 * delta;
 
-      pitch = THREE.MathUtils.lerp(pitch, forwardInput * -0.28, delta * 8);
-      roll = THREE.MathUtils.lerp(roll, -turnInput * 0.42, delta * 8);
+      pitch = THREE.MathUtils.lerp(pitch, forwardInput * -0.2, delta * 6);
+      roll = THREE.MathUtils.lerp(roll, -turnInput * 0.3, delta * 6);
 
       velocity.set(Math.sin(yaw) * speed, 0, Math.cos(yaw) * speed);
       drone.position.addScaledVector(velocity, delta);
@@ -1489,7 +1491,7 @@ export default function ReclamationGame3D({
       if (frame % 4 === 0) {
         const activeCount = beaconsRef.current.filter((b) => b.activated).length;
         onUpdateTelemetry({
-          speed: Math.abs(speed) * 45,
+          speed: Math.abs(speed) * 3.6,
           altitude: drone.position.y,
           heading: Math.round((((yaw % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2)) * (180 / Math.PI)),
           shields: Math.round(shieldsRef.current),

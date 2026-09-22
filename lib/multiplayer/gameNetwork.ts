@@ -402,7 +402,7 @@ export class GameNetworkManager {
 
     let t = 0;
     this.aiInterval = setInterval(() => {
-      t += 0.05;
+      t += 0.018;
       const humanCount = Array.from(this.remotePlayers.values()).filter((p) => !p.isAI).length;
 
       if (humanCount >= 2) {
@@ -423,7 +423,7 @@ export class GameNetworkManager {
       ai1.z = Math.cos(t * 0.4) * r1 + 10;
       ai1.y = 5.5 + Math.sin(t * 1.2) * 1.5;
       ai1.rotY = t * 0.4 + Math.PI / 2;
-      ai1.speed = 8.0;
+      ai1.speed = 4.2;
       ai1.lastSeen = Date.now();
       this.remotePlayers.set(ai1.id, { ...ai1 });
 
@@ -433,7 +433,7 @@ export class GameNetworkManager {
       ai2.z = Math.sin(t * 0.3 * 1.3) * (r2 * 0.8) - 20;
       ai2.y = 7.0 + Math.cos(t * 0.9) * 1.2;
       ai2.rotY = -t * 0.3;
-      ai2.speed = 7.2;
+      ai2.speed = 3.8;
       ai2.lastSeen = Date.now();
       this.remotePlayers.set(ai2.id, { ...ai2 });
 
