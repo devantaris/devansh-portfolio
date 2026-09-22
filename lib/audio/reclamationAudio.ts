@@ -216,6 +216,85 @@ class ReclamationAudio {
     }
   }
 
+  public playZombieScreech() {
+    if (this.isMuted || !this.ctx || this.ctx.state !== 'running') return;
+    try {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(160 + Math.random() * 60, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(320 + Math.random() * 100, this.ctx.currentTime + 0.15);
+      osc.frequency.exponentialRampToValueAtTime(90, this.ctx.currentTime + 0.45);
+
+      gain.gain.setValueAtTime(0.001, this.ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.06, this.ctx.currentTime + 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.45);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.48);
+    } catch {
+      // Audio safety fallback
+    }
+  }
+
+  public playShieldHit() {
+    if (this.isMuted || !this.ctx || this.ctx.state !== 'running') return;
+    try {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(240, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(45, this.ctx.currentTime + 0.18);
+
+      gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.18);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.2);
+    } catch {
+      // Audio safety fallback
+    }
+  }
+
+  public playEmpBlast() {
+    if (this.isMuted || !this.ctx || this.ctx.state !== 'running') return;
+    try {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.6);
+
+      gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.65);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.7);
+    } catch {
+      // Audio safety fallback
+    }
+  }
+
+  public playBeaconLaser() {
+    if (this.isMuted || !this.ctx || this.ctx.state !== 'running') return;
+    try {
+      const notes = [220, 440, 659.25, 880, 1318.5];
+      notes.forEach((freq, idx) => {
+        setTimeout(() => {
+          this.playChime(freq, 0.14);
+        }, idx * 90);
+      });
+    } catch {
+      // Audio safety fallback
+    }
+  }
+
   public playWarpPortalSound() {
     if (this.isMuted || !this.ctx || this.ctx.state !== 'running') return;
     try {

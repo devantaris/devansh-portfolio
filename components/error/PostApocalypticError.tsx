@@ -24,7 +24,7 @@ import { withBasePath } from '@/lib/content';
 import { reclamationAudio } from '@/lib/audio/reclamationAudio';
 import { BioParticles, BioParticlesHandle } from '@/components/error/BioParticles';
 import { ProceduralVines, ProceduralVinesHandle } from '@/components/error/ProceduralVines';
-import type { DiskItem, TelemetryData } from '@/components/error/ReclamationGame3D';
+import type { BeaconItem, TelemetryData } from '@/components/error/ReclamationGame3D';
 import GameHudOverlay from '@/components/error/GameHudOverlay';
 
 const ReclamationGame3D = dynamic(
@@ -33,9 +33,9 @@ const ReclamationGame3D = dynamic(
     ssr: false,
     loading: () => (
       <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#010603] z-50">
-        <div className="w-12 h-12 rounded-full border-2 border-emerald-500/20 border-t-emerald-400 animate-spin mb-4" />
-        <span className="text-xs text-emerald-400 font-mono tracking-widest uppercase">
-          INITIALIZING 3D RECLAIMER SHADERS...
+        <div className="w-12 h-12 rounded-full border-2 border-red-500/20 border-t-red-400 animate-spin mb-4" />
+        <span className="text-xs text-red-400 font-mono tracking-widest uppercase">
+          CALIBRATING ZOMBIE ARENA & SHADERS...
         </span>
       </div>
     ),
@@ -72,7 +72,7 @@ export default function PostApocalypticError({
   const [viewMode, setViewMode] = useState<'3d-game' | '2d-relic'>('3d-game');
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
   const [isAudioActive, setIsAudioActive] = useState(false);
-  const [overgrowthLevel, setOvergrowthLevel] = useState<number>(2); // 0=crash, 1=decade, 2=symbiosis
+  const [overgrowthLevel, setOvergrowthLevel] = useState<number>(2);
   const [inputVal, setInputVal] = useState('');
   const [currentPath] = useState<string>(() => {
     if (typeof window !== 'undefined') {
@@ -83,45 +83,49 @@ export default function PostApocalypticError({
   const [bloomCount, setBloomCount] = useState<number>(0);
   const [glitchActive, setGlitchActive] = useState(false);
 
-  // 3D Game states
+  // 3D Arena states
   const [telemetry, setTelemetry] = useState<TelemetryData>({
     speed: 0,
     altitude: 2.4,
     heading: 0,
+    shields: 100,
+    empCooldown: 1,
     nearestDist: 0,
-    nearestName: 'SEARCHING...',
+    nearestName: 'SCANNING CITY...',
+    zombieCount: 28,
+    zombiesChasing: 0,
   });
 
-  const [disks, setDisks] = useState<DiskItem[]>([
+  const [beacons, setBeacons] = useState<BeaconItem[]>([
     {
-      id: '/dev/sda',
-      name: 'KERNEL BIOS CORE',
-      tag: '0x00404_VFS',
-      pos: [-32, 1.8, -18],
-      collected: false,
+      id: 'ALPHA',
+      name: 'SKYLINE OVERPASS BEACON',
+      location: 'HIGHWAY RAMP // 0x404_A',
+      pos: [-38, 4.5, -35],
+      activated: false,
       color: 0x00e5ff,
     },
     {
-      id: '/dev/sdb',
-      name: 'INODE ROUTE TABLE',
-      tag: '0x00404_ROUTE',
-      pos: [36, 1.8, -38],
-      collected: false,
+      id: 'BETA',
+      name: 'NEON PLAZA BEACON',
+      location: 'CIVIC CENTER // 0x404_B',
+      pos: [42, 1.8, -25],
+      activated: false,
       color: 0x50fa7b,
     },
     {
-      id: '/dev/sdc',
-      name: 'QUANTUM NEURAL CACHE',
-      tag: '0x00404_NEURAL',
-      pos: [-10, 1.8, 32],
-      collected: false,
+      id: 'GAMMA',
+      name: 'SUB-GRID TERMINAL BEACON',
+      location: 'FLOODED CANAL // 0x404_C',
+      pos: [-12, 1.8, 42],
+      activated: false,
       color: 0xffb86c,
     },
   ]);
 
-  const [allCollected, setAllCollected] = useState(false);
-  const [lastRecoveredItem, setLastRecoveredItem] = useState<DiskItem | null>(null);
-  const [virtualInput, setVirtualInput] = useState<{ forward: number; turn: number; action: boolean }>({
+  const [allActivated, setAllActivated] = useState(false);
+  const [lastActivatedBeacon, setLastActivatedBeacon] = useState<BeaconItem | null>(null);
+  const [virtualInput, setVirtualInput] = useState<{ forward: number; turn: number; action: boolean; boost?: boolean }>({
     forward: 0,
     turn: 0,
     action: false,
@@ -134,7 +138,7 @@ export default function PostApocalypticError({
         id: '1',
         type: 'stderr',
         timestamp: '00.000404',
-        text: `STDERR (fd 2): KERNEL PANIC. Inode '${errorType === '404' ? 'NOT_FOUND' : 'SEGMENTATION_FAULT'}' unreachable.`,
+        text: `STDERR (fd 2): ALERT. Route '${errorType === '404' ? 'NOT_FOUND' : 'SEGMENTATION_FAULT'}' lost in the quarantine zone.`,
       },
     ];
 
@@ -159,27 +163,27 @@ export default function PostApocalypticError({
     initial.push(
       {
         id: '2',
-        type: 'system',
+        type: 'error',
         timestamp: '00.001290',
-        text: 'VFS: Root partition /dev/sda1 submerged under wild wisteria & lichen roots.',
+        text: 'BIO-ALERT: Bio-cybernetic zombie mutants detected roaming the overgrown metropolis.',
       },
       {
         id: '3',
         type: 'bio',
         timestamp: '00.002450',
-        text: 'BIO-SENSORS: Chloroplast conductivity 98.4%. Mycelial bus bridging logic gates.',
+        text: 'MISSION: Pilot RECLAIMER drone to synchronize 3 Survival Beacons (Alpha, Beta, Gamma).',
       },
       {
         id: '4',
         type: 'system',
         timestamp: '00.003180',
-        text: 'RECLAIMER-04 DRONE: Deployed. Pilot through the ruins to salvage lost memory cores.',
+        text: 'DEFENSE: Use [SPACE] to detonate EMP shockwave and stun chasing mutant hordes.',
       },
       {
         id: '5',
         type: 'output',
         timestamp: '00.004000',
-        text: "Controls: [W/S] Thrust, [A/D] Steer & Bank, [SPACE/E] Pulse Scanner. Press TAB to toggle terminal.",
+        text: 'Controls: [W/S] Thrust, [A/D] Steer, [SHIFT] Turbo, [SPACE] EMP Shockwave. Press TAB for Console.',
       }
     );
 
@@ -218,20 +222,19 @@ export default function PostApocalypticError({
     setTimeout(() => setGlitchActive(false), 240);
   };
 
-  // 3D Game Callbacks
-  const handleCollectDisk = useCallback((disk: DiskItem, index: number) => {
-    setDisks((prev) => {
+  // 3D Arena Callbacks
+  const handleActivateBeacon = useCallback((beacon: BeaconItem, index: number) => {
+    setBeacons((prev) => {
       const next = [...prev];
-      next[index] = { ...next[index], collected: true };
-      const remaining = next.filter((d) => !d.collected).length;
-      if (remaining === 0) {
-        setAllCollected(true);
+      next[index] = { ...next[index], activated: true };
+      if (next.every((b) => b.activated)) {
+        setAllActivated(true);
       }
       return next;
     });
 
-    setLastRecoveredItem(disk);
-    setTimeout(() => setLastRecoveredItem(null), 4000);
+    setLastActivatedBeacon(beacon);
+    setTimeout(() => setLastActivatedBeacon(null), 4500);
 
     const timestamp = (performance.now() / 1000).toFixed(6);
     setLogs((prev) => [
@@ -240,7 +243,7 @@ export default function PostApocalypticError({
         id: Math.random().toString(),
         type: 'bio',
         timestamp,
-        text: `[SALVAGED] Memory core ${disk.id} (${disk.name}) restored to index table!`,
+        text: `[BEACON ${beacon.id} ONLINE] Sky-laser activated! Massive EMP blast cleared surrounding mutants!`,
       },
     ]);
   }, []);
@@ -316,7 +319,7 @@ export default function PostApocalypticError({
   CPU 0-7     : 24.2°C (COOLED BY DEW & POLYPORE HYPHAE)
   VRAM BUS    : REPURPOSED AS PHOTOSYNTHETIC CAPACITOR
   DRONE UNIT  : RECLAIMER-04 [ONLINE // PROXIMITY SENSORS ACTIVE]
-  SALVAGED    : ${disks.filter((d) => d.collected).length} / ${disks.length} MEMORY CORES
+  BEACONS     : ${beacons.filter((b) => b.activated).length} / ${beacons.length} SYNCHRONIZED
   ERROR STATUS: ${errorType} [DESTINATION CONSUMED BY NATURAL RECLAMATION]`,
       });
     } else if (lower === 'bloom') {
@@ -416,7 +419,7 @@ export default function PostApocalypticError({
       {viewMode === '3d-game' ? (
         <div className="relative w-full h-full">
           <ReclamationGame3D
-            onCollectDisk={handleCollectDisk}
+            onActivateBeacon={handleActivateBeacon}
             onEnterPortal={handleEnterPortal}
             onUpdateTelemetry={handleUpdateTelemetry}
             isAudioActive={isAudioActive}
@@ -425,15 +428,15 @@ export default function PostApocalypticError({
 
           <GameHudOverlay
             telemetry={telemetry}
-            disks={disks}
-            allCollected={allCollected}
+            beacons={beacons}
+            allActivated={allActivated}
             isAudioActive={isAudioActive}
             onToggleAudio={toggleAudio}
             onToggleTerminal={() => setIsTerminalOpen((prev) => !prev)}
             isTerminalOpen={isTerminalOpen}
             onVirtualInput={setVirtualInput}
             onEnterPortal={handleEnterPortal}
-            lastRecoveredItem={lastRecoveredItem}
+            lastActivatedBeacon={lastActivatedBeacon}
           />
         </div>
       ) : (
@@ -445,8 +448,8 @@ export default function PostApocalypticError({
           {/* Cinematic Background Image */}
           <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
             <Image
-              src={withBasePath('/images/overgrown-tech-404.jpg')}
-              alt="Post-apocalyptic overgrown computer servers and robotic ruins"
+              src={withBasePath('/images/zombie-city-ruins.jpg')}
+              alt="Post-apocalyptic overgrown cyberpunk city ruins with zombie horde"
               fill
               priority
               sizes="100vw"

@@ -1,15 +1,15 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { reclamationAudio } from '@/lib/audio/reclamationAudio';
 
-export interface DiskItem {
+export interface BeaconItem {
   id: string;
   name: string;
-  tag: string;
+  location: string;
   pos: [number, number, number];
-  collected: boolean;
+  activated: boolean;
   color: number;
 }
 
@@ -17,79 +17,104 @@ export interface TelemetryData {
   speed: number;
   altitude: number;
   heading: number;
+  shields: number;
+  empCooldown: number; // 0 to 1 (1 = ready)
   nearestDist: number;
   nearestName: string;
+  zombieCount: number;
+  zombiesChasing: number;
 }
 
 interface ReclamationGame3DProps {
-  onCollectDisk: (disk: DiskItem, index: number) => void;
+  onActivateBeacon: (beacon: BeaconItem, index: number) => void;
   onEnterPortal: () => void;
   onUpdateTelemetry: (telemetry: TelemetryData) => void;
+  onDamageTaken?: (shields: number) => void;
   isAudioActive: boolean;
-  virtualInput?: { forward: number; turn: number; action: boolean };
+  virtualInput?: { forward: number; turn: number; action: boolean; boost?: boolean };
+}
+
+interface ZombieState {
+  mesh: THREE.Group;
+  eyeMat: THREE.MeshBasicMaterial;
+  leftArm: THREE.Mesh;
+  rightArm: THREE.Mesh;
+  pos: THREE.Vector3;
+  velocity: THREE.Vector3;
+  speed: number;
+  state: 'idle' | 'chase' | 'attack' | 'stunned';
+  stunTimer: number;
+  screeched: boolean;
+  wanderAngle: number;
 }
 
 export default function ReclamationGame3D({
-  onCollectDisk,
+  onActivateBeacon,
   onEnterPortal,
   onUpdateTelemetry,
+  onDamageTaken,
   virtualInput,
 }: ReclamationGame3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Persistent game state refs
-  const disksRef = useRef<DiskItem[]>([
+  // Beacons state
+  const beaconsRef = useRef<BeaconItem[]>([
     {
-      id: '/dev/sda',
-      name: 'KERNEL BIOS CORE',
-      tag: '0x00404_VFS',
-      pos: [-32, 1.8, -18],
-      collected: false,
-      color: 0x00e5ff, // Cyan
+      id: 'ALPHA',
+      name: 'SKYLINE OVERPASS BEACON',
+      location: 'HIGHWAY RAMP // 0x404_A',
+      pos: [-38, 4.5, -35],
+      activated: false,
+      color: 0x00e5ff,
     },
     {
-      id: '/dev/sdb',
-      name: 'INODE ROUTE TABLE',
-      tag: '0x00404_ROUTE',
-      pos: [36, 1.8, -38],
-      collected: false,
-      color: 0x50fa7b, // Emerald
+      id: 'BETA',
+      name: 'NEON PLAZA BEACON',
+      location: 'CIVIC CENTER // 0x404_B',
+      pos: [42, 1.8, -25],
+      activated: false,
+      color: 0x50fa7b,
     },
     {
-      id: '/dev/sdc',
-      name: 'QUANTUM NEURAL CACHE',
-      tag: '0x00404_NEURAL',
-      pos: [-10, 1.8, 32],
-      collected: false,
-      color: 0xffb86c, // Amber gold
+      id: 'GAMMA',
+      name: 'SUB-GRID TERMINAL BEACON',
+      location: 'FLOODED CANAL // 0x404_C',
+      pos: [-12, 1.8, 42],
+      activated: false,
+      color: 0xffb86c,
     },
   ]);
 
-  const allCollectedRef = useRef(false);
+  const allActivatedRef = useRef(false);
+  const shieldsRef = useRef(100);
+  const empCooldownRef = useRef(1); // 1 = ready
+  const lastDamageTimeRef = useRef(0);
 
-  // Input states
+  // Keyboard controls
   const keysRef = useRef<{
     forward: boolean;
     backward: boolean;
     left: boolean;
     right: boolean;
+    boost: boolean;
     action: boolean;
   }>({
     forward: false,
     backward: false,
     left: false,
     right: false,
+    boost: false,
     action: false,
   });
 
-  // Setup keyboard listeners
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (['ArrowUp', 'KeyW'].includes(e.code)) keysRef.current.forward = true;
       if (['ArrowDown', 'KeyS'].includes(e.code)) keysRef.current.backward = true;
       if (['ArrowLeft', 'KeyA'].includes(e.code)) keysRef.current.left = true;
       if (['ArrowRight', 'KeyD'].includes(e.code)) keysRef.current.right = true;
+      if (['ShiftLeft', 'ShiftRight'].includes(e.code)) keysRef.current.boost = true;
       if (['Space', 'KeyE'].includes(e.code)) keysRef.current.action = true;
     };
 
@@ -98,6 +123,7 @@ export default function ReclamationGame3D({
       if (['ArrowDown', 'KeyS'].includes(e.code)) keysRef.current.backward = false;
       if (['ArrowLeft', 'KeyA'].includes(e.code)) keysRef.current.left = false;
       if (['ArrowRight', 'KeyD'].includes(e.code)) keysRef.current.right = false;
+      if (['ShiftLeft', 'ShiftRight'].includes(e.code)) keysRef.current.boost = false;
       if (['Space', 'KeyE'].includes(e.code)) keysRef.current.action = false;
     };
 
@@ -119,10 +145,10 @@ export default function ReclamationGame3D({
 
     // 1. Scene & Atmosphere
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x020704, 0.011); // Dense forest twilight fog
+    scene.fog = new THREE.FogExp2(0x020805, 0.012); // Cyberpunk rainy forest twilight mist
 
     // 2. Camera
-    const camera = new THREE.PerspectiveCamera(58, width / height, 0.1, 500);
+    const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 500);
     camera.position.set(0, 8, 16);
 
     // 3. Renderer
@@ -141,314 +167,330 @@ export default function ReclamationGame3D({
     container.appendChild(renderer.domElement);
 
     // 4. Lights
-    const ambientLight = new THREE.AmbientLight(0x0a2414, 1.2);
+    const ambientLight = new THREE.AmbientLight(0x0d2618, 1.3);
     scene.add(ambientLight);
 
-    const sunLight = new THREE.DirectionalLight(0xffeaaf, 1.6);
-    sunLight.position.set(40, 60, 20);
-    sunLight.castShadow = true;
-    sunLight.shadow.mapSize.width = 1024;
-    sunLight.shadow.mapSize.height = 1024;
-    sunLight.shadow.camera.near = 10;
-    sunLight.shadow.camera.far = 160;
-    const shadowD = 70;
-    sunLight.shadow.camera.left = -shadowD;
-    sunLight.shadow.camera.right = shadowD;
-    sunLight.shadow.camera.top = shadowD;
-    sunLight.shadow.camera.bottom = -shadowD;
-    scene.add(sunLight);
+    const stormLight = new THREE.DirectionalLight(0xaad8ff, 1.4);
+    stormLight.position.set(50, 70, 30);
+    stormLight.castShadow = true;
+    stormLight.shadow.mapSize.width = 1024;
+    stormLight.shadow.mapSize.height = 1024;
+    stormLight.shadow.camera.near = 10;
+    stormLight.shadow.camera.far = 180;
+    const sD = 80;
+    stormLight.shadow.camera.left = -sD;
+    stormLight.shadow.camera.right = sD;
+    stormLight.shadow.camera.top = sD;
+    stormLight.shadow.camera.bottom = -sD;
+    scene.add(stormLight);
 
-    const hemiLight = new THREE.HemisphereLight(0x194d33, 0x050d06, 0.7);
+    const hemiLight = new THREE.HemisphereLight(0x194d33, 0x050d06, 0.8);
     scene.add(hemiLight);
 
-    // 5. Procedural Undulating Terrain
-    const terrainSize = 220;
-    const terrainGeo = new THREE.PlaneGeometry(terrainSize, terrainSize, 64, 64);
-    terrainGeo.rotateX(-Math.PI / 2);
+    // 5. Overgrown Street Ground & Terrain
+    const cityGroundSize = 240;
+    const groundGeo = new THREE.PlaneGeometry(cityGroundSize, cityGroundSize, 64, 64);
+    groundGeo.rotateX(-Math.PI / 2);
 
-    const posAttr = terrainGeo.attributes.position;
-    const colors = new Float32Array(posAttr.count * 3);
+    const groundPos = groundGeo.attributes.position;
+    const groundColors = new Float32Array(groundPos.count * 3);
 
-    for (let i = 0; i < posAttr.count; i++) {
-      const x = posAttr.getX(i);
-      const z = posAttr.getZ(i);
-      // Gentle rolling hill topography
-      const h =
-        Math.sin(x * 0.05) * Math.cos(z * 0.05) * 2.2 +
-        Math.sin(x * 0.1 + 1.2) * Math.cos(z * 0.08) * 1.1;
-      posAttr.setY(i, h);
+    for (let i = 0; i < groundPos.count; i++) {
+      const gx = groundPos.getX(i);
+      const gz = groundPos.getZ(i);
 
-      // Vertex color palette: rich forest soil with moss and bioluminescent patches
-      const mossFactor = Math.sin(x * 0.15) * Math.cos(z * 0.15);
-      if (mossFactor > 0.4) {
-        // Bright emerald moss
-        colors[i * 3] = 0.12;
-        colors[i * 3 + 1] = 0.42;
-        colors[i * 3 + 2] = 0.22;
-      } else if (mossFactor < -0.4) {
-        // Bioluminescent lichen cyan
-        colors[i * 3] = 0.04;
-        colors[i * 3 + 1] = 0.32;
-        colors[i * 3 + 2] = 0.35;
+      // Mild street topography with cracked asphalt rises
+      const h = Math.sin(gx * 0.04) * Math.cos(gz * 0.04) * 1.5;
+      groundPos.setY(i, h);
+
+      // Cracked asphalt streets vs dense encroaching moss
+      const streetGrid = Math.sin(gx * 0.1) * Math.cos(gz * 0.1);
+      if (streetGrid > 0.3) {
+        // Vibrant creeping moss
+        groundColors[i * 3] = 0.1;
+        groundColors[i * 3 + 1] = 0.42;
+        groundColors[i * 3 + 2] = 0.18;
+      } else if (streetGrid < -0.3) {
+        // Flooded canal puddle / cyber slick
+        groundColors[i * 3] = 0.02;
+        groundColors[i * 3 + 1] = 0.28;
+        groundColors[i * 3 + 2] = 0.32;
       } else {
-        // Dark decaying soil
-        colors[i * 3] = 0.06;
-        colors[i * 3 + 1] = 0.12;
-        colors[i * 3 + 2] = 0.08;
+        // Dark cracked asphalt
+        groundColors[i * 3] = 0.08;
+        groundColors[i * 3 + 1] = 0.11;
+        groundColors[i * 3 + 2] = 0.09;
       }
     }
 
-    terrainGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    terrainGeo.computeVertexNormals();
+    groundGeo.setAttribute('color', new THREE.BufferAttribute(groundColors, 3));
+    groundGeo.computeVertexNormals();
 
-    const terrainMat = new THREE.MeshStandardMaterial({
+    const groundMat = new THREE.MeshStandardMaterial({
       vertexColors: true,
-      roughness: 0.9,
-      metalness: 0.1,
+      roughness: 0.85,
+      metalness: 0.2,
     });
-    const terrain = new THREE.Mesh(terrainGeo, terrainMat);
-    terrain.receiveShadow = true;
-    scene.add(terrain);
+    const groundMesh = new THREE.Mesh(groundGeo, groundMat);
+    groundMesh.receiveShadow = true;
+    scene.add(groundMesh);
 
-    // 6. Overgrown Server Monoliths
-    const monolithGroup = new THREE.Group();
-    const serverGeo = new THREE.BoxGeometry(3.5, 9, 2.5);
-    const serverMat = new THREE.MeshStandardMaterial({
-      color: 0x181c1a,
+    // 6. Overgrown Skyscraper Monoliths
+    const buildingsGroup = new THREE.Group();
+    const buildingMat = new THREE.MeshStandardMaterial({
+      color: 0x141816,
       roughness: 0.7,
-      metalness: 0.7,
+      metalness: 0.6,
     });
+    const vineMat = new THREE.MeshStandardMaterial({ color: 0x18422d, roughness: 0.9 });
+    const glassMat = new THREE.MeshStandardMaterial({ color: 0x00e5ff, roughness: 0.2, metalness: 0.9, transparent: true, opacity: 0.35 });
 
-    const ledMatCyan = new THREE.MeshBasicMaterial({ color: 0x00e5ff });
-    const ledMatAmber = new THREE.MeshBasicMaterial({ color: 0xffaa00 });
-    const ledMatGreen = new THREE.MeshBasicMaterial({ color: 0x50fa7b });
-
-    const monolithPositions: [number, number, number, number][] = [
-      [-18, 4.5, -28, 0.12],
-      [-22, 4.2, -32, -0.22],
-      [-14, 4.0, -36, 0.05],
-      [20, 4.5, -25, -0.15],
-      [26, 4.2, -30, 0.18],
-      [16, 4.5, -42, 0.28],
-      [-42, 4.5, -5, -0.32],
-      [-38, 4.2, 8, 0.15],
-      [40, 4.5, 0, 0.25],
-      [36, 4.2, 14, -0.1],
-      [-24, 4.5, 28, 0.18],
-      [22, 4.5, 32, -0.24],
-      [-8, 4.5, -55, 0.08],
-      [8, 4.5, -58, -0.12],
+    const buildingDefs: [number, number, number, number, number][] = [
+      // [x, z, width, depth, height]
+      [-55, -55, 18, 18, 42],
+      [-55, 0, 16, 20, 36],
+      [-55, 55, 18, 16, 40],
+      [55, -55, 20, 18, 45],
+      [55, 0, 16, 22, 38],
+      [55, 55, 18, 18, 44],
+      [-25, -65, 14, 14, 32],
+      [25, -65, 14, 14, 30],
+      [-25, 65, 14, 14, 28],
+      [25, 65, 14, 14, 34],
+      [-22, -22, 10, 10, 24],
+      [22, -20, 12, 10, 26],
+      [-20, 22, 10, 12, 22],
+      [20, 24, 12, 12, 25],
     ];
 
-    monolithPositions.forEach(([x, y, z, tilt]) => {
-      const monolith = new THREE.Mesh(serverGeo, serverMat);
-      monolith.position.set(x, y, z);
-      monolith.rotation.z = tilt;
-      monolith.rotation.y = Math.random() * Math.PI;
-      monolith.castShadow = true;
-      monolith.receiveShadow = true;
+    buildingDefs.forEach(([bx, bz, bw, bd, bh]) => {
+      const bGeo = new THREE.BoxGeometry(bw, bh, bd);
+      const building = new THREE.Mesh(bGeo, buildingMat);
+      building.position.set(bx, bh / 2, bz);
+      building.castShadow = true;
+      building.receiveShadow = true;
 
-      // Add blinking LED strips
-      for (let row = 0; row < 5; row++) {
-        const ledGeo = new THREE.BoxGeometry(2.4, 0.15, 0.05);
-        const mat = row % 3 === 0 ? ledMatCyan : row % 3 === 1 ? ledMatGreen : ledMatAmber;
-        const led = new THREE.Mesh(ledGeo, mat);
-        led.position.set(0, 3.2 - row * 1.4, 1.28);
-        monolith.add(led);
+      // Add broken glass window strips
+      for (let f = 0; f < 4; f++) {
+        const winGeo = new THREE.BoxGeometry(bw * 0.85, 1.2, bd + 0.1);
+        const win = new THREE.Mesh(winGeo, glassMat);
+        win.position.y = (f - 1.5) * (bh / 5);
+        building.add(win);
       }
 
-      // Add climbing vine cylinders
-      const vineMat = new THREE.MeshStandardMaterial({ color: 0x1b4332, roughness: 0.9 });
+      // Add climbing vine clusters
       for (let v = 0; v < 3; v++) {
-        const vineGeo = new THREE.CylinderGeometry(0.12, 0.12, 8.5, 6);
-        const vine = new THREE.Mesh(vineGeo, vineMat);
-        vine.position.set((v - 1) * 1.1, 0, 1.25);
-        vine.rotation.z = (v - 1) * 0.1;
-        monolith.add(vine);
+        const vGeo = new THREE.CylinderGeometry(0.2, 0.2, bh, 6);
+        const vine = new THREE.Mesh(vGeo, vineMat);
+        vine.position.set((v - 1) * (bw / 3), 0, bd / 2 + 0.2);
+        building.add(vine);
       }
 
-      monolithGroup.add(monolith);
+      buildingsGroup.add(building);
     });
-    scene.add(monolithGroup);
+    scene.add(buildingsGroup);
 
-    // 7. Giant Central CRT Monument
-    const crtMonument = new THREE.Group();
-    crtMonument.position.set(0, 5.5, -45);
+    // 7. Collapsed Elevated Highway Overpass
+    const highwayGroup = new THREE.Group();
+    const roadMat = new THREE.MeshStandardMaterial({ color: 0x1f2421, roughness: 0.8 });
+    const pillarMat = new THREE.MeshStandardMaterial({ color: 0x151a17, roughness: 0.9 });
 
-    const crtChassisGeo = new THREE.BoxGeometry(10, 7.5, 6);
-    const crtChassisMat = new THREE.MeshStandardMaterial({
-      color: 0x151817,
-      roughness: 0.8,
-      metalness: 0.5,
+    // Highway segments
+    const seg1 = new THREE.Mesh(new THREE.BoxGeometry(45, 1.5, 9), roadMat);
+    seg1.position.set(-35, 5.5, -30);
+    seg1.rotation.y = 0.2;
+    highwayGroup.add(seg1);
+
+    const seg2 = new THREE.Mesh(new THREE.BoxGeometry(40, 1.5, 9), roadMat);
+    seg2.position.set(25, 4.5, -20);
+    seg2.rotation.y = -0.15;
+    highwayGroup.add(seg2);
+
+    // Concrete pillars
+    [-50, -35, -20, 10, 30, 45].forEach((px, idx) => {
+      const pillar = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 7, 8), pillarMat);
+      pillar.position.set(px, 3.5, idx < 3 ? -30 : -20);
+      highwayGroup.add(pillar);
     });
-    const crtChassis = new THREE.Mesh(crtChassisGeo, crtChassisMat);
-    crtChassis.castShadow = true;
-    crtMonument.add(crtChassis);
 
-    // CRT Screen with dynamic canvas
-    const screenCanvas = document.createElement('canvas');
-    screenCanvas.width = 512;
-    screenCanvas.height = 256;
-    const screenCtx = screenCanvas.getContext('2d');
+    scene.add(highwayGroup);
 
-    const screenTexture = new THREE.CanvasTexture(screenCanvas);
-    const screenMat = new THREE.MeshBasicMaterial({
-      map: screenTexture,
-    });
-    const screenGeo = new THREE.PlaneGeometry(8.2, 5.8);
-    const screenMesh = new THREE.Mesh(screenGeo, screenMat);
-    screenMesh.position.set(0, 0, 3.02);
-    crtMonument.add(screenMesh);
-
-    // CRT Glow light
-    const crtLight = new THREE.PointLight(0x50fa7b, 2.5, 24);
-    crtLight.position.set(0, 0, 4.5);
-    crtMonument.add(crtLight);
-
-    scene.add(crtMonument);
-
-    // 8. Ancient Warp Gateway (The Return Portal)
-    const portalGroup = new THREE.Group();
-    portalGroup.position.set(0, 7, -80);
-
-    const archPillars = new THREE.Mesh(
-      new THREE.TorusGeometry(8, 0.9, 16, 48),
-      new THREE.MeshStandardMaterial({ color: 0x1a211e, roughness: 0.6, metalness: 0.8 })
-    );
-    portalGroup.add(archPillars);
-
-    // Swirling portal vortex disk
-    const vortexGeo = new THREE.CircleGeometry(7.2, 32);
-    const vortexMat = new THREE.MeshBasicMaterial({
-      color: 0x00e5ff,
-      transparent: true,
-      opacity: 0.25,
-      side: THREE.DoubleSide,
-    });
-    const vortexMesh = new THREE.Mesh(vortexGeo, vortexMat);
-    portalGroup.add(vortexMesh);
-
-    const portalLight = new THREE.PointLight(0x00e5ff, 1.5, 30);
-    portalGroup.add(portalLight);
-
-    scene.add(portalGroup);
-
-    // 9. Collectible Memory Disks (`/dev/sda`, `/dev/sdb`, `/dev/sdc`)
-    const diskMeshes: {
+    // 8. The 3 Survival Beacons
+    const beaconMeshes: {
       group: THREE.Group;
-      beaconRing: THREE.Mesh;
-      light: THREE.PointLight;
-      item: DiskItem;
+      item: BeaconItem;
       index: number;
+      rings: THREE.Mesh[];
+      laserPillar: THREE.Mesh;
+      light: THREE.PointLight;
     }[] = [];
 
-    disksRef.current.forEach((item, index) => {
-      const diskGroup = new THREE.Group();
-      diskGroup.position.set(item.pos[0], item.pos[1], item.pos[2]);
+    beaconsRef.current.forEach((item, index) => {
+      const bGroup = new THREE.Group();
+      bGroup.position.set(item.pos[0], item.pos[1], item.pos[2]);
 
-      // Magnetic Platter
-      const platterGeo = new THREE.CylinderGeometry(1.6, 1.6, 0.2, 32);
-      const platterMat = new THREE.MeshStandardMaterial({
-        color: 0xd4af37, // Gold/bronze platter
-        metalness: 0.95,
-        roughness: 0.2,
-      });
-      const platter = new THREE.Mesh(platterGeo, platterMat);
-      platter.castShadow = true;
-      diskGroup.add(platter);
+      // Tower structure
+      const towerGeo = new THREE.CylinderGeometry(0.8, 1.6, 6, 8);
+      const towerMat = new THREE.MeshStandardMaterial({ color: 0x232b26, roughness: 0.6, metalness: 0.7 });
+      const tower = new THREE.Mesh(towerGeo, towerMat);
+      tower.position.y = 3;
+      tower.castShadow = true;
+      bGroup.add(tower);
 
-      // Rotating holographic beacon ring
-      const ringGeo = new THREE.TorusGeometry(2.4, 0.08, 8, 32);
-      const ringMat = new THREE.MeshBasicMaterial({
+      // Rotating holographic rings
+      const rings: THREE.Mesh[] = [];
+      for (let r = 0; r < 2; r++) {
+        const rGeo = new THREE.TorusGeometry(2.2 + r * 0.7, 0.08, 8, 32);
+        const rMat = new THREE.MeshBasicMaterial({ color: item.color, transparent: true, opacity: 0.85 });
+        const ring = new THREE.Mesh(rGeo, rMat);
+        ring.position.y = 5.5;
+        ring.rotation.x = Math.PI / 2;
+        bGroup.add(ring);
+        rings.push(ring);
+      }
+
+      // Skyward Laser Pillar (active on collection)
+      const laserGeo = new THREE.CylinderGeometry(0.3, 0.3, 120, 8);
+      const laserMat = new THREE.MeshBasicMaterial({
         color: item.color,
         transparent: true,
-        opacity: 0.85,
+        opacity: 0.25,
       });
-      const beaconRing = new THREE.Mesh(ringGeo, ringMat);
-      beaconRing.rotation.x = Math.PI / 2;
-      diskGroup.add(beaconRing);
+      const laserPillar = new THREE.Mesh(laserGeo, laserMat);
+      laserPillar.position.y = 60;
+      bGroup.add(laserPillar);
 
-      // Vertical beacon light shaft
-      const shaftGeo = new THREE.CylinderGeometry(0.1, 0.1, 14, 8);
-      const shaftMat = new THREE.MeshBasicMaterial({
-        color: item.color,
-        transparent: true,
-        opacity: 0.35,
-      });
-      const shaft = new THREE.Mesh(shaftGeo, shaftMat);
-      shaft.position.y = 7;
-      diskGroup.add(shaft);
+      const bLight = new THREE.PointLight(item.color, 3.0, 18);
+      bLight.position.y = 5.5;
+      bGroup.add(bLight);
 
-      // Local beacon point light
-      const light = new THREE.PointLight(item.color, 2.5, 12);
-      light.position.y = 1.2;
-      diskGroup.add(light);
-
-      scene.add(diskGroup);
-      diskMeshes.push({ group: diskGroup, beaconRing, light, item, index });
+      scene.add(bGroup);
+      beaconMeshes.push({ group: bGroup, item, index, rings, laserPillar, light: bLight });
     });
 
-    // 10. Bioluminescent Mushrooms & Firefly Particles
-    const sporeCount = 280;
-    const sporeGeo = new THREE.BufferGeometry();
-    const sporePositions = new Float32Array(sporeCount * 3);
+    // 9. Extraction Evacuation Gateway (North Gate)
+    const portalGroup = new THREE.Group();
+    portalGroup.position.set(0, 7, -85);
 
-    for (let i = 0; i < sporeCount; i++) {
-      sporePositions[i * 3] = (Math.random() - 0.5) * 180;
-      sporePositions[i * 3 + 1] = Math.random() * 18 + 0.5;
-      sporePositions[i * 3 + 2] = (Math.random() - 0.5) * 180;
+    const arch = new THREE.Mesh(
+      new THREE.TorusGeometry(9, 1.2, 16, 48),
+      new THREE.MeshStandardMaterial({ color: 0x161e1a, roughness: 0.6, metalness: 0.8 })
+    );
+    portalGroup.add(arch);
+
+    const portalVortex = new THREE.Mesh(
+      new THREE.CircleGeometry(8.2, 32),
+      new THREE.MeshBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.2, side: THREE.DoubleSide })
+    );
+    portalGroup.add(portalVortex);
+
+    const portalLight = new THREE.PointLight(0x00e5ff, 2.0, 35);
+    portalGroup.add(portalLight);
+    scene.add(portalGroup);
+
+    // 10. Bio-Cyber Zombie Horde
+    const zombieCount = 28;
+    const zombies: ZombieState[] = [];
+
+    const zombieChassisGeo = new THREE.BoxGeometry(1.0, 1.8, 0.7);
+    const zombieMat = new THREE.MeshStandardMaterial({ color: 0x222623, roughness: 0.85 });
+    const headGeo = new THREE.SphereGeometry(0.4, 12, 12);
+    const armGeo = new THREE.BoxGeometry(0.3, 1.4, 0.3);
+
+    for (let z = 0; z < zombieCount; z++) {
+      const zGroup = new THREE.Group();
+
+      // Body torso (hunched)
+      const torso = new THREE.Mesh(zombieChassisGeo, zombieMat);
+      torso.position.y = 1.2;
+      torso.rotation.x = 0.2; // hunched forward
+      torso.castShadow = true;
+      zGroup.add(torso);
+
+      // Head
+      const head = new THREE.Mesh(headGeo, zombieMat);
+      head.position.set(0, 2.2, 0.25);
+      zGroup.add(head);
+
+      // Glowing Crimson Optic Eyes
+      const eyeMat = new THREE.MeshBasicMaterial({ color: 0xff1744 }); // Glowing red
+      const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), eyeMat);
+      eyeL.position.set(0.14, 2.25, 0.6);
+      const eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), eyeMat);
+      eyeR.position.set(-0.14, 2.25, 0.6);
+      zGroup.add(eyeL);
+      zGroup.add(eyeR);
+
+      // Arms (reaching forward)
+      const leftArm = new THREE.Mesh(armGeo, zombieMat);
+      leftArm.position.set(-0.65, 1.4, 0.3);
+      leftArm.rotation.x = -0.5;
+      zGroup.add(leftArm);
+
+      const rightArm = new THREE.Mesh(armGeo, zombieMat);
+      rightArm.position.set(0.65, 1.4, 0.3);
+      rightArm.rotation.x = -0.5;
+      zGroup.add(rightArm);
+
+      // Spawn location spread out through streets and alleys
+      const spawnAngle = Math.random() * Math.PI * 2;
+      const spawnDist = Math.random() * 65 + 18;
+      const zx = Math.cos(spawnAngle) * spawnDist;
+      const zz = Math.sin(spawnAngle) * spawnDist;
+
+      zGroup.position.set(zx, 0, zz);
+      scene.add(zGroup);
+
+      zombies.push({
+        mesh: zGroup,
+        eyeMat,
+        leftArm,
+        rightArm,
+        pos: zGroup.position,
+        velocity: new THREE.Vector3(),
+        speed: Math.random() * 0.04 + 0.07, // Chase speed
+        state: 'idle',
+        stunTimer: 0,
+        screeched: false,
+        wanderAngle: Math.random() * Math.PI * 2,
+      });
     }
-    sporeGeo.setAttribute('position', new THREE.BufferAttribute(sporePositions, 3));
-
-    const sporeMat = new THREE.PointsMaterial({
-      color: 0x50fa7b,
-      size: 0.45,
-      transparent: true,
-      opacity: 0.8,
-      blending: THREE.AdditiveBlending,
-    });
-    const sporePoints = new THREE.Points(sporeGeo, sporeMat);
-    scene.add(sporePoints);
 
     // 11. The Player Drone Model: RECLAIMER-04
     const drone = new THREE.Group();
-    drone.position.set(0, 2.5, 0);
+    drone.position.set(0, 2.6, 0);
 
-    // Central Pod
-    const podGeo = new THREE.DodecahedronGeometry(0.9, 1);
-    const podMat = new THREE.MeshStandardMaterial({
-      color: 0x242826,
-      roughness: 0.5,
-      metalness: 0.8,
-    });
+    const podGeo = new THREE.DodecahedronGeometry(0.95, 1);
+    const podMat = new THREE.MeshStandardMaterial({ color: 0x212523, roughness: 0.5, metalness: 0.8 });
     const pod = new THREE.Mesh(podGeo, podMat);
     pod.castShadow = true;
     drone.add(pod);
 
-    // Hazard stripes banner
-    const stripeGeo = new THREE.BoxGeometry(0.8, 0.15, 1.4);
-    const stripeMat = new THREE.MeshBasicMaterial({ color: 0xffaa00 });
-    const stripe = new THREE.Mesh(stripeGeo, stripeMat);
+    // Hazard stripe
+    const stripe = new THREE.Mesh(
+      new THREE.BoxGeometry(0.8, 0.15, 1.4),
+      new THREE.MeshBasicMaterial({ color: 0xffaa00 })
+    );
     stripe.position.y = 0.4;
     drone.add(stripe);
 
-    // Front glowing optical camera lens
-    const lensGeo = new THREE.SphereGeometry(0.3, 16, 16);
-    const lensMat = new THREE.MeshBasicMaterial({ color: 0x00e5ff });
-    const lens = new THREE.Mesh(lensGeo, lensMat);
-    lens.position.set(0, 0.1, 0.85);
+    // Camera eye lens
+    const lens = new THREE.Mesh(
+      new THREE.SphereGeometry(0.3, 16, 16),
+      new THREE.MeshBasicMaterial({ color: 0x00e5ff })
+    );
+    lens.position.set(0, 0.1, 0.9);
     drone.add(lens);
 
-    // Dynamic Drone Spotlight pointing forward
-    const droneSpotlight = new THREE.SpotLight(0xccffff, 4.0, 48, Math.PI / 5, 0.35, 1.2);
-    droneSpotlight.position.set(0, 0.2, 0.6);
-    droneSpotlight.target.position.set(0, -0.5, 14);
-    droneSpotlight.castShadow = true;
-    droneSpotlight.shadow.bias = -0.002;
-    drone.add(droneSpotlight);
-    drone.add(droneSpotlight.target);
+    // Real-time dynamic spotlight
+    const spotlight = new THREE.SpotLight(0xaaffff, 4.2, 55, Math.PI / 4.5, 0.35, 1.2);
+    spotlight.position.set(0, 0.2, 0.6);
+    spotlight.target.position.set(0, -0.6, 16);
+    spotlight.castShadow = true;
+    drone.add(spotlight);
+    drone.add(spotlight.target);
 
-    // Rotor arms & spinning rotors
+    // Spinning rotors
     const rotorMeshes: THREE.Mesh[] = [];
     const rotorOffsets = [
       [1.4, 0.3, 1.2],
@@ -458,61 +500,51 @@ export default function ReclamationGame3D({
     ];
 
     rotorOffsets.forEach(([rx, ry, rz]) => {
-      // Carbon arm
-      const armGeo = new THREE.CylinderGeometry(0.08, 0.08, 1.6, 6);
-      const armMat = new THREE.MeshStandardMaterial({ color: 0x111312, roughness: 0.8 });
-      const arm = new THREE.Mesh(armGeo, armMat);
+      const arm = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.08, 0.08, 1.6, 6),
+        new THREE.MeshStandardMaterial({ color: 0x111312 })
+      );
       arm.position.set(rx * 0.5, ry * 0.5, rz * 0.5);
       arm.rotation.z = rx > 0 ? -Math.PI / 4 : Math.PI / 4;
       drone.add(arm);
 
-      // Motor hub
-      const hubGeo = new THREE.CylinderGeometry(0.25, 0.25, 0.3, 12);
-      const hub = new THREE.Mesh(hubGeo, podMat);
-      hub.position.set(rx, ry, rz);
-      drone.add(hub);
-
-      // Rotor blades
-      const bladeGeo = new THREE.BoxGeometry(1.5, 0.03, 0.18);
-      const bladeMat = new THREE.MeshStandardMaterial({ color: 0x00e5ff, roughness: 0.3 });
-      const blade = new THREE.Mesh(bladeGeo, bladeMat);
-      blade.position.set(rx, ry + 0.18, rz);
+      const blade = new THREE.Mesh(
+        new THREE.BoxGeometry(1.6, 0.04, 0.18),
+        new THREE.MeshStandardMaterial({ color: 0x00e5ff, roughness: 0.3 })
+      );
+      blade.position.set(rx, ry + 0.2, rz);
       drone.add(blade);
       rotorMeshes.push(blade);
     });
 
-    scene.add(drone);
-
-    // Drone flight physics state
-    let speed = 0;
-    let yaw = 0;
-    let roll = 0;
-    let pitch = 0;
-    const maxSpeed = 0.55;
-    const turnSpeed = 0.038;
-    const accel = 0.025;
-    const friction = 0.94;
-
-    // Pulse scanner visual ring
-    const scanRingGeo = new THREE.RingGeometry(0.5, 0.8, 32);
-    const scanRingMat = new THREE.MeshBasicMaterial({
+    // EMP Shockwave visual ring
+    const empRingGeo = new THREE.RingGeometry(0.5, 1.2, 32);
+    const empRingMat = new THREE.MeshBasicMaterial({
       color: 0x00e5ff,
       transparent: true,
       opacity: 0,
       side: THREE.DoubleSide,
     });
-    const scanRing = new THREE.Mesh(scanRingGeo, scanRingMat);
-    scanRing.rotation.x = -Math.PI / 2;
-    scanRing.position.y = 0.2;
-    drone.add(scanRing);
-    let scanRingScale = 1;
-    let isScanning = false;
+    const empRing = new THREE.Mesh(empRingGeo, empRingMat);
+    empRing.rotation.x = -Math.PI / 2;
+    empRing.position.y = 0.2;
+    drone.add(empRing);
+
+    scene.add(drone);
+
+    // Drone flight state
+    let speed = 0;
+    let yaw = 0;
+    let roll = 0;
+    let pitch = 0;
+    let isEmpExpanding = false;
+    let empRadius = 1;
 
     setIsLoaded(true);
 
-    // 12. Main Animation & Game Loop
+    // 12. Main Game & AI Loop
     let animId: number;
-    let clock = new THREE.Clock();
+    const clock = new THREE.Clock();
     let frame = 0;
 
     const render = () => {
@@ -521,196 +553,254 @@ export default function ReclamationGame3D({
       const time = clock.getElapsedTime();
       frame++;
 
-      // ── Process Controls ──
+      // ── Process Player Inputs ──
       const keys = keysRef.current;
       const vInput = virtualInput;
+
+      const isBoosting = keys.boost || vInput?.boost;
+      const currentMaxSpeed = isBoosting ? 0.95 : 0.55;
+      const currentAccel = isBoosting ? 0.045 : 0.026;
 
       const forwardInput = keys.forward ? 1 : keys.backward ? -1 : (vInput?.forward ?? 0);
       const turnInput = keys.left ? 1 : keys.right ? -1 : -(vInput?.turn ?? 0);
       const actionInput = keys.action || (vInput?.action ?? false);
 
-      // Yaw rotation
-      yaw += turnInput * turnSpeed;
-
-      // Acceleration & speed
+      // Yaw rotation & speed
+      yaw += turnInput * 0.038;
       if (forwardInput !== 0) {
-        speed = Math.max(-maxSpeed * 0.6, Math.min(maxSpeed, speed + forwardInput * accel));
+        speed = Math.max(-currentMaxSpeed * 0.6, Math.min(currentMaxSpeed, speed + forwardInput * currentAccel));
       } else {
-        speed *= friction;
+        speed *= 0.94;
       }
 
-      // Smooth banking roll & tilt pitch
+      // Banking physics
       roll = THREE.MathUtils.lerp(roll, -turnInput * 0.45, 0.12);
       pitch = THREE.MathUtils.lerp(pitch, -forwardInput * 0.35, 0.12);
 
-      // Move drone along current yaw heading
       const forwardX = Math.sin(yaw);
       const forwardZ = Math.cos(yaw);
       drone.position.x += forwardX * speed;
       drone.position.z += forwardZ * speed;
+      drone.position.y = 2.4 + Math.sin(time * 3.2) * 0.15;
 
-      // Natural hover oscillation
-      const baseAltitude = 2.4;
-      drone.position.y = baseAltitude + Math.sin(time * 3.2) * 0.14;
-
-      // Apply rotation to drone mesh
       drone.rotation.y = yaw;
       drone.rotation.z = roll;
       drone.rotation.x = pitch;
 
-      // Keep within sector boundaries
-      const bound = 90;
-      drone.position.x = Math.max(-bound, Math.min(bound, drone.position.x));
-      drone.position.z = Math.max(-bound, Math.min(bound, drone.position.z));
+      // Sector bounds
+      const cityBound = 100;
+      drone.position.x = Math.max(-cityBound, Math.min(cityBound, drone.position.x));
+      drone.position.z = Math.max(-cityBound, Math.min(cityBound, drone.position.z));
 
-      // Spin rotors faster when moving
-      const rotorSpeed = 0.5 + Math.abs(speed) * 1.5;
+      // Rotor animation
+      const rotorSpeed = 0.5 + Math.abs(speed) * 2.0;
       rotorMeshes.forEach((blade, i) => {
         blade.rotation.y += (i % 2 === 0 ? 1 : -1) * rotorSpeed;
       });
 
-      // ── Third-Person Follow Camera ──
-      const camDist = 9.5;
-      const camHeight = 4.2;
-      const targetCamX = drone.position.x - forwardX * camDist;
-      const targetCamZ = drone.position.z - forwardZ * camDist;
-      const targetCamY = drone.position.y + camHeight;
-
-      camera.position.lerp(new THREE.Vector3(targetCamX, targetCamY, targetCamZ), 0.08);
-
-      // Smooth camera look-ahead
-      const lookAhead = 6;
-      const targetLook = new THREE.Vector3(
-        drone.position.x + forwardX * lookAhead,
-        drone.position.y + 0.5,
-        drone.position.z + forwardZ * lookAhead
+      // Third person follow camera
+      const camDist = 9.8;
+      const camHeight = 4.4;
+      const targetCam = new THREE.Vector3(
+        drone.position.x - forwardX * camDist,
+        drone.position.y + camHeight,
+        drone.position.z - forwardZ * camDist
       );
-      camera.lookAt(targetLook);
+      camera.position.lerp(targetCam, 0.08);
 
-      // ── Interactive Scanner Pulse ──
-      if (actionInput && !isScanning) {
-        isScanning = true;
-        scanRingScale = 1;
-        scanRingMat.opacity = 0.9;
-        reclamationAudio.playScannerPing(true);
+      const lookTarget = new THREE.Vector3(
+        drone.position.x + forwardX * 6,
+        drone.position.y + 0.6,
+        drone.position.z + forwardZ * 6
+      );
+      camera.lookAt(lookTarget);
+
+      // ── EMP Shockwave Blast ──
+      empCooldownRef.current = Math.min(1, empCooldownRef.current + delta * 0.25); // 4s cooldown
+
+      if (actionInput && empCooldownRef.current >= 1 && !isEmpExpanding) {
+        empCooldownRef.current = 0;
+        isEmpExpanding = true;
+        empRadius = 1;
+        empRingMat.opacity = 0.95;
+        reclamationAudio.playEmpBlast();
+
+        // Blast nearby zombies
+        zombies.forEach((z) => {
+          const dist = drone.position.distanceTo(z.pos);
+          if (dist < 18) {
+            z.state = 'stunned';
+            z.stunTimer = 3.5;
+            z.eyeMat.color.setHex(0x00e5ff); // Stunned cyan eyes
+            // Knockback vector
+            const kb = z.pos.clone().sub(drone.position).normalize().multiplyScalar(10);
+            z.velocity.add(kb);
+          }
+        });
       }
 
-      if (isScanning) {
-        scanRingScale += 0.8;
-        scanRing.scale.set(scanRingScale, scanRingScale, 1);
-        scanRingMat.opacity *= 0.92;
-        if (scanRingMat.opacity <= 0.04) {
-          isScanning = false;
-          scanRingMat.opacity = 0;
+      if (isEmpExpanding) {
+        empRadius += delta * 35;
+        empRing.scale.set(empRadius, empRadius, 1);
+        empRingMat.opacity *= 0.91;
+        if (empRingMat.opacity <= 0.03) {
+          isEmpExpanding = false;
+          empRingMat.opacity = 0;
         }
       }
 
-      // ── Animate CRT Screen Canvas ──
-      if (frame % 8 === 0 && screenCtx) {
-        screenCtx.fillStyle = '#011206';
-        screenCtx.fillRect(0, 0, 512, 256);
+      // ── Shield Regeneration ──
+      if (time - lastDamageTimeRef.current > 3.0) {
+        shieldsRef.current = Math.min(100, shieldsRef.current + delta * 5.0);
+      }
 
-        screenCtx.fillStyle = '#50fa7b';
-        screenCtx.font = 'bold 22px monospace';
-        screenCtx.fillText('STDERR // FILE DESCRIPTOR 2', 24, 38);
+      // ── Zombie AI & Flocking Loop ──
+      let chasingCount = 0;
+      zombies.forEach((z, idx) => {
+        // Friction on knockback velocity
+        z.pos.add(z.velocity.clone().multiplyScalar(delta));
+        z.velocity.multiplyScalar(0.88);
 
-        screenCtx.font = '16px monospace';
-        screenCtx.fillStyle = '#8be9fd';
-        screenCtx.fillText(`DRONE POS: [${drone.position.x.toFixed(1)}, ${drone.position.z.toFixed(1)}]`, 24, 75);
-        screenCtx.fillText(`SPEED: ${(Math.abs(speed) * 45).toFixed(1)} km/h`, 24, 102);
+        const distToDrone = drone.position.distanceTo(z.pos);
 
-        const remaining = disksRef.current.filter((d) => !d.collected).length;
-        screenCtx.fillStyle = remaining === 0 ? '#50fa7b' : '#ffb86c';
-        screenCtx.fillText(`LOST MEMORY BLOCKS: ${3 - remaining} / 3 SALVAGED`, 24, 138);
+        // Stunned countdown
+        if (z.state === 'stunned') {
+          z.stunTimer -= delta;
+          z.leftArm.rotation.x = Math.sin(time * 20) * 0.2;
+          z.rightArm.rotation.x = Math.sin(time * 20) * 0.2;
+          if (z.stunTimer <= 0) {
+            z.state = 'idle';
+            z.eyeMat.color.setHex(0xff1744); // Red eyes back
+          }
+          return;
+        }
 
-        if (remaining === 0) {
-          screenCtx.fillStyle = '#50fa7b';
-          screenCtx.fillText('STATUS: PORTAL RESTORED. FLY TO GATEWAY.', 24, 175);
+        // Agro trigger: within 28m or spotlight illuminates them
+        const isNear = distToDrone < 28;
+        if (isNear) {
+          z.state = 'chase';
+          chasingCount++;
+
+          if (!z.screeched && Math.random() < 0.15) {
+            z.screeched = true;
+            reclamationAudio.playZombieScreech();
+          }
+
+          // Steer towards drone
+          const dir = drone.position.clone().sub(z.pos);
+          dir.y = 0;
+          dir.normalize();
+
+          // Flocking separation with other zombies
+          const separation = new THREE.Vector3();
+          zombies.forEach((other, oIdx) => {
+            if (idx !== oIdx) {
+              const d = z.pos.distanceTo(other.pos);
+              if (d < 3.2 && d > 0) {
+                separation.add(z.pos.clone().sub(other.pos).normalize().multiplyScalar((3.2 - d) * 0.8));
+              }
+            }
+          });
+
+          dir.add(separation).normalize();
+
+          // Move zombie
+          z.pos.add(dir.multiplyScalar(z.speed * (distToDrone < 8 ? 1.4 : 1.0)));
+          z.mesh.lookAt(new THREE.Vector3(drone.position.x, z.pos.y, drone.position.z));
+
+          // Arm running animation
+          z.leftArm.rotation.x = -0.5 + Math.sin(time * 8 + idx) * 0.6;
+          z.rightArm.rotation.x = -0.5 - Math.sin(time * 8 + idx) * 0.6;
+
+          // Attack swipe if close (< 3.2m)
+          if (distToDrone < 3.4) {
+            shieldsRef.current = Math.max(0, shieldsRef.current - delta * 22);
+            lastDamageTimeRef.current = time;
+            if (onDamageTaken) onDamageTaken(Math.round(shieldsRef.current));
+            if (frame % 20 === 0) reclamationAudio.playShieldHit();
+          }
         } else {
-          screenCtx.fillStyle = '#ff5555';
-          screenCtx.fillText('KERNEL PANIC: ROUTE MISSING IN FOLIAGE', 24, 175);
+          z.state = 'idle';
+          z.screeched = false;
+          // Gentle idle shuffle
+          z.wanderAngle += (Math.random() - 0.5) * 0.1;
+          z.pos.x += Math.cos(z.wanderAngle) * 0.02;
+          z.pos.z += Math.sin(z.wanderAngle) * 0.02;
         }
 
-        // Draw scanlines on the canvas
-        screenCtx.fillStyle = 'rgba(0,0,0,0.25)';
-        for (let y = 0; y < 256; y += 4) {
-          screenCtx.fillRect(0, y, 512, 2);
-        }
+        // Keep zombies in city
+        z.pos.x = Math.max(-cityBound, Math.min(cityBound, z.pos.x));
+        z.pos.z = Math.max(-cityBound, Math.min(cityBound, z.pos.z));
+      });
 
-        screenTexture.needsUpdate = true;
-      }
-
-      // ── Disk Logic & Proximity Check ──
+      // ── Beacon Logic & Activation Check ──
       let nearestDist = 9999;
       let nearestName = 'SCANNING...';
 
-      diskMeshes.forEach(({ group, beaconRing, light, item, index }) => {
-        if (!item.collected) {
-          // Rotate beacon rings
-          beaconRing.rotation.z += 0.04;
-          beaconRing.rotation.y += 0.02;
-          group.position.y = item.pos[1] + Math.sin(time * 2.5 + index) * 0.3;
+      beaconMeshes.forEach(({ group, item, index, rings, laserPillar, light }) => {
+        rings[0].rotation.z += 0.03;
+        rings[1].rotation.y += 0.02;
 
-          const dx = drone.position.x - group.position.x;
-          const dz = drone.position.z - group.position.z;
-          const dist = Math.sqrt(dx * dx + dz * dz);
+        const dist = drone.position.distanceTo(group.position);
+        if (!item.activated && dist < nearestDist) {
+          nearestDist = dist;
+          nearestName = `${item.id}: ${item.name}`;
+        }
 
-          if (dist < nearestDist) {
-            nearestDist = dist;
-            nearestName = `${item.id} (${item.name})`;
-          }
+        // Activation trigger: near or EMP blast near beacon
+        if (!item.activated && (dist < 4.8 || (dist < 16 && isEmpExpanding))) {
+          item.activated = true;
+          beaconsRef.current[index].activated = true;
+          reclamationAudio.playBeaconLaser();
+          onActivateBeacon(item, index);
 
-          // Collection trigger: within 3.8 units or within 6 units while pulse scanning
-          if (dist < 3.8 || (dist < 6.5 && isScanning)) {
-            item.collected = true;
-            disksRef.current[index].collected = true;
-            group.visible = false;
-            reclamationAudio.playCollectSound();
-            onCollectDisk(item, index);
+          // Ignite skyward laser beam
+          laserPillar.scale.set(3.5, 1, 3.5);
+          (laserPillar.material as THREE.MeshBasicMaterial).opacity = 0.95;
+          light.intensity = 8.0;
 
-            // Check if all collected
-            const remainingCount = disksRef.current.filter((d) => !d.collected).length;
-            if (remainingCount === 0 && !allCollectedRef.current) {
-              allCollectedRef.current = true;
-              reclamationAudio.playWarpPortalSound();
-              vortexMat.color.setHex(0x50fa7b);
-              vortexMat.opacity = 0.85;
-              portalLight.intensity = 6.0;
-              portalLight.color.setHex(0x50fa7b);
+          // Seismic beacon EMP clears surrounding zombies
+          zombies.forEach((z) => {
+            if (group.position.distanceTo(z.pos) < 26) {
+              z.state = 'stunned';
+              z.stunTimer = 5.0;
+              z.velocity.add(z.pos.clone().sub(group.position).normalize().multiplyScalar(16));
             }
+          });
+
+          // Check if all 3 beacons activated
+          const remaining = beaconsRef.current.filter((b) => !b.activated).length;
+          if (remaining === 0 && !allActivatedRef.current) {
+            allActivatedRef.current = true;
+            reclamationAudio.playWarpPortalSound();
+            (portalVortex.material as THREE.MeshBasicMaterial).color.setHex(0x50fa7b);
+            (portalVortex.material as THREE.MeshBasicMaterial).opacity = 0.9;
+            portalLight.intensity = 7.0;
+            portalLight.color.setHex(0x50fa7b);
           }
         }
       });
 
-      // ── Check Portal Entry (Victory) ──
-      if (allCollectedRef.current) {
-        vortexMesh.rotation.z += 0.05;
-        const pDx = drone.position.x - portalGroup.position.x;
-        const pDz = drone.position.z - portalGroup.position.z;
-        const pDist = Math.sqrt(pDx * pDx + pDz * pDz);
-
-        if (pDist < 9.0) {
+      // ── Check Portal Entry ──
+      if (allActivatedRef.current) {
+        portalVortex.rotation.z += 0.04;
+        if (drone.position.distanceTo(portalGroup.position) < 9.5) {
           onEnterPortal();
         }
       }
 
-      // ── Drift Spores & Fireflies ──
-      const pAttr = sporeGeo.attributes.position;
-      for (let i = 0; i < sporeCount; i++) {
-        let py = pAttr.getY(i) + 0.025;
-        if (py > 20) py = 0.5;
-        pAttr.setY(i, py);
-      }
-      pAttr.needsUpdate = true;
-
       // ── Send Telemetry to HUD ──
       if (frame % 4 === 0) {
         onUpdateTelemetry({
-          speed: Math.abs(speed) * 45, // km/h
+          speed: Math.abs(speed) * 55,
           altitude: drone.position.y,
           heading: Math.round(((yaw % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2) * (180 / Math.PI)),
+          shields: Math.round(shieldsRef.current),
+          empCooldown: empCooldownRef.current,
           nearestDist: Math.round(nearestDist),
           nearestName,
+          zombieCount,
+          zombiesChasing: chasingCount,
         });
       }
 
@@ -719,7 +809,6 @@ export default function ReclamationGame3D({
 
     animId = requestAnimationFrame(render);
 
-    // Window resize handler
     const handleResize = () => {
       if (!container) return;
       width = container.clientWidth;
@@ -739,7 +828,7 @@ export default function ReclamationGame3D({
         container.removeChild(renderer.domElement);
       }
     };
-  }, [onCollectDisk, onEnterPortal, onUpdateTelemetry, virtualInput]);
+  }, [onActivateBeacon, onEnterPortal, onUpdateTelemetry, onDamageTaken, virtualInput]);
 
   return (
     <div
@@ -750,7 +839,7 @@ export default function ReclamationGame3D({
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#010603] z-50">
           <div className="w-12 h-12 rounded-full border-2 border-emerald-500/20 border-t-emerald-400 animate-spin mb-4" />
           <span className="text-xs text-emerald-400 font-mono tracking-widest uppercase">
-            CALIBRATING 3D BIO-TELEMETRY RUINS...
+            CALIBRATING ZOMBIE ARENA & CYBER RUINS...
           </span>
         </div>
       )}
