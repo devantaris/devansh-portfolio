@@ -21,7 +21,8 @@ import {
   WifiOff,
   MessageSquare,
   Edit2,
-  Check
+  Check,
+  ChevronRight
 } from 'lucide-react';
 import { BeaconItem, TelemetryData, DifficultyMode } from './ReclamationGame3D';
 import { gameNetwork, NetworkStatus, NetworkEvent } from '@/lib/multiplayer/gameNetwork';
@@ -74,7 +75,7 @@ export default function GameHudOverlay({
   useEffect(() => {
     gameNetwork.onStatusChange = (s) => setNetStatus(s);
     gameNetwork.onEvent = (e) => {
-      setChatFeed((prev) => [...prev.slice(-4), e]);
+      setChatFeed((prev) => [...prev.slice(-3), e]);
     };
   }, []);
 
@@ -134,67 +135,74 @@ export default function GameHudOverlay({
   return (
     <div className="pointer-events-none absolute inset-0 z-20 flex flex-col justify-between p-3 sm:p-5 font-mono select-none overflow-hidden">
       
-      {/* Red damage vignette flash when shields fall below 35% */}
+      {/* Critical damage red pulse vignette */}
       {shieldPercent < 35 && (
-        <div className="pointer-events-none absolute inset-0 bg-red-600/15 animate-pulse" />
+        <div className="pointer-events-none absolute inset-0 bg-red-600/20 animate-pulse" />
       )}
 
-      {/* ── 1. TOP BAR: IDENTITY, DIFFICULTY, MULTIPLAYER SQUAD & CONTROLS ── */}
-      <header className="flex flex-wrap items-center justify-between gap-2.5 w-full">
+      {/* ── 1. SLEEK TOP AEROSPACE STATUS BAR (UNIFIED DARK GLASS) ── */}
+      <header className="pointer-events-auto flex items-center justify-between gap-3 w-full max-w-6xl mx-auto px-4 py-2 rounded-2xl bg-neutral-950/80 backdrop-blur-2xl border border-white/15 text-white shadow-2xl">
         
-        {/* Unit Identity & Callsign */}
-        <div className="pointer-events-auto flex items-center gap-2 px-3 py-1.5 rounded-xl border border-white/60 bg-white/85 backdrop-blur-md shadow-lg text-xs">
-          <div className="flex items-center gap-1.5 text-amber-600 font-bold">
-            <Sun size={14} className="animate-spin text-amber-500" style={{ animationDuration: '14s' }} />
-            <span className="text-stone-900 tracking-wider">SUNLIT METROPOLIS</span>
+        {/* Left: Pilot Callsign & Squad Presence */}
+        <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            {isEditingCallsign ? (
+              <div className="flex items-center gap-1">
+                <input
+                  type="text"
+                  value={callsignInput}
+                  onChange={(e) => setCallsignInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSaveCallsign()}
+                  className="px-2 py-0.5 rounded-lg border border-cyan-500 bg-neutral-900 text-white text-xs font-bold outline-none w-28"
+                  autoFocus
+                />
+                <button
+                  onClick={handleSaveCallsign}
+                  className="p-1 rounded-lg bg-cyan-600 text-white hover:bg-cyan-500"
+                >
+                  <Check size={12} />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsEditingCallsign(true)}
+                className="flex items-center gap-1.5 text-xs text-cyan-300 font-bold hover:text-white transition-colors"
+                title="Click to edit callsign"
+              >
+                <span>{netStatus.callsign}</span>
+                <Edit2 size={10} className="text-cyan-400 opacity-60" />
+              </button>
+            )}
           </div>
 
-          <div className="w-px h-3 bg-stone-300 hidden sm:inline" />
+          <div className="w-px h-3.5 bg-white/15 hidden sm:block" />
 
-          {/* Callsign Editor */}
-          {isEditingCallsign ? (
-            <div className="flex items-center gap-1">
-              <input
-                type="text"
-                value={callsignInput}
-                onChange={(e) => setCallsignInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSaveCallsign()}
-                className="px-1.5 py-0.5 rounded border border-teal-500 bg-white text-stone-900 text-[11px] font-bold outline-none w-28"
-                autoFocus
-              />
-              <button
-                onClick={handleSaveCallsign}
-                className="p-1 rounded bg-teal-600 text-white cursor-pointer hover:bg-teal-700"
-              >
-                <Check size={12} />
-              </button>
-            </div>
-          ) : (
-            <div
-              onClick={() => setIsEditingCallsign(true)}
-              className="flex items-center gap-1 text-[11px] text-teal-800 font-bold bg-teal-50/80 px-2 py-0.5 rounded-lg border border-teal-200 cursor-pointer hover:bg-teal-100/90 transition-all"
-              title="Click to edit player callsign"
-            >
-              <span>{netStatus.callsign}</span>
-              <Edit2 size={10} className="text-teal-600 ml-0.5 opacity-60" />
-            </div>
-          )}
+          {/* Squad status */}
+          <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-neutral-400">
+            <Users size={12} className={netStatus.peerCount > 1 ? 'text-cyan-400' : 'text-neutral-500'} />
+            <span>
+              <strong className="text-white font-bold">{netStatus.peerCount}</strong> {netStatus.peerCount === 1 ? 'PILOT' : 'PILOTS'}
+            </span>
+            <span className="text-neutral-600">•</span>
+            <span className="text-[10px] text-neutral-500">{netStatus.ping}ms</span>
+          </div>
         </div>
 
-        {/* Difficulty Mode Selector Pills */}
-        <div className="pointer-events-auto flex items-center gap-1 p-1 rounded-xl border border-white/60 bg-white/85 backdrop-blur-md shadow-lg text-[10px]">
+        {/* Center: Difficulty Mode Aerospace Switch */}
+        <div className="flex items-center p-0.5 rounded-xl bg-neutral-900 border border-white/10 text-[10px]">
           {(['easy', 'medium', 'hard'] as DifficultyMode[]).map((mode) => (
             <button
               key={mode}
               onClick={() => onSelectDifficulty(mode)}
-              className={`px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider transition-all cursor-pointer ${
+              className={`px-3 py-1 rounded-lg font-bold uppercase tracking-wider transition-all cursor-pointer ${
                 difficultyMode === mode
                   ? mode === 'easy'
-                    ? 'bg-emerald-600 text-white shadow-sm'
+                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-sm'
                     : mode === 'medium'
-                    ? 'bg-amber-600 text-white shadow-sm'
-                    : 'bg-red-600 text-white shadow-sm'
-                  : 'text-stone-600 hover:text-stone-950 hover:bg-white/60'
+                    ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40 shadow-sm'
+                    : 'bg-rose-500/20 text-rose-400 border border-rose-500/40 shadow-sm'
+                  : 'text-neutral-400 hover:text-white'
               }`}
             >
               {mode}
@@ -202,112 +210,174 @@ export default function GameHudOverlay({
           ))}
         </div>
 
-        {/* Real-Time Multiplayer Squad Badge */}
-        <div className="pointer-events-auto flex items-center gap-2 px-3 py-1.5 rounded-xl border border-white/60 bg-white/85 backdrop-blur-md shadow-lg text-xs">
-          <div className="flex items-center gap-1.5">
-            <Users size={13} className={netStatus.peerCount > 1 ? 'text-teal-600 animate-pulse' : 'text-stone-400'} />
-            <span className="text-[11px] text-stone-800 font-bold">
-              SQUAD: <strong className="text-teal-700">{netStatus.peerCount} PILOTS</strong>
-            </span>
-          </div>
-
-          <div className="w-px h-3 bg-stone-300" />
-
-          <div className="flex items-center gap-1 text-[10px] text-stone-500">
-            {netStatus.connected ? (
-              <Wifi size={12} className="text-emerald-500" />
-            ) : (
-              <WifiOff size={12} className="text-amber-500" />
-            )}
-            <span className="font-mono">{netStatus.ping}ms</span>
-          </div>
-        </div>
-
-        {/* Shield / Hull Integrity Gauge */}
-        <div className="pointer-events-auto flex items-center gap-2.5 px-3.5 py-1.5 rounded-xl border border-white/60 bg-white/85 backdrop-blur-md shadow-lg text-xs">
-          <ShieldAlert size={14} className={shieldPercent < 30 ? 'text-red-500 animate-bounce' : 'text-emerald-600'} />
-          <div className="flex flex-col">
-            <div className="flex items-center justify-between gap-2 text-[10px]">
-              <span className="text-stone-700 font-bold">SHIELD</span>
-              <span className={shieldPercent < 30 ? 'text-red-600 font-bold' : 'text-emerald-700 font-bold'}>
-                {telemetry.shields} / {telemetry.maxShields} HP
-              </span>
-            </div>
-            <div className="w-20 sm:w-28 h-1.5 rounded-full bg-stone-200 overflow-hidden border border-stone-300">
-              <div
-                className={`h-full transition-all duration-300 ${
-                  shieldPercent < 30 ? 'bg-red-500' : shieldPercent < 60 ? 'bg-amber-500' : 'bg-emerald-500'
-                }`}
-                style={{ width: `${shieldPercent}%` }}
-              />
+        {/* Right: Shield Battery Meter & Actions */}
+        <div className="flex items-center gap-3">
+          {/* Hull Shield Bar */}
+          <div className="flex items-center gap-2">
+            <ShieldAlert size={14} className={shieldPercent < 30 ? 'text-red-400 animate-pulse' : 'text-cyan-400'} />
+            <div className="flex flex-col items-end">
+              <div className="text-[10px] text-neutral-400 font-bold tracking-wider">
+                <span className={shieldPercent < 30 ? 'text-red-400' : 'text-white'}>
+                  {telemetry.shields}
+                </span>
+                <span className="text-neutral-500"> / {telemetry.maxShields} HP</span>
+              </div>
+              <div className="w-16 sm:w-24 h-1.5 rounded-full bg-neutral-800 overflow-hidden border border-white/10">
+                <div
+                  className={`h-full transition-all duration-300 ${
+                    shieldPercent < 30 ? 'bg-red-500' : shieldPercent < 60 ? 'bg-amber-400' : 'bg-gradient-to-r from-cyan-400 to-emerald-400'
+                  }`}
+                  style={{ width: `${shieldPercent}%` }}
+                />
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Audio, Console & Home Exit */}
-        <div className="pointer-events-auto flex items-center gap-1.5">
-          <button
-            onClick={onToggleAudio}
-            className={`p-2 rounded-xl border text-xs transition-all duration-200 cursor-pointer shadow-md ${
-              isAudioActive
-                ? 'border-emerald-500/80 bg-emerald-50 text-emerald-800'
-                : 'border-white/60 bg-white/85 text-stone-700 hover:bg-white'
-            }`}
-            title="Toggle Web Audio"
-          >
-            {isAudioActive ? <Volume2 size={14} className="text-emerald-600 animate-pulse" /> : <VolumeX size={14} className="text-stone-400" />}
-          </button>
+          <div className="w-px h-3.5 bg-white/15" />
 
-          <button
-            onClick={onToggleTerminal}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-xl border text-xs tracking-wider transition-all cursor-pointer shadow-md ${
-              isTerminalOpen
-                ? 'border-teal-500 bg-teal-50 text-teal-800 font-bold'
-                : 'border-white/60 bg-white/85 text-stone-700 hover:bg-white'
-            }`}
-          >
-            <TerminalIcon size={14} className="text-teal-600" />
-            <span className="hidden sm:inline">LOGS</span>
-          </button>
+          {/* Audio, Logs & Exit */}
+          <div className="flex items-center gap-1">
+            <button
+              onClick={onToggleAudio}
+              className={`p-1.5 rounded-xl border transition-all cursor-pointer ${
+                isAudioActive
+                  ? 'border-emerald-500/40 bg-emerald-500/20 text-emerald-400'
+                  : 'border-white/10 bg-neutral-900 text-neutral-400 hover:text-white'
+              }`}
+              title="Toggle Audio Synthesizer"
+            >
+              {isAudioActive ? <Volume2 size={14} className="animate-pulse" /> : <VolumeX size={14} />}
+            </button>
 
-          <Link
-            href="/"
-            className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-white/60 bg-white/85 text-xs text-stone-700 hover:text-stone-950 hover:bg-white transition-all shadow-md cursor-pointer font-semibold"
-          >
-            <Home size={14} />
-            <span className="hidden sm:inline">EXIT</span>
-          </Link>
+            <button
+              onClick={onToggleTerminal}
+              className={`p-1.5 rounded-xl border transition-all cursor-pointer ${
+                isTerminalOpen
+                  ? 'border-cyan-500/40 bg-cyan-500/20 text-cyan-400'
+                  : 'border-white/10 bg-neutral-900 text-neutral-400 hover:text-white'
+              }`}
+              title="Toggle System Terminal"
+            >
+              <TerminalIcon size={14} />
+            </button>
+
+            <Link
+              href="/"
+              className="p-1.5 rounded-xl border border-white/10 bg-neutral-900 text-neutral-400 hover:text-white hover:border-white/30 transition-all cursor-pointer"
+              title="Return to Home"
+            >
+              <Home size={14} />
+            </Link>
+          </div>
         </div>
       </header>
 
-      {/* ── 2. CENTER RETICLE ── */}
+      {/* ── 2. CENTER CROSSHAIR RETICLE ── */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="relative flex items-center justify-center w-16 h-16 opacity-35">
-          <div className="absolute w-full h-px bg-teal-700" />
-          <div className="absolute h-full w-px bg-teal-700" />
-          <div className="w-8 h-8 rounded-full border border-teal-700" />
+        <div className="relative flex items-center justify-center w-20 h-20 opacity-30">
+          <div className="absolute w-full h-px bg-cyan-400" />
+          <div className="absolute h-full w-px bg-cyan-400" />
+          <div className="w-10 h-10 rounded-full border border-cyan-400/60" />
         </div>
       </div>
 
-      {/* ── 3. MID-LEFT: MULTIPLAYER SQUAD CHAT & QUICK PING WHEEL ── */}
-      <div className="pointer-events-auto hidden sm:flex flex-col gap-2 max-w-[240px] absolute top-20 left-5">
-        {/* Quick Ping / Radio Buttons */}
-        <div className="rounded-2xl border border-white/60 bg-white/85 backdrop-blur-md p-2.5 shadow-lg">
-          <div className="text-[10px] font-bold text-stone-700 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-            <MessageSquare size={11} className="text-teal-600" />
-            <span>SQUAD QUICK PING</span>
+      {/* ── 3. TOP-RIGHT: TACTICAL RADAR & BEACONS ── */}
+      <aside className="pointer-events-auto flex flex-col gap-2 max-w-[240px] self-end sm:self-auto sm:absolute sm:top-16 sm:right-5">
+        
+        {/* Sleek Dark Glass Radar Card */}
+        <div className="rounded-2xl border border-white/15 bg-neutral-950/80 backdrop-blur-2xl p-3 text-white shadow-2xl">
+          {/* Header */}
+          <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/10 text-[11px]">
+            <span className="flex items-center gap-1.5 text-cyan-400 font-bold tracking-wider">
+              <Radio size={12} className="animate-pulse" />
+              TACTICAL RADAR
+            </span>
+            <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 font-bold text-[10px]">
+              {beacons.filter((b) => b.activated).length} / {beacons.length}
+            </span>
           </div>
-          <div className="grid grid-cols-2 gap-1.5">
+
+          {/* Horde Threat Status */}
+          <div className="flex items-center justify-between text-[10px] text-neutral-300 mb-2 px-1">
+            <span className="flex items-center gap-1 text-rose-400">
+              <Skull size={11} />
+              MUTANTS DETECTED:
+            </span>
+            <span className="font-bold text-rose-300">
+              {telemetry.zombiesChasing > 0 ? `${telemetry.zombiesChasing} HUNTING` : `${telemetry.zombieCount} ROAMING`}
+            </span>
+          </div>
+
+          {/* Beacons Mini List */}
+          <div className="space-y-1 text-[10px]">
+            {beacons.map((b) => (
+              <div
+                key={b.id}
+                className={`flex items-center justify-between px-2 py-1 rounded-lg border transition-all ${
+                  b.activated
+                    ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
+                    : 'border-white/5 bg-neutral-900/60 text-neutral-400'
+                }`}
+              >
+                <div className="flex items-center gap-1.5 truncate">
+                  <Crosshair size={11} className={b.activated ? 'text-emerald-400' : 'text-neutral-500'} />
+                  <span className="truncate">{b.name}</span>
+                </div>
+                {b.activated ? (
+                  <CheckCircle2 size={12} className="text-emerald-400 shrink-0" />
+                ) : (
+                  <span className="text-[9px] text-amber-400 font-bold">READY</span>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Nearest Beacon Distance Indicator */}
+          {!allActivated && (
+            <div className="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-[10px] text-neutral-400 px-1">
+              <span>NEAREST BEACON:</span>
+              <strong className="text-cyan-300 font-bold">
+                {telemetry.nearestDist > 0 ? `${telemetry.nearestDist}m` : 'LOCATING...'}
+              </strong>
+            </div>
+          )}
+        </div>
+
+        {/* Beacon Activation Alert */}
+        {lastActivatedBeacon && (
+          <div className="animate-bounce rounded-xl border border-emerald-500/40 bg-emerald-950/80 backdrop-blur-xl p-2.5 text-xs text-emerald-300 shadow-xl flex items-center gap-2">
+            <Sparkles size={14} className="text-emerald-400" />
+            <div>
+              <div className="font-bold uppercase tracking-wider text-[11px] text-white">
+                BEACON {lastActivatedBeacon.id} ONLINE
+              </div>
+              <div className="text-[9px] text-emerald-400 font-mono">
+                Skyward Solar Column Fired
+              </div>
+            </div>
+          </div>
+        )}
+      </aside>
+
+      {/* ── 4. LEFT: SQUAD QUICK RADIO PINGS & CHAT ── */}
+      <aside className="pointer-events-auto hidden sm:flex flex-col gap-2 max-w-[220px] absolute top-16 left-5">
+        {/* Quick Ping Strip */}
+        <div className="rounded-2xl border border-white/15 bg-neutral-950/80 backdrop-blur-2xl p-2 text-white shadow-2xl">
+          <div className="flex items-center gap-1.5 text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1.5 px-1">
+            <MessageSquare size={11} className="text-cyan-400" />
+            <span>SQUAD RADIO</span>
+          </div>
+          <div className="grid grid-cols-2 gap-1 text-[9px]">
             {[
               { label: 'EMP READY', ping: 'EMP Shockwave ready!' },
-              { label: 'HOSTILES', ping: 'Zombies swarming my position!' },
-              { label: 'BEACON', ping: 'Beacon located! Moving in.' },
+              { label: 'HOSTILES', ping: 'Mutants swarming my position!' },
+              { label: 'BEACON', ping: 'Beacon localized! Moving in.' },
               { label: 'REGROUP', ping: 'Regroup at bridge!' },
             ].map((qp) => (
               <button
                 key={qp.label}
                 onClick={() => handleQuickPing(qp.ping)}
-                className="px-2 py-1 rounded-lg bg-stone-100 hover:bg-teal-50 hover:text-teal-900 border border-stone-200 text-[9px] font-bold text-stone-700 transition-all cursor-pointer text-left truncate"
+                className="px-2 py-1 rounded-lg bg-neutral-900 border border-white/10 hover:border-cyan-500/50 hover:text-cyan-300 text-neutral-300 font-bold transition-all cursor-pointer truncate text-left"
               >
                 {qp.label}
               </button>
@@ -315,113 +385,32 @@ export default function GameHudOverlay({
           </div>
         </div>
 
-        {/* Live Multiplayer Feed */}
+        {/* Live Incoming Radio Feed */}
         {chatFeed.length > 0 && (
-          <div className="rounded-2xl border border-white/60 bg-white/85 backdrop-blur-md p-2.5 shadow-lg space-y-1 text-[10px]">
-            {chatFeed.slice(-3).map((item, idx) => (
-              <div key={idx} className="leading-tight text-stone-700">
-                <strong className="text-teal-800 font-bold">{item.callsign}:</strong>{' '}
-                {item.text || (item.type === 'BEACON_ACTIVATE' ? `Activated Beacon ${item.beaconId}!` : 'Detonated EMP!')}
+          <div className="rounded-2xl border border-white/15 bg-neutral-950/80 backdrop-blur-2xl p-2.5 text-[10px] text-neutral-300 shadow-2xl space-y-1">
+            {chatFeed.slice(-3).map((msg, i) => (
+              <div key={i} className="leading-tight">
+                <strong className="text-cyan-300 font-bold">{msg.callsign}:</strong>{' '}
+                {msg.text || (msg.type === 'BEACON_ACTIVATE' ? `Synchronized Beacon ${msg.beaconId}!` : 'EMP shockwave fired!')}
               </div>
             ))}
           </div>
         )}
-      </div>
-
-      {/* ── 4. MID-RIGHT: RADAR & SURVIVAL BEACONS ── */}
-      <div className="pointer-events-auto flex flex-col gap-2.5 max-w-[270px] self-end sm:self-auto sm:absolute sm:top-20 sm:right-5">
-        
-        {/* Zombie Horde Radar */}
-        <div className="rounded-2xl border border-red-200 bg-white/90 backdrop-blur-md p-3 shadow-lg">
-          <div className="flex items-center justify-between gap-2 mb-1.5 pb-1 border-b border-stone-200 text-[10px]">
-            <span className="flex items-center gap-1 text-red-600 font-bold">
-              <Skull size={13} className="animate-pulse" />
-              MUTANT HORDE
-            </span>
-            <span className="text-red-600 font-bold bg-red-50 px-1.5 py-0.5 rounded-full border border-red-200">
-              {telemetry.zombiesChasing} HUNTING
-            </span>
-          </div>
-          <div className="text-[10px] text-stone-600 flex items-center justify-between">
-            <span>MUTANTS IN 420m ARENA:</span>
-            <strong className="text-stone-900">{telemetry.zombieCount}</strong>
-          </div>
-        </div>
-
-        {/* Survival Beacons Card */}
-        <div className="rounded-2xl border border-white/60 bg-white/90 backdrop-blur-md p-3.5 shadow-lg">
-          <div className="flex items-center justify-between gap-2 mb-2 pb-1.5 border-b border-stone-200 text-[11px] text-stone-700 uppercase tracking-wider">
-            <span className="flex items-center gap-1.5 text-teal-700 font-bold">
-              <Radio size={13} className="animate-pulse text-teal-600" />
-              SURVIVAL BEACONS
-            </span>
-            <span className="font-bold text-stone-900 bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200">
-              {beacons.filter((b) => b.activated).length} / {beacons.length}
-            </span>
-          </div>
-
-          <div className="space-y-1.5 text-xs max-h-40 overflow-y-auto pr-1">
-            {beacons.map((beacon) => (
-              <div
-                key={beacon.id}
-                className={`flex items-center justify-between p-1.5 rounded-xl border transition-all ${
-                  beacon.activated
-                    ? 'border-emerald-300 bg-emerald-50 text-emerald-900 font-bold shadow-sm'
-                    : 'border-stone-200 bg-stone-50/70 text-stone-700'
-                }`}
-              >
-                <div className="flex items-center gap-1.5">
-                  <Crosshair size={12} className={beacon.activated ? 'text-emerald-600' : 'text-stone-400'} />
-                  <span className="font-mono text-[10px]">{beacon.name}</span>
-                </div>
-                {beacon.activated ? (
-                  <CheckCircle2 size={13} className="text-emerald-600" />
-                ) : (
-                  <span className="text-[9px] text-amber-600 font-bold tracking-wider">OFFLINE</span>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {!allActivated && (
-            <div className="mt-2.5 pt-2 border-t border-stone-200 text-[10px] text-stone-600 flex items-center justify-between">
-              <span>TARGET BEACON:</span>
-              <strong className="text-teal-700 tracking-wider font-mono">
-                {telemetry.nearestDist > 0 ? `${telemetry.nearestDist}m` : 'LOCATING...'}
-              </strong>
-            </div>
-          )}
-        </div>
-
-        {/* Last Activated Beacon Alert */}
-        {lastActivatedBeacon && (
-          <div className="animate-bounce rounded-xl border border-emerald-400 bg-emerald-50 p-2.5 text-xs text-emerald-900 shadow-lg flex items-center gap-2">
-            <Sparkles size={15} className="text-emerald-600" />
-            <div>
-              <div className="font-bold uppercase tracking-wider text-emerald-800 text-[11px]">
-                BEACON {lastActivatedBeacon.id} ACTIVE!
-              </div>
-              <div className="text-[9px] text-emerald-700 font-mono">
-                Solar Skyward Laser Fired
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+      </aside>
 
       {/* ── 5. VICTORY EVACUATION MODAL ── */}
       {allActivated && (
-        <div className="pointer-events-auto absolute inset-x-4 top-20 sm:top-24 max-w-lg mx-auto rounded-3xl border-2 border-emerald-500 bg-white/95 backdrop-blur-2xl p-6 sm:p-7 text-center shadow-2xl z-40 animate-fade-in">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs tracking-widest uppercase mb-3 font-bold">
+        <div className="pointer-events-auto absolute inset-x-4 top-24 max-w-lg mx-auto rounded-3xl border-2 border-emerald-500 bg-neutral-950/95 backdrop-blur-2xl p-7 text-center shadow-2xl z-40 animate-fade-in text-white">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs tracking-widest uppercase mb-3 font-bold">
             <Sparkles size={14} />
             <span>ALL BEACONS SYNCHRONIZED ACROSS SQUAD</span>
           </div>
 
-          <h2 className="font-serif text-2xl sm:text-3xl text-stone-900 font-normal mb-2.5">
+          <h2 className="font-serif text-2xl sm:text-3xl text-white font-normal mb-2.5">
             Extraction Gateway Online.
           </h2>
 
-          <p className="text-xs sm:text-sm text-stone-600 mb-6 font-sans leading-relaxed">
+          <p className="text-xs sm:text-sm text-neutral-300 mb-6 font-sans leading-relaxed">
             The ancient Warp Gateway at <code>(0, 0)</code> is fully charged by the squad&apos;s solar beacons.
             Fly into the turquoise vortex or warp home now:
           </p>
@@ -429,14 +418,14 @@ export default function GameHudOverlay({
           <div className="flex flex-wrap items-center justify-center gap-3">
             <button
               onClick={onEnterPortal}
-              className="px-6 py-3 rounded-xl border border-emerald-600 bg-emerald-600 text-white hover:bg-emerald-700 text-xs tracking-wider uppercase font-bold cursor-pointer transition-all shadow-lg"
+              className="px-6 py-3 rounded-xl border border-emerald-500 bg-emerald-600 text-white hover:bg-emerald-500 text-xs tracking-wider uppercase font-bold cursor-pointer transition-all shadow-lg"
             >
               ← Evacuate to Home (/)
             </button>
 
             <Link
               href="/universe"
-              className="px-6 py-3 rounded-xl border border-stone-300 bg-white text-stone-900 hover:bg-stone-50 text-xs tracking-wider uppercase font-bold cursor-pointer transition-all shadow-md"
+              className="px-6 py-3 rounded-xl border border-white/20 bg-neutral-900 text-white hover:bg-neutral-800 text-xs tracking-wider uppercase font-bold cursor-pointer transition-all shadow-md"
             >
               Escape to 3D Universe →
             </Link>
@@ -444,68 +433,122 @@ export default function GameHudOverlay({
         </div>
       )}
 
-      {/* ── 6. FOOTER: FLIGHT GAUGES, KEYBOARD & TOUCH CONTROLS ── */}
-      <footer className="w-full flex items-end justify-between gap-3">
+      {/* ── 6. AERODYNAMIC DASHBOARD AT BOTTOM CENTER ── */}
+      <footer className="w-full flex items-end justify-between gap-4">
         
-        {/* Flight Gauges (Heading, Speed, EMP) */}
-        <div className="pointer-events-auto hidden md:flex items-center gap-3 px-3.5 py-2 rounded-xl border border-white/60 bg-white/85 backdrop-blur-md shadow-lg text-xs text-stone-800">
-          <div className="flex items-center gap-1.5">
-            <Compass size={14} className="text-teal-600" />
-            <span>HDG: <strong className="text-stone-950 font-bold">{telemetry.heading}°</strong></span>
+        {/* Desktop Keyboard Legend */}
+        <div className="pointer-events-auto hidden md:flex items-center gap-2.5 px-3.5 py-1.5 rounded-xl bg-neutral-950/70 backdrop-blur-xl border border-white/10 text-[10px] text-neutral-400">
+          <div className="flex items-center gap-1">
+            <kbd className="px-1.5 py-0.5 rounded bg-neutral-800 text-white font-bold border border-white/10">W</kbd>
+            <kbd className="px-1.5 py-0.5 rounded bg-neutral-800 text-white font-bold border border-white/10">S</kbd>
+            <span>Thrust</span>
           </div>
-          <div className="w-px h-3 bg-stone-300" />
-          <div>
-            SPEED: <strong className="text-stone-950 font-bold">{telemetry.speed.toFixed(1)}</strong> km/h
+          <span className="text-neutral-600">•</span>
+          <div className="flex items-center gap-1">
+            <kbd className="px-1.5 py-0.5 rounded bg-neutral-800 text-white font-bold border border-white/10">A</kbd>
+            <kbd className="px-1.5 py-0.5 rounded bg-neutral-800 text-white font-bold border border-white/10">D</kbd>
+            <span>Steer</span>
           </div>
-          <div className="w-px h-3 bg-stone-300" />
-          <div className="flex items-center gap-1.5">
-            <Zap size={14} className={telemetry.empCooldown >= 1 ? 'text-cyan-600 animate-pulse' : 'text-stone-400'} />
-            <span className={telemetry.empCooldown >= 1 ? 'text-teal-700 font-bold' : 'text-stone-400'}>
-              {telemetry.empCooldown >= 1 ? 'EMP READY (SPACE)' : 'CHARGING'}
-            </span>
+          <span className="text-neutral-600">•</span>
+          <div className="flex items-center gap-1 text-cyan-300">
+            <kbd className="px-1.5 py-0.5 rounded bg-cyan-950 border border-cyan-500/40 text-cyan-300 font-bold">SHIFT</kbd>
+            <span>Turbo</span>
+          </div>
+          <span className="text-neutral-600">•</span>
+          <div className="flex items-center gap-1 text-amber-300">
+            <kbd className="px-2 py-0.5 rounded bg-amber-950 border border-amber-500/40 text-amber-300 font-bold">SPACE</kbd>
+            <span>EMP</span>
+          </div>
+        </div>
+
+        {/* Center: High-Speed Flight Telemetry Cluster */}
+        <div className="pointer-events-auto flex items-center gap-4 px-4 py-2 rounded-2xl bg-neutral-950/80 backdrop-blur-2xl border border-white/15 text-white shadow-2xl mx-auto md:mx-0">
+          
+          {/* Digital Speedometer */}
+          <div className="flex flex-col items-center">
+            <div className="flex items-baseline gap-1">
+              <span className="text-xl font-extrabold tracking-tight font-mono text-cyan-300">
+                {Math.round(telemetry.speed)}
+              </span>
+              <span className="text-[10px] text-neutral-400 font-bold">KM/H</span>
+            </div>
+            {telemetry.speed > 80 && (
+              <span className="text-[8px] font-bold text-cyan-400 animate-pulse tracking-widest">
+                TURBO ENGAGED
+              </span>
+            )}
+          </div>
+
+          <div className="w-px h-6 bg-white/15" />
+
+          {/* Heading Compass */}
+          <div className="flex flex-col items-center text-[10px] text-neutral-400">
+            <div className="flex items-center gap-1 text-white font-bold">
+              <Compass size={13} className="text-cyan-400" />
+              <span>{telemetry.heading}°</span>
+            </div>
+            <span className="text-[9px] text-neutral-500">HEADING</span>
+          </div>
+
+          <div className="w-px h-6 bg-white/15" />
+
+          {/* EMP Shockwave Readiness */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onVirtualInput({ forward: 0, turn: 0, action: true })}
+              disabled={telemetry.empCooldown < 0.98}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                telemetry.empCooldown >= 0.98
+                  ? 'border-cyan-400 bg-cyan-500/30 text-cyan-300 animate-pulse shadow-lg shadow-cyan-500/20'
+                  : 'border-white/10 bg-neutral-900 text-neutral-500 cursor-not-allowed'
+              }`}
+            >
+              <Zap size={13} className={telemetry.empCooldown >= 0.98 ? 'text-cyan-300' : 'text-neutral-600'} />
+              <span>{telemetry.empCooldown >= 0.98 ? 'EMP READY' : 'CHARGING'}</span>
+            </button>
           </div>
         </div>
 
         {/* Mobile Virtual Touch Joystick */}
         {touchActive && (
-          <div className="pointer-events-auto flex items-end justify-between w-full pb-2">
+          <div className="pointer-events-auto flex items-end justify-between w-full pb-2 md:hidden">
             <div
               ref={joystickBaseRef}
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
-              className="relative w-28 h-28 rounded-full border-2 border-emerald-600/40 bg-white/85 backdrop-blur-md shadow-xl flex items-center justify-center touch-none"
+              className="relative w-28 h-28 rounded-full border-2 border-cyan-500/40 bg-neutral-950/80 backdrop-blur-xl shadow-xl flex items-center justify-center touch-none"
             >
               <div
-                className="w-12 h-12 rounded-full border border-emerald-600 bg-emerald-500/30 transition-transform duration-75"
+                className="w-12 h-12 rounded-full border border-cyan-400 bg-cyan-500/40 transition-transform duration-75"
                 style={{
                   transform: `translate(${joystickPos.x}px, ${joystickPos.y}px)`,
                 }}
               />
-              <span className="absolute bottom-1 text-[9px] text-emerald-800 pointer-events-none font-bold">
-                DRONE STICK
+              <span className="absolute bottom-1 text-[8px] text-cyan-300 pointer-events-none font-bold">
+                STICK
               </span>
             </div>
 
             <button
               onTouchStart={() => onVirtualInput({ forward: 0, turn: 0, action: true })}
               onTouchEnd={() => onVirtualInput({ forward: 0, turn: 0, action: false })}
-              className={`w-20 h-20 rounded-full border-2 backdrop-blur-md flex flex-col items-center justify-center text-xs font-bold active:scale-95 transition-all cursor-pointer shadow-xl ${
-                telemetry.empCooldown >= 1
-                  ? 'border-teal-500 bg-teal-500 text-white shadow-teal-500/30'
-                  : 'border-stone-300 bg-white/80 text-stone-400'
+              className={`w-20 h-20 rounded-full border-2 backdrop-blur-xl flex flex-col items-center justify-center text-xs font-bold active:scale-95 transition-all cursor-pointer shadow-2xl ${
+                telemetry.empCooldown >= 0.98
+                  ? 'border-cyan-400 bg-cyan-500/40 text-cyan-200'
+                  : 'border-white/10 bg-neutral-900 text-neutral-500'
               }`}
             >
-              <Zap size={20} className={telemetry.empCooldown >= 1 ? 'mb-0.5 animate-pulse' : 'mb-0.5'} />
+              <Zap size={20} className={telemetry.empCooldown >= 0.98 ? 'animate-pulse text-cyan-300' : ''} />
               <span>EMP</span>
             </button>
           </div>
         )}
 
         {/* Environment Specs */}
-        <div className="pointer-events-auto hidden sm:block text-right text-[10px] text-stone-600">
-          <div className="font-semibold text-stone-900">ENVIRONMENT: 420m SUNLIT METROPOLIS</div>
-          <div>REALISTIC HOUSES, SKYSCRAPERS & RIVER VALLEY</div>
+        <div className="pointer-events-auto hidden sm:block text-right text-[10px] text-neutral-400">
+          <div className="font-bold text-white tracking-wider">SUNLIT METROPOLIS // 420m</div>
+          <div className="text-neutral-500">LIVE MULTIPLAYER SECTOR</div>
         </div>
       </footer>
     </div>

@@ -82,34 +82,34 @@ export default function ReclamationGame3D({
   const containerRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Difficulty configurations
+  // Difficulty configurations (fast, responsive, balanced)
   const modeSettings = {
     easy: {
       maxShields: 200,
-      empCooldownRate: 1 / 3.2,
+      empCooldownRate: 1 / 3.0,
       zombieCount: 20,
-      zombieBaseSpeed: 1.8,
-      chaseRadius: 22,
+      zombieBaseSpeed: 8.5,
+      chaseRadius: 28,
       beaconCount: 3,
-      fogDensity: 0.0035,
+      fogDensity: 0.003,
     },
     medium: {
       maxShields: 100,
-      empCooldownRate: 1 / 5.5,
+      empCooldownRate: 1 / 5.0,
       zombieCount: 36,
-      zombieBaseSpeed: 2.6,
-      chaseRadius: 30,
+      zombieBaseSpeed: 13.0,
+      chaseRadius: 36,
       beaconCount: 4,
-      fogDensity: 0.0055,
+      fogDensity: 0.0045,
     },
     hard: {
       maxShields: 60,
-      empCooldownRate: 1 / 8.5,
+      empCooldownRate: 1 / 7.5,
       zombieCount: 56,
-      zombieBaseSpeed: 3.6,
-      chaseRadius: 40,
+      zombieBaseSpeed: 18.0,
+      chaseRadius: 48,
       beaconCount: 5,
-      fogDensity: 0.008,
+      fogDensity: 0.0065,
     },
   }[difficultyMode];
 
@@ -119,31 +119,31 @@ export default function ReclamationGame3D({
       id: 'ALPHA',
       name: 'SUBURBAN PLAZA',
       location: 'RESIDENTIAL BOULEVARD // 0x404_A',
-      pos: [-55, 3.2, -45],
+      pos: [-60, 3.2, -55],
       activated: false,
-      color: 0x00b4d8,
+      color: 0x00f5d4,
     },
     {
       id: 'BETA',
       name: 'RIVER ARCH BRIDGE',
       location: 'CANAL CROSSING // 0x404_B',
-      pos: [-28, 4.0, 18],
+      pos: [-30, 4.0, 22],
       activated: false,
-      color: 0x2ec4b6,
+      color: 0x70d6ff,
     },
     {
       id: 'GAMMA',
       name: 'SKYSCRAPER PLAZA',
       location: 'TECH CORE MONOLITH // 0x404_C',
-      pos: [65, 3.5, -60],
+      pos: [75, 3.5, -65],
       activated: false,
-      color: 0xff9f1c,
+      color: 0xff9e00,
     },
     {
       id: 'DELTA',
       name: 'BOTANICAL OVERLOOK',
       location: 'VALLEY RIDGE // 0x404_D',
-      pos: [80, 5.8, 75],
+      pos: [85, 5.8, 80],
       activated: false,
       color: 0xe0aaff,
     },
@@ -151,7 +151,7 @@ export default function ReclamationGame3D({
       id: 'EPSILON',
       name: 'HIGHWAY RUINS',
       location: 'ELEVATED FREEWAY // 0x404_E',
-      pos: [-95, 4.5, 90],
+      pos: [-100, 4.5, 95],
       activated: false,
       color: 0xff4d6d,
     },
@@ -227,19 +227,18 @@ export default function ReclamationGame3D({
     let width = container.clientWidth;
     let height = container.clientHeight;
 
-    // Connect to multiplayer network
     gameNetwork.connect();
 
-    // 1. Scene & Atmosphere
+    // 1. Scene & Crisp Morning Sky
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xaed9e0); // Morning azure sky
-    scene.fog = new THREE.FogExp2(0xb8e0d2, modeSettings.fogDensity);
+    scene.background = new THREE.Color(0x7ec8e3);
+    scene.fog = new THREE.FogExp2(0x9bd7e8, modeSettings.fogDensity);
 
     // 2. Camera
-    const camera = new THREE.PerspectiveCamera(56, width / height, 0.1, 750);
-    camera.position.set(0, 9, 18);
+    const camera = new THREE.PerspectiveCamera(58, width / height, 0.1, 800);
+    camera.position.set(0, 9, 20);
 
-    // 3. Renderer
+    // 3. Renderer with High-End Tonemapping
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       powerPreference: 'high-performance',
@@ -247,35 +246,37 @@ export default function ReclamationGame3D({
     });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-    renderer.setClearColor(0xaed9e0, 1);
+    renderer.setClearColor(0x7ec8e3, 1);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.35;
+    renderer.toneMappingExposure = 1.05;
     container.appendChild(renderer.domElement);
 
-    // 4. Morning Sunlight & Daylight Fill
-    const ambientLight = new THREE.AmbientLight(0xe8f5e9, 1.5);
+    // 4. Balanced Daylight Lighting
+    const ambientLight = new THREE.AmbientLight(0xdcebf7, 0.55);
     scene.add(ambientLight);
 
-    const morningSun = new THREE.DirectionalLight(0xfff4d6, 3.0);
-    morningSun.position.set(140, 95, -110);
+    const morningSun = new THREE.DirectionalLight(0xfff6e6, 2.0);
+    morningSun.position.set(120, 110, -90);
     morningSun.castShadow = true;
     morningSun.shadow.mapSize.width = 2048;
     morningSun.shadow.mapSize.height = 2048;
-    morningSun.shadow.camera.near = 15;
-    morningSun.shadow.camera.far = 480;
-    const sD = 180;
+    morningSun.shadow.camera.near = 10;
+    morningSun.shadow.camera.far = 400;
+    morningSun.shadow.bias = -0.0006;
+    const sD = 75; // Sharp shadow radius centered around player
     morningSun.shadow.camera.left = -sD;
     morningSun.shadow.camera.right = sD;
     morningSun.shadow.camera.top = sD;
     morningSun.shadow.camera.bottom = -sD;
     scene.add(morningSun);
+    scene.add(morningSun.target);
 
-    const hemiLight = new THREE.HemisphereLight(0xaed9e0, 0x52b788, 1.2);
+    const hemiLight = new THREE.HemisphereLight(0x7ec8e3, 0x2d6a4f, 0.4);
     scene.add(hemiLight);
 
-    // 5. Vast Undulating Terrain & Riverbed (420x420)
+    // 5. Vast Undulating Terrain (420x420)
     const mapSize = 440;
     const terrainGeo = new THREE.PlaneGeometry(mapSize, mapSize, 110, 110);
     terrainGeo.rotateX(-Math.PI / 2);
@@ -283,17 +284,14 @@ export default function ReclamationGame3D({
     const posAttr = terrainGeo.attributes.position;
     const colors = new Float32Array(posAttr.count * 3);
 
-    // Height generator helper
     const getTerrainHeight = (gx: number, gz: number) => {
-      // River channel cutting diagonally
-      const riverDist = Math.abs(gz - (gx * 0.75 + 15));
+      const riverDist = Math.abs(gz - (gx * 0.75 + 20));
       if (riverDist < 18) {
         return -2.6 + Math.sin(gx * 0.1) * 0.4;
       }
-      // Gentle rolling hills
       const hill =
         Math.sin(gx * 0.02) * Math.cos(gz * 0.02) * 3.8 +
-        Math.sin(gx * 0.04 + gz * 0.03) * 1.5;
+        Math.sin(gx * 0.04 + gz * 0.03) * 1.4;
       return Math.max(-0.2, hill);
     };
 
@@ -303,38 +301,37 @@ export default function ReclamationGame3D({
       const h = getTerrainHeight(gx, gz);
       posAttr.setY(i, h);
 
-      // Distinguish roads, paths, riverbanks, and lush grass
-      const riverDist = Math.abs(gz - (gx * 0.75 + 15));
+      const riverDist = Math.abs(gz - (gx * 0.75 + 20));
       const isMainAvenue = Math.abs(gx) < 7 && gz > -160 && gz < 160;
       const isCrossBoulevard = Math.abs(gz) < 7 && gx > -160 && gx < 160;
       const isPathway = Math.abs(gx - 45) < 3 || Math.abs(gx + 45) < 3 || Math.abs(gz - 50) < 3;
 
       if (riverDist < 18) {
-        // Riverbed wet pebbles & sand
-        colors[i * 3] = 0.2;
-        colors[i * 3 + 1] = 0.28;
-        colors[i * 3 + 2] = 0.25;
+        // Wet river pebble slate
+        colors[i * 3] = 0.16;
+        colors[i * 3 + 1] = 0.24;
+        colors[i * 3 + 2] = 0.22;
       } else if (riverDist < 26) {
-        // Lush riverbank reed verge
-        colors[i * 3] = 0.3;
-        colors[i * 3 + 1] = 0.58;
-        colors[i * 3 + 2] = 0.28;
+        // Lush riverbank grass
+        colors[i * 3] = 0.22;
+        colors[i * 3 + 1] = 0.50;
+        colors[i * 3 + 2] = 0.26;
       } else if (isMainAvenue || isCrossBoulevard) {
-        // Cracked asphalt highway
-        colors[i * 3] = 0.24;
-        colors[i * 3 + 1] = 0.26;
-        colors[i * 3 + 2] = 0.25;
+        // Dark asphalt tarmac
+        colors[i * 3] = 0.14;
+        colors[i * 3 + 1] = 0.15;
+        colors[i * 3 + 2] = 0.16;
       } else if (isPathway) {
-        // Cobblestone walking promenade
-        colors[i * 3] = 0.56;
-        colors[i * 3 + 1] = 0.6;
-        colors[i * 3 + 2] = 0.52;
+        // Cobblestone walking path
+        colors[i * 3] = 0.45;
+        colors[i * 3 + 1] = 0.48;
+        colors[i * 3 + 2] = 0.43;
       } else {
-        // Fresh morning green meadow with clover
-        const v = 0.2 + (Math.sin(gx * 0.1) * 0.05);
-        colors[i * 3] = v;
-        colors[i * 3 + 1] = 0.64;
-        colors[i * 3 + 2] = 0.32;
+        // Rich vibrant green meadow
+        const noise = Math.sin(gx * 0.2) * 0.04;
+        colors[i * 3] = 0.18 + noise;
+        colors[i * 3 + 1] = 0.52 + noise;
+        colors[i * 3 + 2] = 0.22;
       }
     }
 
@@ -343,46 +340,44 @@ export default function ReclamationGame3D({
 
     const terrainMat = new THREE.MeshStandardMaterial({
       vertexColors: true,
-      roughness: 0.8,
-      metalness: 0.08,
+      roughness: 0.85,
+      metalness: 0.05,
     });
     const metropolisTerrain = new THREE.Mesh(terrainGeo, terrainMat);
     metropolisTerrain.receiveShadow = true;
     scene.add(metropolisTerrain);
 
-    // 6. Flowing Daylight River (Animated Water Surface)
+    // 6. Flowing Daylight River
     const riverGeo = new THREE.PlaneGeometry(420, 32, 60, 10);
     riverGeo.rotateX(-Math.PI / 2);
     riverGeo.rotateY(0.64);
     const riverMat = new THREE.MeshStandardMaterial({
       color: 0x1d7874,
-      roughness: 0.15,
-      metalness: 0.85,
+      roughness: 0.12,
+      metalness: 0.9,
       transparent: true,
-      opacity: 0.88,
+      opacity: 0.9,
     });
     const riverMesh = new THREE.Mesh(riverGeo, riverMat);
-    riverMesh.position.set(0, -1.8, 15);
+    riverMesh.position.set(0, -1.8, 20);
     riverMesh.receiveShadow = true;
     scene.add(riverMesh);
 
-    // 7. Stone Arched Bridges over the River
+    // 7. Stone Arched Bridges
     const bridgeGroup = new THREE.Group();
-    const stoneMat = new THREE.MeshStandardMaterial({ color: 0x6c757d, roughness: 0.7 });
-    const railingMat = new THREE.MeshStandardMaterial({ color: 0x343a40, roughness: 0.5 });
+    const stoneMat = new THREE.MeshStandardMaterial({ color: 0x5a6065, roughness: 0.75 });
+    const railingMat = new THREE.MeshStandardMaterial({ color: 0x2b2d42, roughness: 0.6 });
 
     const createStoneBridge = (bx: number, bz: number, angle: number) => {
       const bridge = new THREE.Group();
       bridge.position.set(bx, 1.2, bz);
       bridge.rotation.y = angle;
 
-      // Road deck
       const deck = new THREE.Mesh(new THREE.BoxGeometry(11, 1.2, 38), stoneMat);
       deck.castShadow = true;
       deck.receiveShadow = true;
       bridge.add(deck);
 
-      // Stone piers
       [-12, 0, 12].forEach((pz) => {
         const pier = new THREE.Mesh(new THREE.BoxGeometry(12, 6, 3.5), stoneMat);
         pier.position.set(0, -2.8, pz);
@@ -390,7 +385,6 @@ export default function ReclamationGame3D({
         bridge.add(pier);
       });
 
-      // Side safety railings
       [-5.6, 5.6].forEach((rx) => {
         const rail = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.3, 38), railingMat);
         rail.position.set(rx, 1.2, 0);
@@ -401,14 +395,14 @@ export default function ReclamationGame3D({
       return bridge;
     };
 
-    bridgeGroup.add(createStoneBridge(-28, 18, -0.9));
+    bridgeGroup.add(createStoneBridge(-30, 22, -0.9));
     bridgeGroup.add(createStoneBridge(65, 95, -0.9));
     scene.add(bridgeGroup);
 
-    // 8. Perimeter Defensive Laser Posts (420x420 Arena Bounds)
+    // 8. Perimeter Defensive Laser Posts (420x420)
     const perimeterGroup = new THREE.Group();
-    const fenceMat = new THREE.MeshBasicMaterial({ color: 0x00b4d8, transparent: true, opacity: 0.65 });
-    const postMat = new THREE.MeshStandardMaterial({ color: 0x2b2d42, roughness: 0.5 });
+    const fenceMat = new THREE.MeshBasicMaterial({ color: 0x00f5d4, transparent: true, opacity: 0.7 });
+    const postMat = new THREE.MeshStandardMaterial({ color: 0x1b263b, roughness: 0.5 });
 
     const townBound = 200;
     for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 16) {
@@ -425,23 +419,22 @@ export default function ReclamationGame3D({
     }
     scene.add(perimeterGroup);
 
-    // 9. Realistic Residential Houses ("House Stuff")
+    // 9. Realistic Residential Houses
     const housesGroup = new THREE.Group();
     const wallMats = [
-      new THREE.MeshStandardMaterial({ color: 0xf4f1de, roughness: 0.65 }), // Warm cream siding
-      new THREE.MeshStandardMaterial({ color: 0xd8e2dc, roughness: 0.7 }), // Morning sage
-      new THREE.MeshStandardMaterial({ color: 0xe07a5f, roughness: 0.75 }), // Terracotta red brick
-      new THREE.MeshStandardMaterial({ color: 0xffe5d9, roughness: 0.7 }), // Rose sunlit wood
-      new THREE.MeshStandardMaterial({ color: 0x81b29a, roughness: 0.7 }), // Muted olive
+      new THREE.MeshStandardMaterial({ color: 0xf4f1de, roughness: 0.65 }),
+      new THREE.MeshStandardMaterial({ color: 0xd8e2dc, roughness: 0.7 }),
+      new THREE.MeshStandardMaterial({ color: 0xbc6c25, roughness: 0.75 }),
+      new THREE.MeshStandardMaterial({ color: 0xdda15e, roughness: 0.7 }),
     ];
 
     const roofMats = [
-      new THREE.MeshStandardMaterial({ color: 0x9d0208, roughness: 0.55 }), // Terracotta shingles
-      new THREE.MeshStandardMaterial({ color: 0x2b2d42, roughness: 0.6 }), // Dark charcoal slate
-      new THREE.MeshStandardMaterial({ color: 0x495057, roughness: 0.65 }), // Weathered cedar
+      new THREE.MeshStandardMaterial({ color: 0x780000, roughness: 0.6 }),
+      new THREE.MeshStandardMaterial({ color: 0x2b2d42, roughness: 0.6 }),
+      new THREE.MeshStandardMaterial({ color: 0x495057, roughness: 0.65 }),
     ];
 
-    const woodTrimMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 });
+    const woodTrimMat = new THREE.MeshStandardMaterial({ color: 0xf8f9fa, roughness: 0.5 });
     const ivyMat = new THREE.MeshStandardMaterial({ color: 0x2d6a4f, roughness: 0.85 });
     const glassMat = new THREE.MeshStandardMaterial({ color: 0x90e0ef, roughness: 0.1, metalness: 0.9 });
     const doorMat = new THREE.MeshStandardMaterial({ color: 0x3d405b, roughness: 0.5 });
@@ -456,14 +449,12 @@ export default function ReclamationGame3D({
       const hd = 8.2;
       const hh = 5.2;
 
-      // Foundation base
       const fGeo = new THREE.BoxGeometry(hw + 0.5, 0.6, hd + 0.5);
       const foundation = new THREE.Mesh(fGeo, stoneMat);
       foundation.position.y = 0.3;
       foundation.receiveShadow = true;
       house.add(foundation);
 
-      // Main house body
       const bodyGeo = new THREE.BoxGeometry(hw, hh, hd);
       const bodyMat = wallMats[styleIdx % wallMats.length];
       const body = new THREE.Mesh(bodyGeo, bodyMat);
@@ -472,7 +463,6 @@ export default function ReclamationGame3D({
       body.receiveShadow = true;
       house.add(body);
 
-      // Pitched Gabled Shingle Roof
       const roofGeo = new THREE.ConeGeometry(hw * 0.76, 3.8, 4);
       const roofMat = roofMats[styleIdx % roofMats.length];
       const roof = new THREE.Mesh(roofGeo, roofMat);
@@ -483,7 +473,6 @@ export default function ReclamationGame3D({
       roof.receiveShadow = true;
       house.add(roof);
 
-      // Attic Dormer Window
       const dormer = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.4, 2.0), bodyMat);
       dormer.position.set(0, hh + 1.8, hd / 2 - 0.5);
       dormer.castShadow = true;
@@ -492,7 +481,6 @@ export default function ReclamationGame3D({
       dormerWin.position.set(0, hh + 1.8, hd / 2 + 0.55);
       house.add(dormerWin);
 
-      // Front Porch & Wooden Balustrades
       const porchDeck = new THREE.Mesh(new THREE.BoxGeometry(6.4, 0.3, 3.0), woodTrimMat);
       porchDeck.position.set(0, 0.6, hd / 2 + 1.5);
       porchDeck.castShadow = true;
@@ -510,25 +498,21 @@ export default function ReclamationGame3D({
         house.add(post);
       });
 
-      // Front Door
       const door = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 2.4), doorMat);
       door.position.set(0, 1.8, hd / 2 + 0.05);
       house.add(door);
 
-      // Windows with morning glints
       [-2.8, 2.8].forEach((wx) => {
         const win = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 1.8), glassMat);
         win.position.set(wx, 2.6, hd / 2 + 0.05);
         house.add(win);
       });
 
-      // Brick Chimney
       const chimney = new THREE.Mesh(new THREE.BoxGeometry(1.4, 5.0, 1.4), roofMats[0]);
       chimney.position.set(3.2, hh + 2.4, -1.8);
       chimney.castShadow = true;
       house.add(chimney);
 
-      // Garage Annex on the side
       const garage = new THREE.Mesh(new THREE.BoxGeometry(6.0, 3.6, 7.5), bodyMat);
       garage.position.set(hw / 2 + 3.0, 1.8, 0);
       garage.castShadow = true;
@@ -537,7 +521,6 @@ export default function ReclamationGame3D({
       garageDoor.position.set(hw / 2 + 3.0, 1.5, 7.5 / 2 + 0.05);
       house.add(garageDoor);
 
-      // Climbing Ivy
       for (let v = 0; v < 3; v++) {
         const vine = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, hh + 2, 6), ivyMat);
         vine.position.set((v - 1) * 3.4, (hh + 2) / 2, hd / 2 + 0.15);
@@ -545,7 +528,6 @@ export default function ReclamationGame3D({
         house.add(vine);
       }
 
-      // Mailbox and walkway fence
       const mailbox = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 0.7), woodTrimMat);
       mailbox.position.set(4.2, 1.3, hd / 2 + 3.8);
       house.add(mailbox);
@@ -553,27 +535,23 @@ export default function ReclamationGame3D({
       return house;
     };
 
-    // Populate 18+ houses across residential sectors
     const houseConfigs = [
       { x: -75, z: -75, r: 0.1, s: 1.0, idx: 0 },
       { x: -50, z: -80, r: -0.05, s: 1.05, idx: 1 },
       { x: -25, z: -80, r: 0.1, s: 0.95, idx: 2 },
       { x: -80, z: -45, r: Math.PI / 2, s: 1.0, idx: 3 },
-      { x: -80, z: -20, r: Math.PI / 2 - 0.1, s: 1.0, idx: 4 },
-      { x: -55, z: -25, r: Math.PI - 0.1, s: 1.05, idx: 0 },
-      { x: -30, z: -25, r: Math.PI + 0.05, s: 0.95, idx: 1 },
-      { x: -55, z: 0, r: 0.05, s: 1.0, idx: 2 },
-      { x: -80, z: 25, r: Math.PI / 2, s: 1.0, idx: 3 },
-      { x: -55, z: 35, r: -0.1, s: 1.05, idx: 4 },
-      // East Riverside Suburb
-      { x: 45, z: -25, r: -Math.PI / 2, s: 1.0, idx: 0 },
-      { x: 45, z: 0, r: -Math.PI / 2 + 0.05, s: 1.05, idx: 1 },
-      { x: 45, z: 25, r: -Math.PI / 2 - 0.05, s: 0.95, idx: 2 },
-      { x: 80, z: -25, r: Math.PI / 2, s: 1.0, idx: 3 },
-      { x: 80, z: 0, r: Math.PI / 2, s: 1.0, idx: 4 },
-      { x: 80, z: 25, r: Math.PI / 2, s: 1.05, idx: 0 },
-      { x: 105, z: 10, r: -0.2, s: 1.0, idx: 1 },
-      { x: 105, z: 35, r: 0.15, s: 0.95, idx: 2 },
+      { x: -80, z: -20, r: Math.PI / 2 - 0.1, s: 1.0, idx: 0 },
+      { x: -55, z: -25, r: Math.PI - 0.1, s: 1.05, idx: 1 },
+      { x: -30, z: -25, r: Math.PI + 0.05, s: 0.95, idx: 2 },
+      { x: -55, z: 0, r: 0.05, s: 1.0, idx: 3 },
+      { x: -80, z: 25, r: Math.PI / 2, s: 1.0, idx: 0 },
+      { x: -55, z: 35, r: -0.1, s: 1.05, idx: 1 },
+      { x: 50, z: -25, r: -Math.PI / 2, s: 1.0, idx: 0 },
+      { x: 50, z: 0, r: -Math.PI / 2 + 0.05, s: 1.05, idx: 1 },
+      { x: 50, z: 25, r: -Math.PI / 2 - 0.05, s: 0.95, idx: 2 },
+      { x: 85, z: -25, r: Math.PI / 2, s: 1.0, idx: 3 },
+      { x: 85, z: 0, r: Math.PI / 2, s: 1.0, idx: 0 },
+      { x: 85, z: 25, r: Math.PI / 2, s: 1.05, idx: 1 },
     ];
 
     houseConfigs.forEach((h) => {
@@ -581,12 +559,12 @@ export default function ReclamationGame3D({
     });
     scene.add(housesGroup);
 
-    // 10. Multi-Storey Commercial & Tech Core (14+ Skyscraper Towers)
+    // 10. Multi-Storey Skyscrapers & Commercial Core
     const towersGroup = new THREE.Group();
-    const concreteMat = new THREE.MeshStandardMaterial({ color: 0x8d99ae, roughness: 0.6, metalness: 0.2 });
-    const darkTowerMat = new THREE.MeshStandardMaterial({ color: 0x2b2d42, roughness: 0.5, metalness: 0.4 });
-    const metalMat = new THREE.MeshStandardMaterial({ color: 0x4a4e69, roughness: 0.4, metalness: 0.8 });
-    const warningRedMat = new THREE.MeshBasicMaterial({ color: 0xff1744 });
+    const concreteMat = new THREE.MeshStandardMaterial({ color: 0x6c757d, roughness: 0.6, metalness: 0.2 });
+    const darkTowerMat = new THREE.MeshStandardMaterial({ color: 0x1b263b, roughness: 0.4, metalness: 0.5 });
+    const metalMat = new THREE.MeshStandardMaterial({ color: 0x415a77, roughness: 0.35, metalness: 0.8 });
+    const warningRedMat = new THREE.MeshBasicMaterial({ color: 0xff0055 });
 
     const createMultiStoreyTower = (
       tx: number,
@@ -602,7 +580,6 @@ export default function ReclamationGame3D({
       const floorHeight = 4.2;
       const totalH = floors * floorHeight;
 
-      // Tower Core
       const coreMat = style === 'glass' ? glassMat : style === 'brutalist' ? concreteMat : darkTowerMat;
       const core = new THREE.Mesh(new THREE.BoxGeometry(width, totalH, depth), coreMat);
       core.position.y = totalH / 2;
@@ -610,7 +587,6 @@ export default function ReclamationGame3D({
       core.receiveShadow = true;
       tower.add(core);
 
-      // Floor Slabs & Horizontal Louvers
       for (let f = 1; f < floors; f++) {
         const slab = new THREE.Mesh(
           new THREE.BoxGeometry(width + 0.6, 0.4, depth + 0.6),
@@ -621,7 +597,6 @@ export default function ReclamationGame3D({
         tower.add(slab);
       }
 
-      // Exterior Fire Escape on one side
       const feX = width / 2 + 0.6;
       for (let f = 1; f < floors; f += 2) {
         const platform = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.2, 3.2), metalMat);
@@ -633,16 +608,12 @@ export default function ReclamationGame3D({
         tower.add(ladder);
       }
 
-      // Rooftop Equipment (Water Tower, Chiller, Antenna)
       const roofH = totalH;
-
-      // Rooftop Penthouse
       const ph = new THREE.Mesh(new THREE.BoxGeometry(width * 0.45, 3.2, depth * 0.45), concreteMat);
       ph.position.set(0, roofH + 1.6, 0);
       ph.castShadow = true;
       tower.add(ph);
 
-      // Water Tower on Stilts
       const tankStilts = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 3.0, 4), metalMat);
       tankStilts.position.set(width * 0.25, roofH + 1.5, depth * 0.25);
       const waterTank = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 1.6, 2.4, 12), roofMats[0]);
@@ -651,7 +622,6 @@ export default function ReclamationGame3D({
       tower.add(tankStilts);
       tower.add(waterTank);
 
-      // Tall Antenna with Blinking Aviation Light
       const antenna = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.18, 9.0, 6), metalMat);
       antenna.position.set(-width * 0.2, roofH + 4.5, -depth * 0.2);
       const beaconLight = new THREE.Mesh(new THREE.SphereGeometry(0.35, 8, 8), warningRedMat);
@@ -659,58 +629,46 @@ export default function ReclamationGame3D({
       tower.add(antenna);
       tower.add(beaconLight);
 
-      // Rooftop Overgrowth
-      const roofGrass = new THREE.Mesh(new THREE.BoxGeometry(width * 0.35, 0.4, depth * 0.35), ivyMat);
-      roofGrass.position.set(-width * 0.2, roofH + 0.2, depth * 0.2);
-      tower.add(roofGrass);
-
       return tower;
     };
 
-    // Skyscraper Metropolis Cluster (Northeast Core)
     const towerConfigs = [
-      { x: 35, z: -85, f: 8, w: 16, d: 16, s: 'glass' as const },
-      { x: 65, z: -90, f: 12, w: 18, d: 18, s: 'brutalist' as const },
-      { x: 95, z: -85, f: 14, w: 20, d: 20, s: 'glass' as const }, // Apex Tower
-      { x: 35, z: -55, f: 6, w: 14, d: 14, s: 'industrial' as const },
-      { x: 70, z: -55, f: 10, w: 17, d: 17, s: 'glass' as const },
-      { x: 105, z: -55, f: 8, w: 15, d: 15, s: 'brutalist' as const },
-      // Secondary City Blocks
-      { x: -110, z: -80, f: 7, w: 16, d: 16, s: 'industrial' as const },
-      { x: -110, z: -45, f: 9, w: 18, d: 18, s: 'brutalist' as const },
-      { x: -110, z: 45, f: 8, w: 16, d: 16, s: 'glass' as const },
-      { x: -110, z: 80, f: 11, w: 19, d: 19, s: 'brutalist' as const },
-      // Southern Highway Block
-      { x: 20, z: 125, f: 7, w: 15, d: 15, s: 'industrial' as const },
-      { x: 55, z: 130, f: 9, w: 17, d: 17, s: 'glass' as const },
+      { x: 40, z: -85, f: 8, w: 16, d: 16, s: 'glass' as const },
+      { x: 70, z: -90, f: 12, w: 18, d: 18, s: 'brutalist' as const },
+      { x: 100, z: -85, f: 14, w: 20, d: 20, s: 'glass' as const },
+      { x: 40, z: -55, f: 6, w: 14, d: 14, s: 'industrial' as const },
+      { x: 75, z: -55, f: 10, w: 17, d: 17, s: 'glass' as const },
+      { x: 110, z: -55, f: 8, w: 15, d: 15, s: 'brutalist' as const },
+      { x: -115, z: -80, f: 7, w: 16, d: 16, s: 'industrial' as const },
+      { x: -115, z: -45, f: 9, w: 18, d: 18, s: 'brutalist' as const },
+      { x: -115, z: 45, f: 8, w: 16, d: 16, s: 'glass' as const },
+      { x: -115, z: 80, f: 11, w: 19, d: 19, s: 'brutalist' as const },
+      { x: 25, z: 125, f: 7, w: 15, d: 15, s: 'industrial' as const },
+      { x: 60, z: 130, f: 9, w: 17, d: 17, s: 'glass' as const },
     ];
 
     towerConfigs.forEach((tc) => {
       towersGroup.add(createMultiStoreyTower(tc.x, tc.z, tc.f, tc.w, tc.d, tc.s));
     });
 
-    // Skybridge connecting the two towers at (35, -85) and (65, -90)
     const skybridge = new THREE.Mesh(new THREE.BoxGeometry(24, 3.8, 3.8), glassMat);
-    skybridge.position.set(50, 24, -87.5);
+    skybridge.position.set(55, 24, -87.5);
     skybridge.castShadow = true;
     towersGroup.add(skybridge);
-
     scene.add(towersGroup);
 
-    // 11. Realistic Procedural Trees & Botany
+    // 11. Realistic Organic Trees (Well Away From Spawn Area)
     const treesGroup = new THREE.Group();
-    const trunkMat = new THREE.MeshStandardMaterial({ color: 0x3e2723, roughness: 0.9 });
-    const oakLeafMat = new THREE.MeshStandardMaterial({ color: 0x2d6a4f, roughness: 0.8 });
-    const goldenLeafMat = new THREE.MeshStandardMaterial({ color: 0x55a630, roughness: 0.75 });
-    const willowLeafMat = new THREE.MeshStandardMaterial({ color: 0x74c69d, roughness: 0.8 });
-    const pineLeafMat = new THREE.MeshStandardMaterial({ color: 0x1b4332, roughness: 0.7 });
-    const wisteriaLeafMat = new THREE.MeshStandardMaterial({ color: 0x9d4edd, roughness: 0.75 });
+    const oakTrunkMat = new THREE.MeshStandardMaterial({ color: 0x2b1d14, roughness: 0.9 });
+    const leafForestMat = new THREE.MeshStandardMaterial({ color: 0x2d5a27, roughness: 0.8 });
+    const leafSunMat = new THREE.MeshStandardMaterial({ color: 0x40916c, roughness: 0.75 });
+    const leafWillowMat = new THREE.MeshStandardMaterial({ color: 0x52b788, roughness: 0.8 });
+    const leafPineMat = new THREE.MeshStandardMaterial({ color: 0x1b4332, roughness: 0.7 });
 
-    // Procedural Tree Generator (Multi-tiered canopy)
     const createRealisticTree = (
       tx: number,
       tz: number,
-      type: 'oak' | 'willow' | 'pine' | 'wisteria',
+      type: 'oak' | 'willow' | 'pine',
       scale = 1
     ) => {
       const tree = new THREE.Group();
@@ -718,139 +676,83 @@ export default function ReclamationGame3D({
       tree.scale.set(scale, scale, scale);
 
       if (type === 'pine') {
-        // Conifer / Pine
-        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.6, 9.5, 8), trunkMat);
-        trunk.position.y = 4.75;
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.5, 10, 8), oakTrunkMat);
+        trunk.position.y = 5;
         trunk.castShadow = true;
         tree.add(trunk);
 
         [
-          { y: 4.5, r: 3.8, h: 4.2 },
-          { y: 7.2, r: 3.0, h: 3.8 },
-          { y: 9.8, r: 2.1, h: 3.4 },
-          { y: 12.0, r: 1.2, h: 2.8 },
+          { y: 5.0, r: 3.6, h: 4.0 },
+          { y: 7.6, r: 2.8, h: 3.5 },
+          { y: 10.0, r: 2.0, h: 3.0 },
+          { y: 12.2, r: 1.1, h: 2.4 },
         ].forEach((tier) => {
-          const cone = new THREE.Mesh(new THREE.ConeGeometry(tier.r, tier.h, 7), pineLeafMat);
+          const cone = new THREE.Mesh(new THREE.ConeGeometry(tier.r, tier.h, 7), leafPineMat);
           cone.position.y = tier.y;
           cone.castShadow = true;
           tree.add(cone);
         });
       } else if (type === 'willow') {
-        // Weeping willow along river
-        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.8, 6.5, 8), trunkMat);
-        trunk.position.y = 3.25;
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.7, 6.0, 8), oakTrunkMat);
+        trunk.position.y = 3.0;
         trunk.castShadow = true;
         tree.add(trunk);
 
-        const dome = new THREE.Mesh(new THREE.SphereGeometry(4.2, 10, 8), willowLeafMat);
-        dome.position.y = 7.5;
-        dome.scale.set(1.2, 0.9, 1.2);
+        const dome = new THREE.Mesh(new THREE.SphereGeometry(3.6, 12, 10), leafWillowMat);
+        dome.position.y = 6.8;
+        dome.scale.set(1.2, 0.85, 1.2);
         dome.castShadow = true;
         tree.add(dome);
 
-        // Hanging vine tendrils
-        for (let a = 0; a < 8; a++) {
-          const ang = (a / 8) * Math.PI * 2;
-          const tendril = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 4.8, 4), ivyMat);
-          tendril.position.set(Math.cos(ang) * 3.8, 4.5, Math.sin(ang) * 3.8);
+        for (let a = 0; a < 6; a++) {
+          const ang = (a / 6) * Math.PI * 2;
+          const tendril = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 4.0, 4), leafWillowMat);
+          tendril.position.set(Math.cos(ang) * 3.2, 4.0, Math.sin(ang) * 3.2);
           tree.add(tendril);
         }
       } else {
-        // Broadleaf Oak or Wisteria
-        const lMat = type === 'wisteria' ? wisteriaLeafMat : Math.random() > 0.5 ? oakLeafMat : goldenLeafMat;
-        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.85, 7.0, 8), trunkMat);
+        // Natural broadleaf oak
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.8, 7.0, 8), oakTrunkMat);
         trunk.position.y = 3.5;
         trunk.castShadow = true;
         tree.add(trunk);
 
-        // Branch clusters
+        // Clustered leafy puffs
         [
-          { x: 0, y: 8.5, z: 0, r: 3.8 },
-          { x: -2.2, y: 7.2, z: 1.5, r: 2.8 },
-          { x: 2.2, y: 7.6, z: -1.2, r: 2.9 },
-          { x: 0.8, y: 8.0, z: 2.0, r: 2.7 },
+          { x: 0, y: 8.0, z: 0, r: 3.2, m: leafForestMat },
+          { x: -1.8, y: 7.0, z: 1.2, r: 2.4, m: leafSunMat },
+          { x: 1.8, y: 7.2, z: -1.0, r: 2.5, m: leafForestMat },
+          { x: 0.6, y: 7.6, z: 1.8, r: 2.2, m: leafSunMat },
         ].forEach((cl) => {
-          const foliage = new THREE.Mesh(new THREE.DodecahedronGeometry(cl.r, 1), lMat);
-          foliage.position.set(cl.x, cl.y, cl.z);
-          foliage.castShadow = true;
-          tree.add(foliage);
+          const puff = new THREE.Mesh(new THREE.IcosahedronGeometry(cl.r, 2), cl.m);
+          puff.position.set(cl.x, cl.y, cl.z);
+          puff.castShadow = true;
+          tree.add(puff);
         });
       }
 
       return tree;
     };
 
-    // Plant trees across the open landscape
-    const treeLocs: [number, number, 'oak' | 'willow' | 'pine' | 'wisteria'][] = [
-      [-15, -45, 'oak'], [-15, -15, 'wisteria'], [-15, 15, 'oak'],
-      [15, -45, 'wisteria'], [15, -15, 'oak'], [15, 15, 'wisteria'],
+    // Planted safely away from spawn (0, 0)
+    const treeLocs: [number, number, 'oak' | 'willow' | 'pine'][] = [
+      [-40, -45, 'oak'], [-40, -15, 'oak'], [-40, 15, 'oak'],
+      [40, -45, 'oak'], [40, -15, 'oak'], [40, 15, 'oak'],
       // River willows
-      [-38, 8, 'willow'], [-15, 26, 'willow'], [8, 42, 'willow'], [32, 60, 'willow'],
-      [58, 80, 'willow'], [85, 105, 'willow'],
-      // Pine hills
+      [-38, 10, 'willow'], [-15, 30, 'willow'], [12, 46, 'willow'], [38, 65, 'willow'],
+      // Hills conifers
       [-95, -110, 'pine'], [-75, -115, 'pine'], [-55, -110, 'pine'],
       [115, -110, 'pine'], [135, -95, 'pine'], [145, -70, 'pine'],
-      [-120, 110, 'pine'], [-100, 125, 'pine'], [-80, 135, 'pine'],
-      [110, 85, 'oak'], [125, 60, 'wisteria'], [135, 30, 'oak'],
+      [-120, 110, 'pine'], [-100, 125, 'pine'],
+      [110, 85, 'oak'], [135, 30, 'oak'],
     ];
 
     treeLocs.forEach(([tx, tz, tType]) => {
-      treesGroup.add(createRealisticTree(tx, tz, tType, 1.0 + Math.random() * 0.3));
+      treesGroup.add(createRealisticTree(tx, tz, tType, 1.0 + Math.random() * 0.25));
     });
     scene.add(treesGroup);
 
-    // 12. Abandoned Rusted Vehicles (Cars, Pickups)
-    const vehiclesGroup = new THREE.Group();
-    const carMat = new THREE.MeshStandardMaterial({ color: 0x5c677d, roughness: 0.7, metalness: 0.3 });
-    const tireMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.9 });
-
-    const createAbandonedCar = (vx: number, vz: number, rot: number) => {
-      const car = new THREE.Group();
-      car.position.set(vx, 0.8, vz);
-      car.rotation.y = rot;
-
-      // Chassis
-      const body = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.1, 4.8), carMat);
-      body.castShadow = true;
-      car.add(body);
-      const cabin = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.9, 2.5), glassMat);
-      cabin.position.set(0, 0.95, -0.2);
-      cabin.castShadow = true;
-      car.add(cabin);
-
-      // Wheels
-      [
-        [-1.25, -0.35, 1.4],
-        [1.25, -0.35, 1.4],
-        [-1.25, -0.35, -1.4],
-        [1.25, -0.35, -1.4],
-      ].forEach(([wx, wy, wz]) => {
-        const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.35, 8), tireMat);
-        wheel.rotation.z = Math.PI / 2;
-        wheel.position.set(wx, wy, wz);
-        car.add(wheel);
-      });
-
-      // Moss patch on roof
-      const moss = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.2, 1.8), ivyMat);
-      moss.position.set(0, 1.45, -0.2);
-      car.add(moss);
-
-      return car;
-    };
-
-    [
-      [-4, -35, 0.2],
-      [4, 28, -0.4],
-      [-42, 0, 1.6],
-      [55, 0, -1.4],
-      [-75, 85, 0.8],
-    ].forEach(([cx, cz, crot]) => {
-      vehiclesGroup.add(createAbandonedCar(cx, cz, crot));
-    });
-    scene.add(vehiclesGroup);
-
-    // 13. The Survival Beacons (Synchronized in Multiplayer)
+    // 12. The Survival Beacons
     const beaconsGroup = new THREE.Group();
     const beaconMeshes: {
       group: THREE.Group;
@@ -915,12 +817,12 @@ export default function ReclamationGame3D({
     });
     scene.add(beaconsGroup);
 
-    // 14. Evacuation Portal Vortex
+    // 13. Evacuation Portal Vortex
     const portalGroup = new THREE.Group();
     portalGroup.position.set(0, 3.5, 0);
     const vortexGeo = new THREE.RingGeometry(3.5, 8.5, 32);
     const vortexMat = new THREE.MeshBasicMaterial({
-      color: 0x90e0ef,
+      color: 0x00f5d4,
       side: THREE.DoubleSide,
       transparent: true,
       opacity: 0.25,
@@ -930,87 +832,86 @@ export default function ReclamationGame3D({
     portalVortex.rotation.x = -Math.PI / 2;
     portalGroup.add(portalVortex);
 
-    const portalLight = new THREE.PointLight(0x00b4d8, 1.5, 45);
+    const portalLight = new THREE.PointLight(0x00f5d4, 1.5, 45);
     portalGroup.add(portalLight);
     scene.add(portalGroup);
 
-    // 15. Player Reconnaissance Drone Model
+    // 14. Sleek Aerodynamic Recon Drone
     const drone = new THREE.Group();
-    drone.position.set(0, 4.5, 15);
+    drone.position.set(0, 4.5, 0);
 
     const droneBodyMat = new THREE.MeshStandardMaterial({
-      color: 0x2b2d42,
-      metalness: 0.85,
-      roughness: 0.25,
+      color: 0x1a1a24,
+      metalness: 0.9,
+      roughness: 0.2,
     });
     const droneAccentMat = new THREE.MeshStandardMaterial({
       color: gameNetwork.getLocalColor(),
-      metalness: 0.9,
-      roughness: 0.2,
+      metalness: 0.95,
+      roughness: 0.15,
       emissive: gameNetwork.getLocalColor(),
-      emissiveIntensity: 0.6,
+      emissiveIntensity: 0.8,
     });
 
-    const body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.45, 1.9), droneBodyMat);
+    const body = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.4, 1.8), droneBodyMat);
     body.castShadow = true;
     drone.add(body);
 
-    const cockpit = new THREE.Mesh(new THREE.SphereGeometry(0.55, 12, 12), glassMat);
-    cockpit.position.set(0, 0.28, 0.2);
+    const cockpit = new THREE.Mesh(new THREE.SphereGeometry(0.5, 14, 14), glassMat);
+    cockpit.position.set(0, 0.26, 0.2);
     drone.add(cockpit);
 
     const rotorBlades: THREE.Mesh[] = [];
     const armCoords = [
-      [-1.3, 0, 1.2],
-      [1.3, 0, 1.2],
-      [-1.3, 0, -1.2],
-      [1.3, 0, -1.2],
+      [-1.25, 0, 1.15],
+      [1.25, 0, 1.15],
+      [-1.25, 0, -1.15],
+      [1.25, 0, -1.15],
     ];
 
     armCoords.forEach(([ax, ay, az]) => {
-      const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 1.5, 6), metalMat);
+      const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 1.4, 6), metalMat);
       arm.rotation.z = Math.PI / 2;
       arm.rotation.y = Math.atan2(az, ax);
       arm.position.set(ax * 0.5, 0.05, az * 0.5);
       drone.add(arm);
 
-      const motor = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.35, 8), droneAccentMat);
+      const motor = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.32, 8), droneAccentMat);
       motor.position.set(ax, ay + 0.15, az);
       drone.add(motor);
 
-      const blade = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.03, 0.18), droneBodyMat);
-      blade.position.set(ax, ay + 0.35, az);
+      const blade = new THREE.Mesh(new THREE.BoxGeometry(1.25, 0.025, 0.16), droneBodyMat);
+      blade.position.set(ax, ay + 0.32, az);
       drone.add(blade);
       rotorBlades.push(blade);
     });
 
-    const droneHeadlight = new THREE.SpotLight(0xfff4d6, 5.0, 45, Math.PI / 5, 0.4);
+    const droneHeadlight = new THREE.SpotLight(0xfff6e6, 4.5, 55, Math.PI / 5, 0.4);
     droneHeadlight.position.set(0, 0, 0.9);
-    droneHeadlight.target.position.set(0, -2, 12);
+    droneHeadlight.target.position.set(0, -2, 14);
     drone.add(droneHeadlight);
     drone.add(droneHeadlight.target);
 
     scene.add(drone);
 
-    // 16. Multiplayer Remote Players Visualization
+    // 15. Multiplayer Remote Players Visualization
     const remoteDrones = new Map<string, RemoteDroneVisual>();
 
-    // Helper to generate a crisp 3D CanvasTexture label sprite
     const createPlayerLabel = (callsign: string, colorHex: string) => {
       const canvas = document.createElement('canvas');
       canvas.width = 256;
       canvas.height = 64;
       const ctx = canvas.getContext('2d');
       if (ctx) {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
+        ctx.fillStyle = 'rgba(10, 15, 25, 0.88)';
         ctx.roundRect(4, 4, 248, 56, 12);
         ctx.fill();
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 2.5;
         ctx.strokeStyle = colorHex;
         ctx.stroke();
 
-        ctx.font = 'bold 22px monospace';
-        ctx.fillStyle = '#111827';
+        ctx.font = 'bold 20px monospace';
+        ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';
         ctx.fillText(callsign, 128, 38);
       }
@@ -1029,17 +930,17 @@ export default function ReclamationGame3D({
       const rMat = new THREE.MeshStandardMaterial({
         color: player.color,
         emissive: player.color,
-        emissiveIntensity: 0.5,
+        emissiveIntensity: 0.6,
       });
 
-      const rBody = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.45, 1.8), rMat);
+      const rBody = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.4, 1.8), rMat);
       rBody.castShadow = true;
       rGroup.add(rBody);
 
       const rRotors: THREE.Mesh[] = [];
       armCoords.forEach(([ax, ay, az]) => {
-        const b = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.03, 0.18), droneBodyMat);
-        b.position.set(ax, ay + 0.35, az);
+        const b = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.03, 0.16), droneBodyMat);
+        b.position.set(ax, ay + 0.32, az);
         rGroup.add(b);
         rRotors.push(b);
       });
@@ -1064,9 +965,7 @@ export default function ReclamationGame3D({
       };
     };
 
-    // Network callbacks
     gameNetwork.onPlayersUpdate = (players) => {
-      // Add or update remote player drones
       const activeIds = new Set<string>();
 
       players.forEach((p) => {
@@ -1083,7 +982,6 @@ export default function ReclamationGame3D({
         visual.shields = p.shields;
       });
 
-      // Remove disconnected players
       for (const [id, visual] of remoteDrones.entries()) {
         if (!activeIds.has(id)) {
           scene.remove(visual.group);
@@ -1109,7 +1007,7 @@ export default function ReclamationGame3D({
       }
     };
 
-    // 17. EMP Shockwave Ring
+    // 16. EMP Shockwave Ring
     const shockwaveGeo = new THREE.RingGeometry(0.4, 1.8, 36);
     shockwaveGeo.rotateX(-Math.PI / 2);
     const shockwaveMat = new THREE.MeshBasicMaterial({
@@ -1123,67 +1021,68 @@ export default function ReclamationGame3D({
     let shockwaveRadius = 0;
     let isEmpExpanding = false;
 
-    // 18. Bio-Cyber Zombies Swarm
+    // 17. Sleek Cyber-Revenant Mutant Swarm
     const zombiesGroup = new THREE.Group();
     const zombies: ZombieState[] = [];
     const zombieCount = modeSettings.zombieCount;
 
-    const zombieSkinMat = new THREE.MeshStandardMaterial({ color: 0x2d6a4f, roughness: 0.9 });
-    const cyberJointMat = new THREE.MeshStandardMaterial({ color: 0x3a0ca3, metalness: 0.8, roughness: 0.3 });
+    const exoMat = new THREE.MeshStandardMaterial({ color: 0x161a1d, roughness: 0.4, metalness: 0.8 });
+    const coreMat = new THREE.MeshBasicMaterial({ color: 0xff0055 });
 
     for (let i = 0; i < zombieCount; i++) {
       const zGroup = new THREE.Group();
       const ang = Math.random() * Math.PI * 2;
-      const rad = 25 + Math.random() * (townBound - 35);
+      const rad = 30 + Math.random() * (townBound - 40);
       const zx = Math.cos(ang) * rad;
       const zz = Math.sin(ang) * rad;
       zGroup.position.set(zx, 0, zz);
 
       const isBrute = difficultyMode === 'hard' && i < 6;
       const isSprinter = difficultyMode === 'hard' && i >= 6 && i < 16;
-      const zScale = isBrute ? 2.2 : isSprinter ? 0.9 : 1.0;
+      const zScale = isBrute ? 2.0 : isSprinter ? 0.9 : 1.0;
       zGroup.scale.set(zScale, zScale, zScale);
 
-      // Torso
-      const torso = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.4, 0.5), zombieSkinMat);
+      // Armored Torso with glowing core
+      const torso = new THREE.Mesh(new THREE.BoxGeometry(0.7, 1.3, 0.45), exoMat);
       torso.position.y = 1.3;
       torso.castShadow = true;
       zGroup.add(torso);
 
-      // Head
-      const head = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.6, 0.55), zombieSkinMat);
-      head.position.y = 2.3;
+      const reactorCore = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.4, 0.48), coreMat);
+      reactorCore.position.set(0, 1.4, 0.05);
+      zGroup.add(reactorCore);
+
+      // Sleek Cyber Head with Visor Slit
+      const head = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.55, 0.5), exoMat);
+      head.position.y = 2.25;
       head.castShadow = true;
       zGroup.add(head);
 
-      // Cyber Glowing Eyes
       const eyeMat = new THREE.MeshBasicMaterial({ color: isSprinter ? 0xff0054 : isBrute ? 0x00f5d4 : 0xff1744 });
-      [-0.14, 0.14].forEach((ex) => {
-        const eye = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 0.1), eyeMat);
-        eye.position.set(ex, 2.35, 0.28);
-        zGroup.add(eye);
-      });
+      const visor = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.08, 0.1), eyeMat);
+      visor.position.set(0, 2.3, 0.26);
+      zGroup.add(visor);
 
-      // Flailing arms
-      const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.24, 1.1, 0.24), cyberJointMat);
-      leftArm.position.set(-0.55, 1.5, 0.35);
-      leftArm.rotation.x = -0.6;
+      // Hydraulic arms
+      const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.2, 1.0, 0.2), exoMat);
+      leftArm.position.set(-0.5, 1.4, 0.25);
+      leftArm.rotation.x = -0.5;
       leftArm.castShadow = true;
       zGroup.add(leftArm);
 
-      const rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.24, 1.1, 0.24), cyberJointMat);
-      rightArm.position.set(0.55, 1.5, 0.35);
-      rightArm.rotation.x = -0.6;
+      const rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.2, 1.0, 0.2), exoMat);
+      rightArm.position.set(0.5, 1.4, 0.25);
+      rightArm.rotation.x = -0.5;
       rightArm.castShadow = true;
       zGroup.add(rightArm);
 
       zombiesGroup.add(zGroup);
 
       const speed = isSprinter
-        ? modeSettings.zombieBaseSpeed * 1.6
+        ? modeSettings.zombieBaseSpeed * 1.5
         : isBrute
         ? modeSettings.zombieBaseSpeed * 0.75
-        : modeSettings.zombieBaseSpeed * (0.8 + Math.random() * 0.4);
+        : modeSettings.zombieBaseSpeed * (0.85 + Math.random() * 0.3);
 
       zombies.push({
         mesh: zGroup,
@@ -1205,7 +1104,7 @@ export default function ReclamationGame3D({
 
     setIsLoaded(true);
 
-    // 19. Physics & Game Loop
+    // 18. Physics & Game Loop (High-Speed, Exhilarating Flight Dynamics)
     let speed = 0;
     let yaw = 0;
     let pitch = 0;
@@ -1256,11 +1155,10 @@ export default function ReclamationGame3D({
         gameNetwork.sendEmpBlast(drone.position.x, drone.position.z);
       }
 
-      // Expand EMP shockwave
       if (isEmpExpanding) {
-        shockwaveRadius += delta * 55;
+        shockwaveRadius += delta * 60;
         shockwaveMesh.scale.set(shockwaveRadius, shockwaveRadius, 1);
-        shockwaveMat.opacity = Math.max(0, 1 - shockwaveRadius / 38);
+        shockwaveMat.opacity = Math.max(0, 1 - shockwaveRadius / 42);
 
         zombies.forEach((z) => {
           if (drone.position.distanceTo(z.pos) < shockwaveRadius + 2.5) {
@@ -1268,29 +1166,30 @@ export default function ReclamationGame3D({
             z.stunTimer = 4.5;
             z.eyeMat.color.setHex(0x00f5d4);
             z.velocity.add(
-              z.pos.clone().sub(drone.position).normalize().multiplyScalar(isBoosting ? 26 : 18)
+              z.pos.clone().sub(drone.position).normalize().multiplyScalar(isBoosting ? 28 : 20)
             );
           }
         });
 
-        if (shockwaveRadius >= 38) {
+        if (shockwaveRadius >= 42) {
           isEmpExpanding = false;
           shockwaveMat.opacity = 0;
         }
       }
 
-      // Drone flight dynamics (tuned for slow, smooth, cinematic and controlled flight)
-      const maxForwardSpeed = isBoosting ? 12.0 : 6.8;
-      const maxReverseSpeed = -3.2;
-      const accel = isBoosting ? 16 : 8.5;
+      // HIGH-SPEED RESPONSIVE DRONE FLIGHT DYNAMICS
+      const targetSpeed = forwardInput > 0
+        ? (isBoosting ? 38.0 : 22.0) * forwardInput
+        : forwardInput < 0
+        ? -11.0 * Math.abs(forwardInput)
+        : 0;
 
-      speed += forwardInput * accel * delta;
-      speed *= Math.pow(0.80, delta * 60);
-      speed = Math.max(maxReverseSpeed, Math.min(maxForwardSpeed, speed));
-      yaw -= turnInput * 2.0 * delta;
+      // Snappy acceleration and smooth aerodynamic deceleration
+      speed = THREE.MathUtils.damp(speed, targetSpeed, forwardInput !== 0 ? 8.0 : 4.5, delta);
+      yaw -= turnInput * 3.2 * delta;
 
-      pitch = THREE.MathUtils.lerp(pitch, forwardInput * -0.2, delta * 6);
-      roll = THREE.MathUtils.lerp(roll, -turnInput * 0.3, delta * 6);
+      pitch = THREE.MathUtils.lerp(pitch, (speed / 38) * -0.35, delta * 8);
+      roll = THREE.MathUtils.lerp(roll, -turnInput * 0.45, delta * 8);
 
       velocity.set(Math.sin(yaw) * speed, 0, Math.cos(yaw) * speed);
       drone.position.addScaledVector(velocity, delta);
@@ -1301,26 +1200,34 @@ export default function ReclamationGame3D({
 
       // Terrain altitude adaptation
       const gHeight = getTerrainHeight(drone.position.x, drone.position.z);
-      const targetAltitude = Math.max(3.2, gHeight + 3.8 + Math.sin(time * 3.5) * 0.2);
-      drone.position.y = THREE.MathUtils.lerp(drone.position.y, targetAltitude, delta * 4);
+      const targetAltitude = Math.max(3.2, gHeight + 3.8 + Math.sin(time * 3.5) * 0.15);
+      drone.position.y = THREE.MathUtils.lerp(drone.position.y, targetAltitude, delta * 5);
 
       drone.rotation.set(pitch, yaw, roll);
 
-      // Spin propellers
-      const rotorSpeed = (isBoosting ? 55 : 28) * delta;
+      // Spin propellers with speed intensity
+      const rotorSpeed = (isBoosting ? 65 : 35) * delta;
       rotorBlades.forEach((r, idx) => {
         r.rotation.y += (idx % 2 === 0 ? 1 : -1) * rotorSpeed;
       });
 
-      // Camera follow with cinematic morning framing
+      // Cinematic Dynamic Camera Follow with Turbo Speed FOV Kickback
+      const targetFov = isBoosting ? 68 : 58;
+      camera.fov = THREE.MathUtils.lerp(camera.fov, targetFov, delta * 4);
+      camera.updateProjectionMatrix();
+
+      const camDistance = isBoosting ? 13.5 : 11.0;
       const camOffset = new THREE.Vector3(
-        -Math.sin(yaw) * 11.5,
-        4.8 + Math.max(0, -pitch * 3),
-        -Math.cos(yaw) * 11.5
+        -Math.sin(yaw) * camDistance,
+        4.5 + Math.max(0, -pitch * 3),
+        -Math.cos(yaw) * camDistance
       );
       const targetCamPos = drone.position.clone().add(camOffset);
-      camera.position.lerp(targetCamPos, delta * 5.5);
+      camera.position.lerp(targetCamPos, delta * 7.0);
       camera.lookAt(drone.position.clone().add(new THREE.Vector3(0, 0.8, 0)));
+
+      // Keep sun focused on drone for razor-sharp real-time shadows
+      morningSun.target.position.copy(drone.position);
 
       // Broadcast local drone telemetry to multiplayer network (10Hz)
       if (frame % 6 === 0) {
@@ -1345,23 +1252,21 @@ export default function ReclamationGame3D({
         visual.group.rotation.x = THREE.MathUtils.lerp(visual.group.rotation.x, visual.targetPitch, delta * 12);
         visual.group.rotation.z = THREE.MathUtils.lerp(visual.group.rotation.z, visual.targetRoll, delta * 12);
 
-        // Spin remote rotors
         visual.rotors.forEach((r) => {
           r.rotation.y += delta * 30;
         });
       });
 
       // Shield regeneration
-      if (time - lastDamageTimeRef.current > 4.5 && shieldsRef.current < maxShieldsRef.current) {
-        shieldsRef.current = Math.min(maxShieldsRef.current, shieldsRef.current + delta * 12);
+      if (time - lastDamageTimeRef.current > 4.0 && shieldsRef.current < maxShieldsRef.current) {
+        shieldsRef.current = Math.min(maxShieldsRef.current, shieldsRef.current + delta * 14);
       }
 
-      // Zombie AI (Flocking + Chasing + Attack)
+      // Zombie AI (Intense swarm chase)
       let chasingCount = 0;
       zombies.forEach((z, idx) => {
         z.mesh.position.copy(z.pos);
 
-        // Velocity knockback decay
         if (z.velocity.lengthSq() > 0.01) {
           z.pos.addScaledVector(z.velocity, delta);
           z.velocity.multiplyScalar(0.9);
@@ -1394,7 +1299,6 @@ export default function ReclamationGame3D({
           dir.y = 0;
           dir.normalize();
 
-          // Flocking separation
           const separation = new THREE.Vector3();
           zombies.forEach((other, oIdx) => {
             if (idx !== oIdx) {
@@ -1407,20 +1311,19 @@ export default function ReclamationGame3D({
 
           dir.add(separation).normalize();
 
-          const currentZSpeed = z.speed * (distToDrone < 10 ? 1.35 : 1.0);
+          const currentZSpeed = z.speed * (distToDrone < 12 ? 1.25 : 1.0);
           z.pos.add(dir.multiplyScalar(currentZSpeed * delta));
           z.mesh.lookAt(new THREE.Vector3(drone.position.x, z.pos.y, drone.position.z));
 
           z.leftArm.rotation.x = -0.5 + Math.sin(time * 9 + idx) * 0.6;
           z.rightArm.rotation.x = -0.5 - Math.sin(time * 9 + idx) * 0.6;
 
-          // Drone damage contact
           if (distToDrone < 3.8) {
-            const damagePerSec = z.isBrute ? 35 : 20;
+            const damagePerSec = z.isBrute ? 40 : 22;
             shieldsRef.current = Math.max(0, shieldsRef.current - delta * damagePerSec);
             lastDamageTimeRef.current = time;
             if (onDamageTaken) onDamageTaken(Math.round(shieldsRef.current));
-            if (frame % 20 === 0) reclamationAudio.playShieldHit();
+            if (frame % 18 === 0) reclamationAudio.playShieldHit();
           }
         } else {
           z.state = 'idle';
@@ -1448,7 +1351,7 @@ export default function ReclamationGame3D({
           nearestName = `${item.id}: ${item.name}`;
         }
 
-        if (!item.activated && (dist < 5.2 || (dist < 18 && isEmpExpanding))) {
+        if (!item.activated && (dist < 5.5 || (dist < 22 && isEmpExpanding))) {
           item.activated = true;
           beaconsRef.current[index].activated = true;
           reclamationAudio.playBeaconLaser();
@@ -1459,12 +1362,11 @@ export default function ReclamationGame3D({
           (laserPillar.material as THREE.MeshBasicMaterial).opacity = 0.95;
           light.intensity = 8.0;
 
-          // Clear nearby zombies
           zombies.forEach((z) => {
-            if (group.position.distanceTo(z.pos) < 30) {
+            if (group.position.distanceTo(z.pos) < 32) {
               z.state = 'stunned';
               z.stunTimer = 5.0;
-              z.velocity.add(z.pos.clone().sub(group.position).normalize().multiplyScalar(18));
+              z.velocity.add(z.pos.clone().sub(group.position).normalize().multiplyScalar(22));
             }
           });
 
@@ -1472,7 +1374,7 @@ export default function ReclamationGame3D({
           if (remaining === 0 && !allActivatedRef.current) {
             allActivatedRef.current = true;
             reclamationAudio.playWarpPortalSound();
-            (portalVortex.material as THREE.MeshBasicMaterial).color.setHex(0x2ec4b6);
+            (portalVortex.material as THREE.MeshBasicMaterial).color.setHex(0x00f5d4);
             (portalVortex.material as THREE.MeshBasicMaterial).opacity = 0.9;
             portalLight.intensity = 8.0;
           }
@@ -1487,7 +1389,7 @@ export default function ReclamationGame3D({
         }
       }
 
-      // Update Telemetry
+      // Update Telemetry with real-world km/h
       if (frame % 4 === 0) {
         const activeCount = beaconsRef.current.filter((b) => b.activated).length;
         onUpdateTelemetry({
@@ -1550,13 +1452,13 @@ export default function ReclamationGame3D({
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full min-h-screen overflow-hidden bg-[#aed9e0]"
+      className="relative w-full h-full min-h-screen overflow-hidden bg-[#7ec8e3]"
     >
       {!isLoaded && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#b8e0d2] z-50">
-          <div className="w-12 h-12 rounded-full border-2 border-emerald-600/30 border-t-emerald-600 animate-spin mb-4" />
-          <span className="text-xs text-emerald-900 font-mono tracking-widest uppercase font-bold">
-            EXPANDING VAST METROPOLIS & MULTIPLAYER RADAR...
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#111827] z-50">
+          <div className="w-12 h-12 rounded-full border-2 border-cyan-500/30 border-t-cyan-400 animate-spin mb-4" />
+          <span className="text-xs text-cyan-400 font-mono tracking-widest uppercase font-bold">
+            CALIBRATING HIGH-SPEED METROPOLIS & MULTIPLAYER SENSORS...
           </span>
         </div>
       )}
