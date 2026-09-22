@@ -64,6 +64,17 @@ export default function CommandPalette({ onOpenMariSimulator, onOpenContactModal
             }
         },
         {
+            id: 'stderr-lost-sector',
+            title: 'Inspect STDERR: Sector Reclaimed (Overgrown Relic)',
+            subtitle: 'Post-apocalyptic terminal where nature reclaims ancient computers & robots',
+            category: 'ACTIONS',
+            icon: Terminal,
+            action: () => {
+                setIsOpen(false);
+                router.push('/stderr');
+            }
+        },
+        {
             id: 'resume-live',
             title: 'Open Live Resume (devantaris.github.io)',
             subtitle: 'Latest single-page verified academic & industry credentials',

@@ -390,7 +390,7 @@ export default function AllProjectsPage() {
                                         className="border-b border-white/5 hover:bg-white/[0.02] transition-colors"
                                     >
                                         <td className="py-4 px-6 font-mono text-xs" style={{ color: project.color }}>
-                                            0{idx + 1} // {project.id.toUpperCase()}
+                                            0{idx + 1} {'//'} {project.id.toUpperCase()}
                                         </td>
                                         <td className="py-4 px-6">
                                             <div className="font-serif text-base text-white">{project.name}</div>
