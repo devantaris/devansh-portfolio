@@ -27,6 +27,7 @@ export interface TelemetryData {
   zombiesChasing: number;
   activeBeacons: number;
   totalBeacons: number;
+  dronePos?: [number, number, number];
 }
 
 export type DifficultyMode = 'easy' | 'medium' | 'hard';
@@ -234,9 +235,9 @@ export default function ReclamationGame3D({
     scene.background = new THREE.Color(0x7ec8e3);
     scene.fog = new THREE.FogExp2(0x9bd7e8, modeSettings.fogDensity);
 
-    // 2. Camera
-    const camera = new THREE.PerspectiveCamera(58, width / height, 0.1, 800);
-    camera.position.set(0, 9, 20);
+    // Camera with dynamic third-person follow
+    const camera = new THREE.PerspectiveCamera(58, width / height, 0.1, 1000);
+    camera.position.set(0, 9, 36);
 
     // 3. Renderer with High-End Tonemapping
     const renderer = new THREE.WebGLRenderer({
@@ -698,18 +699,27 @@ export default function ReclamationGame3D({
         trunk.castShadow = true;
         tree.add(trunk);
 
+        // Tiered organic weeping dome without stick tendrils
         const dome = new THREE.Mesh(new THREE.SphereGeometry(3.6, 12, 10), leafWillowMat);
         dome.position.y = 6.8;
-        dome.scale.set(1.2, 0.85, 1.2);
+        dome.scale.set(1.25, 0.85, 1.25);
         dome.castShadow = true;
         tree.add(dome);
 
-        for (let a = 0; a < 6; a++) {
-          const ang = (a / 6) * Math.PI * 2;
-          const tendril = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 4.0, 4), leafWillowMat);
-          tendril.position.set(Math.cos(ang) * 3.2, 4.0, Math.sin(ang) * 3.2);
-          tree.add(tendril);
-        }
+        [
+          { x: -2.2, y: 5.2, z: 0, r: 2.0 },
+          { x: 2.2, y: 5.2, z: 0, r: 2.0 },
+          { x: 0, y: 5.0, z: -2.2, r: 2.0 },
+          { x: 0, y: 5.0, z: 2.2, r: 2.0 },
+          { x: 1.5, y: 4.8, z: 1.5, r: 1.7 },
+          { x: -1.5, y: 4.8, z: -1.5, r: 1.7 },
+        ].forEach((leaf) => {
+          const lPuff = new THREE.Mesh(new THREE.SphereGeometry(leaf.r, 8, 8), leafWillowMat);
+          lPuff.position.set(leaf.x, leaf.y, leaf.z);
+          lPuff.scale.set(1.0, 1.25, 1.0);
+          lPuff.castShadow = true;
+          tree.add(lPuff);
+        });
       } else {
         // Natural broadleaf oak
         const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.8, 7.0, 8), oakTrunkMat);
@@ -817,28 +827,38 @@ export default function ReclamationGame3D({
     });
     scene.add(beaconsGroup);
 
-    // 13. Evacuation Portal Vortex
+    // 13. Evacuation Portal Stargate (North Plaza // 0, 5.5, -110)
     const portalGroup = new THREE.Group();
-    portalGroup.position.set(0, 3.5, 0);
-    const vortexGeo = new THREE.RingGeometry(3.5, 8.5, 32);
+    portalGroup.position.set(0, 5.5, -110);
+
+    const portalRingGeo = new THREE.TorusGeometry(6.0, 0.45, 16, 48);
+    const portalRingMat = new THREE.MeshStandardMaterial({
+      color: 0x1a2332,
+      metalness: 0.9,
+      roughness: 0.2,
+      emissive: 0x00f5d4,
+      emissiveIntensity: 0.3,
+    });
+    const portalRing = new THREE.Mesh(portalRingGeo, portalRingMat);
+    portalGroup.add(portalRing);
+
+    const vortexGeo = new THREE.CircleGeometry(5.6, 36);
     const vortexMat = new THREE.MeshBasicMaterial({
       color: 0x00f5d4,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.25,
-      wireframe: true,
+      opacity: 0.35,
     });
     const portalVortex = new THREE.Mesh(vortexGeo, vortexMat);
-    portalVortex.rotation.x = -Math.PI / 2;
     portalGroup.add(portalVortex);
 
-    const portalLight = new THREE.PointLight(0x00f5d4, 1.5, 45);
+    const portalLight = new THREE.PointLight(0x00f5d4, 2.5, 60);
     portalGroup.add(portalLight);
     scene.add(portalGroup);
 
-    // 14. Sleek Aerodynamic Recon Drone
+    // 14. Sleek Aerodynamic Recon Drone (Spawns at 0, 4.5, 25 facing North Boulevard)
     const drone = new THREE.Group();
-    drone.position.set(0, 4.5, 0);
+    drone.position.set(0, 4.5, 25);
 
     const droneBodyMat = new THREE.MeshStandardMaterial({
       color: 0x1a1a24,
@@ -1032,7 +1052,7 @@ export default function ReclamationGame3D({
     for (let i = 0; i < zombieCount; i++) {
       const zGroup = new THREE.Group();
       const ang = Math.random() * Math.PI * 2;
-      const rad = 30 + Math.random() * (townBound - 40);
+      const rad = 65 + Math.random() * (townBound - 75);
       const zx = Math.cos(ang) * rad;
       const zz = Math.sin(ang) * rad;
       zGroup.position.set(zx, 0, zz);
@@ -1106,7 +1126,7 @@ export default function ReclamationGame3D({
 
     // 18. Physics & Game Loop (High-Speed, Exhilarating Flight Dynamics)
     let speed = 0;
-    let yaw = 0;
+    let yaw = Math.PI; // Face forward towards North Boulevard (-z)
     let pitch = 0;
     let roll = 0;
     const velocity = new THREE.Vector3();
@@ -1166,7 +1186,7 @@ export default function ReclamationGame3D({
             z.stunTimer = 4.5;
             z.eyeMat.color.setHex(0x00f5d4);
             z.velocity.add(
-              z.pos.clone().sub(drone.position).normalize().multiplyScalar(isBoosting ? 28 : 20)
+              z.pos.clone().sub(drone.position).normalize().multiplyScalar(isBoosting ? 32 : 24)
             );
           }
         });
@@ -1179,17 +1199,17 @@ export default function ReclamationGame3D({
 
       // HIGH-SPEED RESPONSIVE DRONE FLIGHT DYNAMICS
       const targetSpeed = forwardInput > 0
-        ? (isBoosting ? 38.0 : 22.0) * forwardInput
+        ? (isBoosting ? 55.0 : 32.0) * forwardInput
         : forwardInput < 0
-        ? -11.0 * Math.abs(forwardInput)
+        ? -16.0 * Math.abs(forwardInput)
         : 0;
 
       // Snappy acceleration and smooth aerodynamic deceleration
-      speed = THREE.MathUtils.damp(speed, targetSpeed, forwardInput !== 0 ? 8.0 : 4.5, delta);
-      yaw -= turnInput * 3.2 * delta;
+      speed = THREE.MathUtils.damp(speed, targetSpeed, forwardInput !== 0 ? 12.0 : 5.0, delta);
+      yaw -= turnInput * 3.6 * delta;
 
-      pitch = THREE.MathUtils.lerp(pitch, (speed / 38) * -0.35, delta * 8);
-      roll = THREE.MathUtils.lerp(roll, -turnInput * 0.45, delta * 8);
+      pitch = THREE.MathUtils.lerp(pitch, (speed / 55) * -0.35, delta * 9);
+      roll = THREE.MathUtils.lerp(roll, -turnInput * 0.45, delta * 9);
 
       velocity.set(Math.sin(yaw) * speed, 0, Math.cos(yaw) * speed);
       drone.position.addScaledVector(velocity, delta);
@@ -1384,7 +1404,7 @@ export default function ReclamationGame3D({
       // Portal Entry
       if (allActivatedRef.current) {
         portalVortex.rotation.z += 0.04;
-        if (drone.position.distanceTo(portalGroup.position) < 10) {
+        if (drone.position.distanceTo(portalGroup.position) < 14) {
           onEnterPortal();
         }
       }
@@ -1405,6 +1425,7 @@ export default function ReclamationGame3D({
           zombiesChasing: chasingCount,
           activeBeacons: activeCount,
           totalBeacons: beaconsRef.current.length,
+          dronePos: [drone.position.x, drone.position.y, drone.position.z],
         });
       }
 
