@@ -121,15 +121,19 @@ class ReclamationAudio {
     this.noiseSource.start();
     this.lfoOsc.start();
 
-    // 2. Periodic organic dew chime drops
-    const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99]; // Pentatonic C-E-G-C-E-G
+    // 2. Periodic organic morning birds and dew chime drops
+    const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99];
     this.chimeTimer = setInterval(() => {
       if (this.isMuted || !this.ctx || this.ctx.state !== 'running') return;
-      if (Math.random() > 0.4) {
-        const note = notes[Math.floor(Math.random() * notes.length)];
-        this.playChime(note, 0.08);
+      if (Math.random() > 0.45) {
+        if (Math.random() > 0.5) {
+          this.playMorningBirdChirp();
+        } else {
+          const note = notes[Math.floor(Math.random() * notes.length)];
+          this.playChime(note, 0.07);
+        }
       }
-    }, 3800);
+    }, 3200);
   }
 
   public playClick() {
@@ -171,6 +175,34 @@ class ReclamationAudio {
 
       osc.start();
       osc.stop(this.ctx.currentTime + 1.85);
+    } catch {
+      // Audio safety fallback
+    }
+  }
+
+  public playMorningBirdChirp() {
+    if (this.isMuted || !this.ctx || this.ctx.state !== 'running') return;
+    try {
+      const startTime = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(2800, startTime);
+      osc.frequency.exponentialRampToValueAtTime(3600, startTime + 0.04);
+      osc.frequency.exponentialRampToValueAtTime(2600, startTime + 0.09);
+      osc.frequency.exponentialRampToValueAtTime(4100, startTime + 0.13);
+      osc.frequency.exponentialRampToValueAtTime(2900, startTime + 0.18);
+
+      gain.gain.setValueAtTime(0.001, startTime);
+      gain.gain.linearRampToValueAtTime(0.035, startTime + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.2);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(startTime);
+      osc.stop(startTime + 0.22);
     } catch {
       // Audio safety fallback
     }

@@ -440,146 +440,141 @@ export default function PostApocalypticError({
           />
         </div>
       ) : (
-        /* ── MODE 2: 2D RELIC VIEW ── */
+        /* ── MODE 2: 2D MORNING RELIC VIEW ── */
         <div 
           onClick={handleBackgroundClick}
-          className="relative w-full h-full overflow-y-auto"
+          className="relative w-full h-full overflow-y-auto bg-[#e8f4f8]"
         >
-          {/* Cinematic Background Image */}
+          {/* Cinematic Morning Background Image */}
           <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
             <Image
-              src={withBasePath('/images/zombie-city-ruins.jpg')}
-              alt="Post-apocalyptic overgrown cyberpunk city ruins with zombie horde"
+              src={withBasePath('/images/morning-overgrown-city.jpg')}
+              alt="Post-apocalyptic overgrown houses, pathways and morning city"
               fill
               priority
               sizes="100vw"
-              className="object-cover transition-transform duration-1000 ease-out filter contrast-110 saturate-125"
+              className="object-cover transition-transform duration-1000 ease-out filter contrast-105"
               style={{ transform: 'scale(1.02)' }}
             />
-            <div className="absolute inset-0 bg-radial-vignette opacity-85" 
-                 style={{ background: 'radial-gradient(circle at 50% 40%, rgba(2,3,4,0.3) 0%, rgba(1,4,2,0.92) 85%, #010402 100%)' }} />
+            <div className="absolute inset-0 bg-gradient-to-t from-white/70 via-transparent to-white/30" />
           </div>
 
           <ProceduralVines ref={vinesRef} overgrowthLevel={overgrowthLevel} onBloomCountChange={setBloomCount} />
           <BioParticles ref={bioRef} />
 
-          {/* 2D Header */}
-          <header className="relative z-30 flex flex-wrap items-center justify-between gap-4 px-6 py-4 border-b border-emerald-950/60 bg-black/50 backdrop-blur-md">
+          {/* 2D Header (Light Mode) */}
+          <header className="relative z-30 flex flex-wrap items-center justify-between gap-4 px-6 py-4 border-b border-stone-200/80 bg-white/80 backdrop-blur-md shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 px-2.5 py-1 rounded border border-emerald-500/30 bg-emerald-950/40 text-[11px] text-emerald-400">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-emerald-600/30 bg-emerald-50 text-xs text-emerald-800 font-bold">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600" />
                 </span>
-                <span>STDERR // FILE DESCRIPTOR 2</span>
+                <span>STDERR // MORNING LIGHT MODE</span>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setViewMode('3d-game')}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-cyan-500/50 bg-cyan-950/40 text-cyan-300 text-xs font-bold hover:bg-cyan-900/50 cursor-pointer transition-all shadow-[0_0_15px_rgba(0,229,255,0.2)]"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-teal-600 bg-teal-600 text-white text-xs font-bold hover:bg-teal-700 cursor-pointer transition-all shadow-md"
               >
-                <Gamepad2 size={13} />
+                <Gamepad2 size={14} />
                 <span>PILOT 3D DRONE</span>
               </button>
 
               <button
                 onClick={toggleAudio}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-stone-800 bg-stone-900/60 text-stone-400 text-xs cursor-pointer hover:text-stone-200"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-stone-300 bg-white text-stone-700 text-xs cursor-pointer hover:bg-stone-50 font-semibold"
               >
-                {isAudioActive ? <Volume2 size={13} className="text-emerald-400" /> : <VolumeX size={13} />}
+                {isAudioActive ? <Volume2 size={14} className="text-emerald-600" /> : <VolumeX size={14} />}
                 <span>{isAudioActive ? 'AUDIO ON' : 'MUTED'}</span>
               </button>
             </div>
           </header>
 
-          {/* 2D Center Stage */}
+          {/* 2D Center Stage (Light Mode) */}
           <div className="relative z-30 max-w-4xl mx-auto px-4 pt-12 pb-24 flex flex-col items-center text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-amber-500/30 bg-amber-950/30 text-amber-400 text-xs tracking-widest uppercase mb-3">
-              <AlertTriangle size={13} />
-              <span>SIGNAL ATTEMPT: {currentPath || '/lost-sector'} — DECAYED</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-amber-300 bg-amber-50 text-amber-900 text-xs tracking-widest uppercase mb-4 shadow-sm font-semibold">
+              <AlertTriangle size={14} className="text-amber-600" />
+              <span>SIGNAL ATTEMPT: {currentPath || '/lost-town'} — RECLAIMED BY NATURE</span>
             </div>
 
-            <h1 className="font-serif text-5xl sm:text-6xl text-stone-100 font-extralight mb-4">
-              Lost to the Wild.
+            <h1 className="font-serif text-5xl sm:text-7xl text-stone-900 font-normal mb-4 tracking-tight">
+              Morning in the Ruins.
             </h1>
 
-            <p className="text-sm sm:text-base text-stone-400 max-w-lg mb-8 font-sans leading-relaxed">
-              The sector you requested was claimed by moss, roots, and time centuries ago. 
-              Step into the pilot cockpit of RECLAIMER-04 to salvage lost memory cores.
+            <p className="text-base sm:text-lg text-stone-700 max-w-xl mb-8 font-sans leading-relaxed font-light">
+              Sunlight warms the overgrown rooftops, pathways, and cottage gardens. 
+              Pilot the RECLAIMER drone across the neighborhood to activate the 3 survival beacons.
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
               <button
                 onClick={() => setViewMode('3d-game')}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-cyan-400/80 bg-cyan-500/20 text-cyan-200 hover:bg-cyan-500/30 text-xs sm:text-sm tracking-wider uppercase font-bold transition-all shadow-[0_0_25px_rgba(0,229,255,0.25)] cursor-pointer"
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl border border-teal-600 bg-teal-600 text-white hover:bg-teal-700 text-sm tracking-wider uppercase font-bold transition-all shadow-xl cursor-pointer"
               >
-                <Gamepad2 size={16} />
-                <span>Enter 3D Drone Game →</span>
+                <Gamepad2 size={18} />
+                <span>Enter 3D Drone Arena →</span>
               </button>
 
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-emerald-500/40 bg-emerald-950/30 text-emerald-200 hover:bg-emerald-900/40 text-xs sm:text-sm tracking-wider uppercase transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl border border-stone-300 bg-white text-stone-800 hover:bg-stone-50 text-sm tracking-wider uppercase font-semibold transition-all shadow-md cursor-pointer"
               >
-                <Home size={15} />
+                <Home size={17} />
                 <span>Return to Civilization</span>
               </Link>
             </div>
 
-            <div className="text-[11px] text-stone-500 flex items-center gap-2">
-              <Leaf size={12} className="text-emerald-500/70" />
-              <span>Click anywhere in the ruins to cultivate flowers ({bloomCount} sprouted)</span>
+            <div className="text-xs text-stone-600 font-medium flex items-center gap-2 bg-white/80 px-4 py-2 rounded-full border border-stone-200">
+              <Leaf size={14} className="text-emerald-600" />
+              <span>Click anywhere in the morning ruins to cultivate wildflowers ({bloomCount} blossomed)</span>
             </div>
           </div>
         </div>
       )}
 
-      {/* ── 2. SLIDE-OUT / FLOATING CRT TERMINAL DRAWER ── */}
+      {/* ── 2. SLIDE-OUT CRT TERMINAL DRAWER (LIGHT MODE) ── */}
       {isTerminalOpen && (
-        <div className="absolute inset-x-4 sm:inset-x-auto sm:right-6 bottom-4 sm:bottom-6 z-50 w-auto sm:w-[540px] rounded-xl border border-emerald-500/40 bg-black/90 backdrop-blur-2xl shadow-[0_20px_60px_rgba(0,0,0,0.9),0_0_30px_rgba(16,185,129,0.15)] overflow-hidden animate-slide-up">
+        <div className="absolute inset-x-4 sm:inset-x-auto sm:right-6 bottom-4 sm:bottom-6 z-50 w-auto sm:w-[540px] rounded-2xl border border-emerald-500/50 bg-white/95 backdrop-blur-2xl shadow-2xl overflow-hidden animate-slide-up text-stone-900">
           
           {/* Header Bar */}
-          <div className="flex items-center justify-between px-4 py-2.5 bg-stone-950/90 border-b border-emerald-950/80 text-xs">
+          <div className="flex items-center justify-between px-4 py-2.5 bg-stone-100 border-b border-stone-200 text-xs">
             <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-              <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
-              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
-              <span className="ml-2 text-[11px] text-emerald-400 font-mono flex items-center gap-1.5">
-                <Terminal size={12} />
-                STDERR // FILE DESCRIPTOR 2 CONSOLE
+              <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
+              <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
+              <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+              <span className="ml-2 text-[11px] text-stone-800 font-mono font-bold flex items-center gap-1.5">
+                <Terminal size={12} className="text-teal-600" />
+                STDERR // DAYLIGHT TERMINAL
               </span>
             </div>
 
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setIsTerminalOpen(false)}
-                className="p-1 text-stone-400 hover:text-stone-100 transition-colors cursor-pointer"
-                title="Close terminal (TAB)"
-              >
-                <X size={14} />
-              </button>
-            </div>
+            <button
+              onClick={() => setIsTerminalOpen(false)}
+              className="p-1 text-stone-500 hover:text-stone-900 transition-colors cursor-pointer"
+            >
+              <X size={14} />
+            </button>
           </div>
 
           {/* Terminal Logs */}
           <div
             ref={terminalScrollRef}
-            className="p-4 h-[240px] overflow-y-auto font-mono text-xs leading-relaxed custom-scrollbar space-y-1.5"
-            style={{ textShadow: '0 0 8px rgba(80, 250, 123, 0.4)' }}
+            className="p-4 h-[240px] overflow-y-auto font-mono text-xs leading-relaxed custom-scrollbar space-y-1.5 bg-stone-50/50"
           >
             {logs.map((log) => {
-              let colorClass = 'text-stone-300';
-              if (log.type === 'stderr') colorClass = 'text-amber-400 font-medium';
-              if (log.type === 'bio') colorClass = 'text-emerald-300';
-              if (log.type === 'system') colorClass = 'text-stone-400';
-              if (log.type === 'input') colorClass = 'text-cyan-300 font-semibold';
-              if (log.type === 'error') colorClass = 'text-rose-400';
+              let colorClass = 'text-stone-700';
+              if (log.type === 'stderr') colorClass = 'text-amber-800 font-semibold';
+              if (log.type === 'bio') colorClass = 'text-emerald-800 font-medium';
+              if (log.type === 'system') colorClass = 'text-stone-600';
+              if (log.type === 'input') colorClass = 'text-teal-800 font-bold';
+              if (log.type === 'error') colorClass = 'text-red-700 font-semibold';
 
               return (
                 <div key={log.id} className={`flex items-start gap-2 ${colorClass}`}>
-                  <span className="text-stone-600 select-none text-[10px] min-w-[55px]">
+                  <span className="text-stone-400 select-none text-[10px] min-w-[55px]">
                     [{log.timestamp}]
                   </span>
                   <pre className="font-mono whitespace-pre-wrap break-all flex-1">
@@ -593,10 +588,10 @@ export default function PostApocalypticError({
           {/* Input Form */}
           <form
             onSubmit={handleSubmit}
-            className="flex items-center gap-2 px-4 py-2.5 bg-stone-950 border-t border-emerald-950/80"
+            className="flex items-center gap-2 px-4 py-2.5 bg-white border-t border-stone-200"
           >
-            <span className="text-emerald-400 font-bold select-none text-xs">
-              reclaimer@earth:~$
+            <span className="text-teal-700 font-bold select-none text-xs">
+              reclaimer@town:~$
             </span>
             <input
               ref={inputRef}
@@ -604,13 +599,13 @@ export default function PostApocalypticError({
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
               placeholder="help, diagnose, bloom, spores, memdump..."
-              className="flex-1 bg-transparent text-emerald-200 placeholder-stone-600 focus:outline-none font-mono text-xs"
+              className="flex-1 bg-transparent text-stone-900 placeholder-stone-400 focus:outline-none font-mono text-xs"
               spellCheck={false}
               autoComplete="off"
             />
             <button
               type="submit"
-              className="px-2.5 py-1 text-[10px] rounded border border-emerald-500/40 bg-emerald-950/60 text-emerald-300 hover:bg-emerald-900/70 transition-colors cursor-pointer"
+              className="px-3 py-1 text-[11px] font-bold rounded-lg border border-teal-600 bg-teal-600 text-white hover:bg-teal-700 transition-colors cursor-pointer"
             >
               RUN
             </button>
