@@ -24,7 +24,7 @@ import { withBasePath } from '@/lib/content';
 import { reclamationAudio } from '@/lib/audio/reclamationAudio';
 import { BioParticles, BioParticlesHandle } from '@/components/error/BioParticles';
 import { ProceduralVines, ProceduralVinesHandle } from '@/components/error/ProceduralVines';
-import type { BeaconItem, TelemetryData } from '@/components/error/ReclamationGame3D';
+import type { BeaconItem, TelemetryData, DifficultyMode } from '@/components/error/ReclamationGame3D';
 import GameHudOverlay from '@/components/error/GameHudOverlay';
 
 const ReclamationGame3D = dynamic(
@@ -83,45 +83,80 @@ export default function PostApocalypticError({
   const [bloomCount, setBloomCount] = useState<number>(0);
   const [glitchActive, setGlitchActive] = useState(false);
 
+  // Difficulty Mode (Easy / Medium / Hard)
+  const [difficultyMode, setDifficultyMode] = useState<DifficultyMode>('medium');
+
   // 3D Arena states
   const [telemetry, setTelemetry] = useState<TelemetryData>({
     speed: 0,
-    altitude: 2.4,
+    altitude: 3.5,
     heading: 0,
     shields: 100,
+    maxShields: 100,
     empCooldown: 1,
     nearestDist: 0,
-    nearestName: 'SCANNING CITY...',
-    zombieCount: 28,
+    nearestName: 'SCANNING ARENA...',
+    zombieCount: 36,
     zombiesChasing: 0,
+    activeBeacons: 0,
+    totalBeacons: 4,
   });
 
-  const [beacons, setBeacons] = useState<BeaconItem[]>([
-    {
-      id: 'ALPHA',
-      name: 'SKYLINE OVERPASS BEACON',
-      location: 'HIGHWAY RAMP // 0x404_A',
-      pos: [-38, 4.5, -35],
-      activated: false,
-      color: 0x00e5ff,
-    },
-    {
-      id: 'BETA',
-      name: 'NEON PLAZA BEACON',
-      location: 'CIVIC CENTER // 0x404_B',
-      pos: [42, 1.8, -25],
-      activated: false,
-      color: 0x50fa7b,
-    },
-    {
-      id: 'GAMMA',
-      name: 'SUB-GRID TERMINAL BEACON',
-      location: 'FLOODED CANAL // 0x404_C',
-      pos: [-12, 1.8, 42],
-      activated: false,
-      color: 0xffb86c,
-    },
-  ]);
+  const getBeaconsForMode = (mode: DifficultyMode): BeaconItem[] => {
+    const list: BeaconItem[] = [
+      {
+        id: 'ALPHA',
+        name: 'SUBURBAN PLAZA',
+        location: 'RESIDENTIAL BOULEVARD // 0x404_A',
+        pos: [-55, 3.2, -45],
+        activated: false,
+        color: 0x00b4d8,
+      },
+      {
+        id: 'BETA',
+        name: 'RIVER ARCH BRIDGE',
+        location: 'CANAL CROSSING // 0x404_B',
+        pos: [-28, 4.0, 18],
+        activated: false,
+        color: 0x2ec4b6,
+      },
+      {
+        id: 'GAMMA',
+        name: 'SKYSCRAPER PLAZA',
+        location: 'TECH CORE MONOLITH // 0x404_C',
+        pos: [65, 3.5, -60],
+        activated: false,
+        color: 0xff9f1c,
+      },
+      {
+        id: 'DELTA',
+        name: 'BOTANICAL OVERLOOK',
+        location: 'VALLEY RIDGE // 0x404_D',
+        pos: [80, 5.8, 75],
+        activated: false,
+        color: 0xe0aaff,
+      },
+      {
+        id: 'EPSILON',
+        name: 'HIGHWAY RUINS',
+        location: 'ELEVATED FREEWAY // 0x404_E',
+        pos: [-95, 4.5, 90],
+        activated: false,
+        color: 0xff4d6d,
+      },
+    ];
+    const count = mode === 'easy' ? 3 : mode === 'medium' ? 4 : 5;
+    return list.slice(0, count);
+  };
+
+  const [beacons, setBeacons] = useState<BeaconItem[]>(() => getBeaconsForMode('medium'));
+
+  const handleSelectDifficulty = useCallback((mode: DifficultyMode) => {
+    setDifficultyMode(mode);
+    setBeacons(getBeaconsForMode(mode));
+    setAllActivated(false);
+    setLastActivatedBeacon(null);
+  }, []);
 
   const [allActivated, setAllActivated] = useState(false);
   const [lastActivatedBeacon, setLastActivatedBeacon] = useState<BeaconItem | null>(null);
@@ -255,6 +290,9 @@ export default function PostApocalypticError({
 
   const handleUpdateTelemetry = useCallback((t: TelemetryData) => {
     setTelemetry(t);
+    if (t.activeBeacons >= t.totalBeacons && t.totalBeacons > 0) {
+      setAllActivated(true);
+    }
   }, []);
 
   // Interactive Bloom / Click anywhere (2D Mode)
@@ -419,6 +457,7 @@ export default function PostApocalypticError({
       {viewMode === '3d-game' ? (
         <div className="relative w-full h-full">
           <ReclamationGame3D
+            difficultyMode={difficultyMode}
             onActivateBeacon={handleActivateBeacon}
             onEnterPortal={handleEnterPortal}
             onUpdateTelemetry={handleUpdateTelemetry}
@@ -431,6 +470,8 @@ export default function PostApocalypticError({
             beacons={beacons}
             allActivated={allActivated}
             isAudioActive={isAudioActive}
+            difficultyMode={difficultyMode}
+            onSelectDifficulty={handleSelectDifficulty}
             onToggleAudio={toggleAudio}
             onToggleTerminal={() => setIsTerminalOpen((prev) => !prev)}
             isTerminalOpen={isTerminalOpen}
