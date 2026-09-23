@@ -33,6 +33,8 @@ export default function LenisProvider({ children }: { children: React.ReactNode 
             }
         });
 
+        (window as unknown as { __lenis?: Lenis | null }).__lenis = lenis;
+
         let rafId: number;
         function raf(time: number) {
             lenis.raf(time);
@@ -42,9 +44,15 @@ export default function LenisProvider({ children }: { children: React.ReactNode 
 
         return () => {
             cancelAnimationFrame(rafId);
+            (window as unknown as { __lenis?: Lenis | null }).__lenis = null;
             lenis.destroy();
         };
     }, []);
 
     return <>{children}</>;
+}
+
+export function getLenis(): Lenis | null {
+    if (typeof window === 'undefined') return null;
+    return (window as unknown as { __lenis?: Lenis | null }).__lenis ?? null;
 }

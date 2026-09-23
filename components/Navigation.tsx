@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import ContactModal from '@/components/ui/contact-modal';
 import { profile } from '@/lib/content';
+import { getLenis } from '@/components/LenisProvider';
 
 export default function Navigation() {
     const router = useRouter();
@@ -43,11 +44,16 @@ export default function Navigation() {
             router.push(item.href);
             return;
         }
-        const element = document.querySelector(item.href);
+        const element = document.querySelector(item.href) as HTMLElement | null;
         if (element) {
             // Delay scrolling slightly to allow exit animation to begin
             setTimeout(() => {
-                element.scrollIntoView({ behavior: 'smooth' });
+                const lenis = getLenis();
+                if (lenis) {
+                    lenis.scrollTo(element, { duration: 0.9 });
+                } else {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }
             }, 300);
         }
     };
@@ -78,7 +84,14 @@ export default function Navigation() {
                 }}>
                     {/* Editorial Logo Pill */}
                     <button
-                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                        onClick={() => {
+                            const lenis = getLenis();
+                            if (lenis) {
+                                lenis.scrollTo(0, { duration: 0.9 });
+                            } else {
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }
+                        }}
                         style={{
                             pointerEvents: 'auto',
                             fontFamily: 'var(--font-mono)',

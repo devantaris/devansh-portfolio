@@ -11,6 +11,7 @@ import GitHubStats from '@/components/sections/GitHubStats';
 import Blog from '@/components/sections/Blog';
 import ContactSection from '@/components/sections/ContactSection';
 import ContactModal from '@/components/ui/contact-modal';
+import SectionScrollManager from '@/components/SectionScrollManager';
 
 const MultiLayerStarfield = dynamic(() => import('@/components/StarfieldBackground'), { ssr: false });
 const Projects = dynamic(() => import('@/components/Projects'), { ssr: false });
@@ -24,6 +25,7 @@ export default function ClassicSite() {
 
   return (
     <main className="relative min-h-screen">
+      <SectionScrollManager />
       <MultiLayerStarfield />
       <Navigation />
       <Hero />
