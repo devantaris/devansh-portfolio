@@ -10,6 +10,42 @@ export default function LorenzAttractor() {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
+        // ── Defer ALL WebGL init until the canvas enters the viewport ──────────
+        // Prevents a Three.js context + 14k-particle rAF loop from starting on
+        // page load before the attractor has been scrolled into view.
+        let cleanupFn: (() => void) | undefined;
+        const initObserver = new IntersectionObserver(
+            (entries) => {
+                if (!entries[0].isIntersecting) return;
+                initObserver.disconnect(); // one-shot: fire once then stop
+                cleanupFn = initWebGL(canvas);
+            },
+            { threshold: 0.01 }
+        );
+        initObserver.observe(canvas);
+
+        return () => {
+            initObserver.disconnect();
+            cleanupFn?.();
+        };
+    }, []);
+
+    return (
+        <canvas
+            ref={canvasRef}
+            style={{
+                width: '100%',
+                height: '100%',
+                display: 'block',
+                cursor: 'grab',
+            }}
+        />
+    );
+}
+
+// ── All Three.js work isolated here — called only once the canvas is on screen ─
+function initWebGL(canvas: HTMLCanvasElement): () => void {
+
         const scene = new THREE.Scene();
         
         const camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
@@ -293,33 +329,21 @@ export default function LorenzAttractor() {
         const resizeObserver = new ResizeObserver(() => handleResize());
         resizeObserver.observe(canvas);
 
-        return () => {
-            cancelAnimationFrame(animId);
-            intersectionObserver.disconnect();
-            canvas.removeEventListener('mousedown', handleMouseDown);
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('mouseup', handleMouseUp);
-            window.removeEventListener('scroll', handleScroll);
-            canvas.removeEventListener('touchstart', handleTouchStart);
-            canvas.removeEventListener('touchmove', handleTouchMove);
-            canvas.removeEventListener('touchend', handleMouseUp);
-            resizeObserver.disconnect();
-            
-            geometry.dispose();
-            material.dispose();
-            renderer.dispose();
-        };
-    }, []);
+    // Return the cleanup function so initWebGL's caller can tear everything down
+    return () => {
+        cancelAnimationFrame(animId);
+        intersectionObserver.disconnect();
+        canvas.removeEventListener('mousedown', handleMouseDown);
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+        window.removeEventListener('scroll', handleScroll);
+        canvas.removeEventListener('touchstart', handleTouchStart);
+        canvas.removeEventListener('touchmove', handleTouchMove);
+        canvas.removeEventListener('touchend', handleMouseUp);
+        resizeObserver.disconnect();
 
-    return (
-        <canvas 
-            ref={canvasRef} 
-            style={{ 
-                width: '100%', 
-                height: '100%', 
-                display: 'block',
-                cursor: 'grab' // Grab cursor to hint that it is fully drag-interactive!
-            }} 
-        />
-    );
+        geometry.dispose();
+        material.dispose();
+        renderer.dispose();
+    };
 }

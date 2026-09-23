@@ -261,6 +261,7 @@ export default function MultiLayerStarfield() {
 
     // ── Scroll state ──
     let scrollY = window.scrollY;
+    let docHeight = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
     const handleScroll = () => scrollY = window.scrollY;
     window.addEventListener('scroll', handleScroll, { passive: true });
 
@@ -295,11 +296,9 @@ export default function MultiLayerStarfield() {
         if (layer.material instanceof THREE.ShaderMaterial) {
           layer.material.uniforms.time.value = time;
           layer.material.uniforms.uMouse.value.set(clientX, clientY);
-          layer.material.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
         }
       });
 
-      const docHeight = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
       const progress = Math.min(scrollY / docHeight, 1);
 
       const targetX = mouseX * 8;
@@ -330,10 +329,16 @@ export default function MultiLayerStarfield() {
 
     // ── Resize ──
     const handleResize = () => {
+      docHeight = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
       composer.setSize(window.innerWidth, window.innerHeight);
+      starLayers.forEach((layer) => {
+        if (layer.material instanceof THREE.ShaderMaterial) {
+          layer.material.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
+        }
+      });
     };
     window.addEventListener('resize', handleResize);
 

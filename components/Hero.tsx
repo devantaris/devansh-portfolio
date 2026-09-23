@@ -4,12 +4,7 @@ import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
 import { profile, withBasePath } from '@/lib/content';
-import { useMotionCapable } from '@/hooks/useMotionCapable';
-
-// three.js canvas — client-only, kept out of the initial bundle
-const LorenzAttractor = dynamic(() => import('./LorenzAttractor'), { ssr: false });
 
 /* ─── Social Icons ─── */
 const GithubIcon = () => (
@@ -39,8 +34,6 @@ const MailIcon = () => (
 
 export default function Hero() {
     const containerRef = useRef<HTMLDivElement>(null);
-    
-    const motionCapable = useMotionCapable();
 
     return (
         <section
@@ -56,20 +49,6 @@ export default function Hero() {
                 padding: 'clamp(80px, 12vw, 160px) 0'
             }}
         >
-            {/* Ambient attractor field situated in background (desktop only) */}
-            {motionCapable && (
-            <div style={{
-                position: 'absolute',
-                right: '10%',
-                width: 'min(70vw, 650px)',
-                height: 'min(70vw, 650px)',
-                opacity: 0.35,
-                zIndex: 1,
-                pointerEvents: 'none'
-            }}>
-                <LorenzAttractor />
-            </div>
-            )}
 
             {/* Core Editorial Container */}
             <div

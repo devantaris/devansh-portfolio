@@ -57,6 +57,9 @@ export default function CustomCursor() {
     );
 
     useEffect(() => {
+        // Only run custom cursor on fine pointer devices (desktops/laptops with mouse/trackpad)
+        if (!window.matchMedia('(pointer: fine)').matches) return;
+
         const canvas = canvasRef.current;
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
@@ -86,7 +89,9 @@ export default function CustomCursor() {
             }
 
             isVisibleRef.current = true;
-            document.body.classList.add('has-custom-cursor');
+            if (!document.body.classList.contains('has-custom-cursor')) {
+                document.body.classList.add('has-custom-cursor');
+            }
             mouseRef.current = { x: e.clientX, y: e.clientY };
 
             if (smoothPosRef.current.x < 0) {
@@ -104,7 +109,9 @@ export default function CustomCursor() {
 
         const handleMouseEnter = (e: MouseEvent) => {
             isVisibleRef.current = true;
-            document.body.classList.add('has-custom-cursor');
+            if (!document.body.classList.contains('has-custom-cursor')) {
+                document.body.classList.add('has-custom-cursor');
+            }
             mouseRef.current = { x: e.clientX, y: e.clientY };
             smoothPosRef.current = { x: e.clientX, y: e.clientY };
         };
@@ -122,6 +129,7 @@ export default function CustomCursor() {
         const animate = () => {
             animIdRef.current = requestAnimationFrame(animate);
 
+            if (document.hidden) return;
             if (!isVisibleRef.current && particlesRef.current.length === 0) {
                 return;
             }

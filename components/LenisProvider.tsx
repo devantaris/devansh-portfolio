@@ -22,8 +22,15 @@ export default function LenisProvider({ children }: { children: React.ReactNode 
         // Fire a native scroll event on every Lenis tick so that any
         // window.addEventListener('scroll', ...) listener (e.g. in Projects.tsx)
         // picks up the smooth-scrolled position in real time.
+        // Throttled to ~60fps — Lenis itself may tick at 120fps but scroll handlers
+        // don't need to run more often than that, and this halves their workload.
+        let lastScrollDispatch = 0;
         lenis.on('scroll', () => {
-            window.dispatchEvent(new Event('scroll'));
+            const now = performance.now();
+            if (now - lastScrollDispatch >= 16) {
+                lastScrollDispatch = now;
+                window.dispatchEvent(new Event('scroll'));
+            }
         });
 
         let rafId: number;

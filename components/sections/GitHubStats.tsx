@@ -24,49 +24,74 @@ export default function GitHubStats() {
     const stats = profile.githubStats.totals;
     const languages = profile.githubStats.languages;
 
-    // Fetch live contribution activity on mount
+    // Fetch live contribution activity on mount — with 1-hour localStorage cache
     useEffect(() => {
         let isMounted = true;
 
+        const CACHE_KEY = 'gh_contributions_v1';
+        const CACHE_TTL = 60 * 60 * 1000; // 1 hour in ms
+
+        function applyData(contributions: ContributionDay[]) {
+            if (!isMounted) return;
+            setDays(contributions);
+            const total = contributions.reduce((acc, cur) => acc + cur.count, 0);
+            setTotalCount(total);
+            setIsLoading(false);
+        }
+
+        function generateFallback(): ContributionDay[] {
+            const fallback: ContributionDay[] = [];
+            const now = new Date();
+            for (let i = 365; i >= 0; i--) {
+                const d = new Date(now);
+                d.setDate(d.getDate() - i);
+                const dateStr = d.toISOString().split('T')[0];
+                const isToday = i === 0;
+                fallback.push({
+                    date: dateStr,
+                    count: isToday ? 4 : (i % 7 === 0 ? 3 : 0),
+                    level: isToday ? 2 : (i % 7 === 0 ? 1 : 0),
+                });
+            }
+            return fallback;
+        }
+
         async function fetchContributions() {
+            // ── Check localStorage cache first ──────────────────────────────
+            try {
+                const cached = localStorage.getItem(CACHE_KEY);
+                if (cached) {
+                    const { ts, data }: { ts: number; data: ContributionDay[] } = JSON.parse(cached);
+                    if (Date.now() - ts < CACHE_TTL && data?.length > 0) {
+                        applyData(data);
+                        return; // cache hit — skip network request entirely
+                    }
+                }
+            } catch { /* ignore parse errors */ }
+
+            // ── Network fetch ───────────────────────────────────────────────
             try {
                 const res = await fetch('https://github-contributions-api.jogruber.de/v4/devantaris?y=last');
                 if (!res.ok) throw new Error('Failed to fetch contributions');
-                const data: ApiResponse = await res.json();
-                
-                if (isMounted && data.contributions && data.contributions.length > 0) {
-                    setDays(data.contributions);
-                    const total = data.contributions.reduce((acc, cur) => acc + cur.count, 0);
-                    setTotalCount(total);
-                    setIsLoading(false);
+                const json: ApiResponse = await res.json();
+
+                if (json.contributions?.length > 0) {
+                    // Persist to cache before applying so subsequent loads are instant
+                    try {
+                        localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: json.contributions }));
+                    } catch { /* storage quota exceeded — just skip caching */ }
+                    applyData(json.contributions);
                 }
             } catch (err) {
-                console.warn('Could not fetch live GitHub activity, generating recent fallback:', err);
-                if (isMounted) {
-                    // Generate accurate 52-week fallback ending today
-                    const fallbackDays: ContributionDay[] = [];
-                    const now = new Date();
-                    for (let i = 365; i >= 0; i--) {
-                        const d = new Date(now);
-                        d.setDate(d.getDate() - i);
-                        const dateStr = d.toISOString().split('T')[0];
-                        // Give today 4 commits
-                        const isToday = i === 0;
-                        fallbackDays.push({
-                            date: dateStr,
-                            count: isToday ? 4 : (i % 7 === 0 ? 3 : 0),
-                            level: isToday ? 2 : (i % 7 === 0 ? 1 : 0),
-                        });
-                    }
-                    setDays(fallbackDays);
-                    setIsLoading(false);
-                }
+                console.warn('Could not fetch live GitHub activity, using fallback:', err);
+                if (isMounted) applyData(generateFallback());
             }
         }
 
         fetchContributions();
         return () => { isMounted = false; };
     }, []);
+
 
     // Structure 365/366 days into 53 weekly columns (7 days each)
     const weeks = useMemo(() => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import * as THREE from 'three';
@@ -30,7 +30,7 @@ export default function Projects() {
         window.scrollTo({ top: target, behavior: 'smooth' });
     };
 
-    // ─── Three.js Engine (runs ONCE) ─────────────────────────────────────────
+    // ─── Three.js Engine (runs ONCE, deferred until section enters viewport) ──
     useEffect(() => {
         const canvas = canvasRef.current;
         const section = sectionRef.current;
@@ -38,9 +38,38 @@ export default function Projects() {
         // Skip the WebGL engine on mobile, touch, and reduced-motion devices
         if (!motionCapable) return;
 
-        const scene = new THREE.Scene();
+        // ── Defer heavy init until the projects section is actually visible ──
+        // This avoids building 1520×880 HUD canvas textures + a Three.js renderer
+        // + rAF loop while the user is still reading the hero / about sections.
+        let cleanupEngine: (() => void) | undefined;
+        const sectionObserver = new IntersectionObserver(
+            (entries) => {
+                if (!entries[0].isIntersecting) return;
+                sectionObserver.disconnect(); // one-shot
+                cleanupEngine = startEngine(canvas, section, sectionRef, activeIdxRef, setActiveIdx);
+            },
+            { threshold: 0.01 }
+        );
+        sectionObserver.observe(section);
 
-        const getSize = () => ({
+        return () => {
+            sectionObserver.disconnect();
+            cleanupEngine?.();
+        };
+    }, [motionCapable]);
+
+
+// ── All Three.js work isolated here — called once the section enters viewport ─
+function startEngine(
+    canvas: HTMLCanvasElement,
+    section: HTMLDivElement,
+    sectionRef: React.RefObject<HTMLDivElement | null>,
+    activeIdxRef: React.RefObject<number>,
+    setActiveIdx: (idx: number) => void
+): () => void {
+    const scene = new THREE.Scene();
+
+    const getSize = () => ({
             w: canvas.clientWidth || window.innerWidth,
             h: canvas.clientHeight || window.innerHeight,
         });
@@ -252,22 +281,22 @@ export default function Projects() {
         const ro = new ResizeObserver(onResize);
         ro.observe(canvas);
 
-        return () => {
-            cancelAnimationFrame(animId);
-            window.removeEventListener('scroll', updateScroll);
-            window.removeEventListener('mousemove', onMouse);
-            ro.disconnect();
-            hudTextures.forEach((t) => t.dispose());
-            projectGroups.forEach((g) =>
-                g.children.forEach((c: THREE.Object3D) => {
-                    const mesh = c as THREE.Mesh;
-                    if (mesh.geometry) mesh.geometry.dispose();
-                    if (mesh.material) (mesh.material as THREE.Material).dispose();
-                })
-            );
-            renderer.dispose();
-        };
-    }, [motionCapable]); // engine (re)starts once motion capability is known
+    return () => {
+        cancelAnimationFrame(animId);
+        window.removeEventListener('scroll', updateScroll);
+        window.removeEventListener('mousemove', onMouse);
+        ro.disconnect();
+        hudTextures.forEach((t) => t.dispose());
+        projectGroups.forEach((g) =>
+            g.children.forEach((c: THREE.Object3D) => {
+                const mesh = c as THREE.Mesh;
+                if (mesh.geometry) mesh.geometry.dispose();
+                if (mesh.material) (mesh.material as THREE.Material).dispose();
+            })
+        );
+        renderer.dispose();
+    };
+} // end startEngine
 
     const proj = projects[activeIdx];
 

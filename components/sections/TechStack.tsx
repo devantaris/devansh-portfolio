@@ -554,6 +554,7 @@ export default function TechStack() {
                                                                     alt={skill.name}
                                                                     width={16}
                                                                     height={16}
+                                                                    loading="lazy"
                                                                     unoptimized
                                                                     style={{ filter: 'brightness(1.15) contrast(1.05)' }}
                                                                 />
