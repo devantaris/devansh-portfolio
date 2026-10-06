@@ -127,7 +127,7 @@
   {
     "id": "portfolio",
     "name": "Devansh Portfolio — Core Telemetry System",
-    "tagline": "Minimal, high-performance portfolio with Three.js attractor fields, Lenis smooth scrolling, and live telemetry.",
+    "tagline": "Minimal, high-performance editorial portfolio with Lenis smooth scrolling and live telemetry.",
     "tech": ["Next.js 16", "TypeScript", "Three.js", "Framer Motion", "Tailwind CSS"],
     "demo": null,
     "code": "https://github.com/devantaris/devansh-portfolio",
@@ -136,7 +136,7 @@
     "video": null,
     "impact": "Next.js 16 · Static export · Zero layout shift",
     "specs": [
-      "This portfolio site features a Three.js Lorenz attractor dynamic hero, multi-layer starfield background, kinetic orbital tech stack visualizer, responsive contact matrix, and live GitHub contribution telemetry.",
+      "This portfolio site features a sleek editorial interface, kinetic orbital tech stack visualizer, responsive contact matrix, and live GitHub contribution telemetry.",
       "Built with Next.js 16 static export and Lenis for silky-smooth physics and zero layout shifts."
     ],
     "featured": false
