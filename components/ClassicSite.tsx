@@ -10,6 +10,7 @@ import Experience from '@/components/Experience';
 import GitHubStats from '@/components/sections/GitHubStats';
 import Blog from '@/components/sections/Blog';
 import ContactSection from '@/components/sections/ContactSection';
+import Footer from '@/components/Footer';
 import ContactModal from '@/components/ui/contact-modal';
 import SectionScrollManager from '@/components/SectionScrollManager';
 
@@ -36,6 +37,7 @@ export default function ClassicSite() {
       <GitHubStats />
       <Blog />
       <ContactSection />
+      <Footer />
       <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
     </main>
   );

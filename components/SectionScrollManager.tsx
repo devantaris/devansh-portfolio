@@ -12,6 +12,7 @@ const SECTION_LANDMARKS = [
     'stats',
     'blog',
     'contact',
+    'footer',
 ];
 
 interface SnapStopsData {
