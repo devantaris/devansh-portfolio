@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Devansh Kumar — Identify</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,700..900&family=DM+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg: #f1ede2;
+  --ink: #14213d;
+  --blue: #2748c9;
+  --ln: rgba(39,72,201,.1);
+  --lm: rgba(39,72,201,.2);
+  --l2: rgba(39,72,201,.5);
+  --hi: #ffd60a;
+  --st: #d7263d;
+  --green: #00c853;
+  --dim: rgba(39,72,201,.55);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b2a73;
+    --ink: #f3f6ff;
+    --blue: #9db9ff;
+    --ln: rgba(157,185,255,.1);
+    --lm: rgba(157,185,255,.2);
+    --l2: rgba(157,185,255,.55);
+    --green: #69ff8e;
+    --dim: rgba(157,185,255,.5);
+  }
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 13px/1.6 'DM Mono', ui-monospace, Menlo, monospace;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Blueprint grid ── */
+.grid {
+  position: fixed; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(var(--ln) 1px, transparent 1px),
+    linear-gradient(90deg, var(--ln) 1px, transparent 1px),
+    linear-gradient(var(--lm) 1px, transparent 1px),
+    linear-gradient(90deg, var(--lm) 1px, transparent 1px);
+  background-size: 20px 20px, 20px 20px, 100px 100px, 100px 100px;
+}
+.frame { position: fixed; inset: 10px; border: 1px solid var(--l2); pointer-events: none; z-index: 1; }
+
+/* ── Corner labels ── */
+.corner {
+  position: fixed; z-index: 2; font-size: 9px;
+  letter-spacing: .15em; text-transform: uppercase; color: var(--blue);
+  pointer-events: none;
+}
+.corner.tl { top: 16px; left: 20px; }
+.corner.tr { top: 16px; right: 20px; text-align: right; }
+.corner.bl { bottom: 16px; left: 20px; }
+.corner.br { bottom: 16px; right: 20px; text-align: right; }
+
+/* ── Terminal window ── */
+.terminal {
+  position: fixed; inset: 0; display: flex;
+  align-items: center; justify-content: center;
+  padding: 20px; z-index: 10;
+}
+.window {
+  width: min(680px, 100%);
+  border: 1.5px solid var(--ink);
+  background: var(--bg);
+  display: flex; flex-direction: column;
+}
+.titlebar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--l2);
+  font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--blue);
+}
+.dot { width: 10px; height: 10px; border: 1.5px solid var(--ink); }
+.dot.r { background: var(--st); }
+.dot.y { background: var(--hi); }
+.dot.g { background: var(--green); }
+.titlebar span { margin-left: auto; }
+
+.body { padding: 28px 32px 32px; }
+
+/* ── Lines ── */
+.line { display: flex; gap: 0; margin-bottom: 4px; line-height: 1.7; }
+.prompt { color: var(--blue); flex-shrink: 0; user-select: none; }
+.text { color: var(--ink); }
+.text.dim { color: var(--dim); }
+.text.hi  { color: var(--hi); font-weight: 500; }
+.text.err { color: var(--st); }
+.text.ok  { color: var(--green); }
+
+.gap { height: 14px; }
+
+/* ── Cursor ── */
+.cursor {
+  display: inline-block; width: 8px; height: 1.1em;
+  background: var(--ink); vertical-align: text-bottom;
+  animation: blink .9s step-end infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ── Choice buttons ── */
+.choices { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.choice {
+  display: flex; align-items: center; gap: 0;
+  background: none; border: none; cursor: pointer;
+  font: 400 13px/1.6 'DM Mono', monospace;
+  text-align: left; padding: 0;
+  color: var(--ink);
+  transition: none;
+}
+.choice .key {
+  color: var(--blue); flex-shrink: 0;
+  min-width: 28px; user-select: none;
+}
+.choice .label {
+  border-bottom: 1px solid transparent;
+  transition: border-color .15s, color .15s;
+}
+.choice:hover .label,
+.choice.hover .label { border-bottom-color: var(--ink); }
+.choice.selected .label { color: var(--hi); border-bottom-color: var(--hi); }
+.choice.faded { opacity: .3; pointer-events: none; }
+
+/* ── Sub-options ── */
+.sub-choices {
+  display: none; flex-direction: column; gap: 5px;
+  margin-top: 6px; padding-left: 28px;
+  border-left: 1px solid var(--l2);
+}
+.sub-choices.show { display: flex; }
+.sub-choice {
+  display: flex; align-items: center; gap: 0;
+  background: none; border: none; cursor: pointer;
+  font: 400 12px/1.6 'DM Mono', monospace;
+  text-align: left; padding: 0;
+  color: var(--dim);
+  transition: color .15s;
+}
+.sub-choice:hover { color: var(--ink); }
+.sub-choice .skey { color: var(--blue); min-width: 24px; flex-shrink: 0; font-size: 11px; }
+.sub-choice .slabel { border-bottom: 1px solid transparent; }
+.sub-choice:hover .slabel { border-bottom-color: var(--dim); }
+
+/* ── Executing state ── */
+.exec-line {
+  display: none; align-items: center; gap: 8px;
+  font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--blue); margin-top: 12px;
+}
+.exec-line.show { display: flex; }
+.spinner {
+  width: 10px; height: 10px;
+  border: 1.5px solid var(--l2);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Scan line overlay ── */
+.scan {
+  position: fixed; inset: 0; pointer-events: none; z-index: 100;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 3px,
+    rgba(0,0,0,.03) 3px, rgba(0,0,0,.03) 4px
+  );
+}
+
+/* ── Keyboard hint ── */
+.kbd-hint {
+  font-size: 10px; letter-spacing: .12em; color: var(--dim);
+  text-transform: uppercase; margin-top: 20px;
+}
+
+@media (max-width: 520px) {
+  .body { padding: 18px 18px 24px; }
+  .window { border-left: 0; border-right: 0; }
+  .frame { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="scan"></div>
+<div class="grid"></div>
+<div class="frame"></div>
+
+<div class="corner tl">vantaris/sys · boot</div>
+<div class="corner tr" id="clk"></div>
+<div class="corner bl">session · identify</div>
+<div class="corner br">rev 2026.D</div>
+
+<div class="terminal">
+  <div class="window" id="win">
+
+    <div class="titlebar">
+      <div class="dot r"></div>
+      <div class="dot y"></div>
+      <div class="dot g"></div>
+      <span id="tb-status">vantaris@sys:~ — bash</span>
+    </div>
+
+    <div class="body" id="body">
+
+      <!-- Boot lines, typed in sequence -->
+      <div class="line" id="l0" style="display:none">
+        <span class="prompt">sys&nbsp;&nbsp;&nbsp;&gt;&nbsp;</span>
+        <span class="text dim">initialising vantaris kernel v2026.D …&nbsp;<span id="ok0"></span></span>
+      </div>
+      <div class="gap" id="g0" style="display:none"></div>
+
+      <div class="line" id="l1" style="display:none">
+        <span class="prompt">sys&nbsp;&nbsp;&nbsp;&gt;&nbsp;</span>
+        <span class="text">whoami</span>
+      </div>
+      <div class="line" id="l1b" style="display:none">
+        <span class="prompt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span class="text dim">devansh kumar · backend / ml · bennett university · ieee bu chair</span>
+      </div>
+      <div class="gap" id="g1" style="display:none"></div>
+
+      <div class="line" id="l2" style="display:none">
+        <span class="prompt">sys&nbsp;&nbsp;&nbsp;&gt;&nbsp;</span>
+        <span class="text">identify --visitor</span>
+      </div>
+      <div class="line" id="l2b" style="display:none">
+        <span class="prompt">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span class="text dim">you are at the boundary. state your intent.</span>
+      </div>
+      <div class="gap" id="g2" style="display:none"></div>
+
+      <!-- Prompt line with choices -->
+      <div class="line" id="lq" style="display:none">
+        <span class="prompt">guest&nbsp;&gt;&nbsp;</span>
+        <span class="text" id="typed-q"><span class="cursor" id="cur"></span></span>
+      </div>
+
+      <div class="choices" id="choices" style="display:none">
+        <button class="choice" id="c0" onclick="pick(0)">
+          <span class="key">[1]&nbsp;</span>
+          <span class="label">Recruiter — here to evaluate</span>
+        </button>
+        <button class="choice" id="c1" onclick="pick(1)">
+          <span class="key">[2]&nbsp;</span>
+          <span class="label">Explorer — curious, no map</span>
+        </button>
+        <button class="choice" id="c2" onclick="pick(2)">
+          <span class="key">[3]&nbsp;</span>
+          <span class="label">Friend — just vibing</span>
+        </button>
+      </div>
+
+      <!-- Sub-options per choice -->
+      <div class="sub-choices" id="sub0">
+        <button class="sub-choice" onclick="go('/blueprint.html')">
+          <span class="skey">→&nbsp;</span><span class="slabel">Open systems drawing (recommended)</span>
+        </button>
+        <button class="sub-choice" onclick="go('/projects')">
+          <span class="skey">→&nbsp;</span><span class="slabel">Jump to projects</span>
+        </button>
+        <button class="sub-choice" onclick="go('/blueprint.html#research')">
+          <span class="skey">→&nbsp;</span><span class="slabel">See research &amp; publications</span>
+        </button>
+        <button class="sub-choice" onclick="go('/universe')">
+          <span class="skey">→&nbsp;</span><span class="slabel">Take the scenic route (universe)</span>
+        </button>
+      </div>
+
+      <div class="sub-choices" id="sub1">
+        <button class="sub-choice" onclick="go('/universe')">
+          <span class="skey">→&nbsp;</span><span class="slabel">Enter the universe — navigate as planets</span>
+        </button>
+        <button class="sub-choice" onclick="go('/blueprint.html')">
+          <span class="skey">→&nbsp;</span><span class="slabel">Read the blueprint — engineering view</span>
+        </button>
+        <button class="sub-choice" onclick="go('/stderr')">
+          <span class="skey">→&nbsp;</span><span class="slabel">Take a wrong turn (stderr)</span>
+        </button>
+      </div>
+
+      <div class="sub-choices" id="sub2">
+        <button class="sub-choice" onclick="go('/stderr')">
+          <span class="skey">→&nbsp;</span><span class="slabel">Play the post-apocalyptic terminal game</span>
+        </button>
+        <button class="sub-choice" onclick="go('/universe')">
+          <span class="skey">→&nbsp;</span><span class="slabel">Get lost in the universe first</span>
+        </button>
+        <button class="sub-choice" onclick="go('/blueprint.html')">
+          <span class="skey">→&nbsp;</span><span class="slabel">Actually read the portfolio</span>
+        </button>
+      </div>
+
+      <!-- Exec line -->
+      <div class="exec-line" id="exec">
+        <div class="spinner"></div>
+        <span id="exec-text">loading …</span>
+      </div>
+
+      <p class="kbd-hint" id="hint" style="display:none">
+        ↑ ↓ arrow keys or [1][2][3] to navigate · enter to confirm
+      </p>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  // ── Clock ──────────────────────────────────────────────────────────────────
+  var clk = document.getElementById('clk');
+  function tick() {
+    clk.textContent = new Date().toLocaleTimeString('en-GB', { timeZone: 'Asia/Kolkata' }) + ' IST';
+  }
+  tick(); setInterval(tick, 1000);
+
+  // ── Type utility ──────────────────────────────────────────────────────────
+  function show(id) { document.getElementById(id).style.display = 'flex'; }
+  function showBlock(id) { document.getElementById(id).style.display = 'block'; }
+
+  function typeInto(el, text, speed, done) {
+    var i = 0;
+    var cur = el.querySelector('.cursor');
+    function next() {
+      if (i < text.length) {
+        // insert char before cursor
+        el.insertBefore(document.createTextNode(text[i]), cur);
+        i++;
+        setTimeout(next, speed + (Math.random() * speed * 0.6 - speed * 0.3));
+      } else {
+        if (done) done();
+      }
+    }
+    next();
+  }
+
+  // ── Sequence ──────────────────────────────────────────────────────────────
+  var seq = [
+    function (next) {
+      show('l0');
+      setTimeout(function () {
+        document.getElementById('ok0').textContent = 'ok';
+        document.getElementById('ok0').style.color = 'var(--green)';
+        setTimeout(next, 280);
+      }, 600);
+    },
+    function (next) { show('g0'); show('l1'); setTimeout(function () { show('l1b'); setTimeout(next, 180); }, 220); },
+    function (next) { show('g1'); show('l2'); setTimeout(function () { show('l2b'); setTimeout(next, 260); }, 240); },
+    function (next) {
+      show('g2'); show('lq');
+      var el = document.getElementById('typed-q');
+      setTimeout(function () {
+        typeInto(el, 'who are you?', 60, function () {
+          setTimeout(function () {
+            document.getElementById('cur').style.display = 'none';
+            showBlock('choices');
+            showBlock('hint');
+            document.getElementById('choices').style.display = 'flex';
+            document.getElementById('hint').style.display = 'block';
+            enableKeyboard();
+          }, 300);
+        });
+      }, 200);
+    }
+  ];
+
+  var s = 0;
+  function runNext() { if (s < seq.length) seq[s++](runNext); }
+  setTimeout(runNext, 200);
+
+  // ── Keyboard nav ──────────────────────────────────────────────────────────
+  var selected = -1;
+  var hovered = -1;
+  var expanded = -1;
+
+  function setHover(idx) {
+    [0, 1, 2].forEach(function (i) { document.getElementById('c' + i).classList.remove('hover'); });
+    if (idx >= 0) document.getElementById('c' + idx).classList.add('hover');
+    hovered = idx;
+  }
+
+  function enableKeyboard() {
+    document.addEventListener('keydown', function (e) {
+      if (expanded >= 0) {
+        if (e.key === 'Escape') collapse();
+        return;
+      }
+      if (e.key === 'ArrowDown' || e.key === 'Tab') {
+        e.preventDefault();
+        hovered = (hovered + 1) % 3;
+        setHover(hovered);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        hovered = (hovered + 2) % 3;
+        setHover(hovered);
+      } else if (e.key === '1') { pick(0); }
+      else if (e.key === '2') { pick(1); }
+      else if (e.key === '3') { pick(2); }
+      else if (e.key === 'Enter' && hovered >= 0) { pick(hovered); }
+    });
+  }
+
+  // ── Pick ──────────────────────────────────────────────────────────────────
+  window.pick = function (idx) {
+    if (expanded === idx) { collapse(); return; }
+    if (expanded >= 0) collapse();
+    expanded = idx;
+    selected = idx;
+
+    [0, 1, 2].forEach(function (i) {
+      var c = document.getElementById('c' + i);
+      c.classList.remove('hover');
+      if (i !== idx) c.classList.add('faded');
+      else c.classList.add('selected');
+    });
+
+    document.getElementById('sub' + idx).classList.add('show');
+    document.getElementById('hint').textContent = '↑ ↓ to navigate · esc to go back';
+  };
+
+  function collapse() {
+    [0, 1, 2].forEach(function (i) {
+      var c = document.getElementById('c' + i);
+      c.classList.remove('faded', 'selected');
+      document.getElementById('sub' + i).classList.remove('show');
+    });
+    expanded = -1;
+    selected = -1;
+    document.getElementById('hint').textContent = '↑ ↓ arrow keys or [1][2][3] to navigate · enter to confirm';
+    setHover(-1);
+  }
+
+  // ── Go ────────────────────────────────────────────────────────────────────
+  var LABELS = {
+    '/blueprint.html':        'routing → systems drawing …',
+    '/blueprint.html#research': 'routing → research &amp; publications …',
+    '/universe':              'routing → universe …',
+    '/stderr':                'routing → stderr …',
+    '/projects':              'routing → projects …',
+  };
+
+  window.go = function (url) {
+    var exec = document.getElementById('exec');
+    var execText = document.getElementById('exec-text');
+    execText.innerHTML = LABELS[url] || 'routing …';
+    exec.classList.add('show');
+    document.getElementById('hint').style.display = 'none';
+    document.getElementById('tb-status').textContent = 'vantaris@sys:~ — redirecting';
+
+    setTimeout(function () {
+      window.location.href = url;
+    }, 820);
+  };
+})();
+</script>
+</body>
+</html>
