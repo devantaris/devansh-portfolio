@@ -1,0 +1,16 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": true,
+  "redirects": [
+    {
+      "source": "/landing.html",
+      "destination": "/landing/",
+      "permanent": false
+    },
+    {
+      "source": "/blueprint.html",
+      "destination": "/blueprint/",
+      "permanent": false
+    }
+  ]
+}
