@@ -1,10 +1,11 @@
-'use client';
-import { useEffect } from 'react';
-
 export default function Home() {
-  useEffect(() => {
-    window.location.replace('/landing.html');
-  }, []);
-
-  return null;
+  return (
+    <>
+      <meta httpEquiv="refresh" content="0; url=/landing.html" />
+      <link rel="canonical" href="/landing.html" />
+      <noscript>
+        <a href="/landing.html">Enter portfolio →</a>
+      </noscript>
+    </>
+  );
 }
