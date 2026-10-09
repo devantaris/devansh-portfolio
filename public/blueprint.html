@@ -184,9 +184,10 @@ var W=innerWidth,H=innerHeight,mx=W/2,my=H/2,sx=mx,sy=my,run=false,done=false,la
 function el(n,a,p){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e}
 $('#zt').innerHTML='123456'.split('').map(function(c){return '<span>'+c+'</span>'}).join('');$('#zl').innerHTML='ABCDEF'.split('').map(function(c){return '<span>'+c+'</span>'}).join('');
 $$('.nl>span').forEach(function(s){s.innerHTML=s.textContent.split('').map(function(c){return '<span class="g">'+c+'</span>'}).join('')});
-// Theme toggle
+// Theme toggle with localStorage persistence
 var thm=$('#thm');
-thm.addEventListener('click',function(){var r=document.documentElement;if(r.dataset.theme==='dark'){r.removeAttribute('data-theme')}else{r.dataset.theme='dark'}});
+(function(){var saved=localStorage.getItem('dk-theme');if(saved)document.documentElement.dataset.theme=saved;})();
+thm.addEventListener('click',function(){var r=document.documentElement;if(r.dataset.theme==='dark'){r.removeAttribute('data-theme');localStorage.removeItem('dk-theme')}else{r.dataset.theme='dark';localStorage.setItem('dk-theme','dark')}});
 var s=64,B=[{x:160,y:390,l:'FastAPI',h:46},{x:380,y:280,l:'Celery',h:46},{x:600,y:390,l:'Redis',h:46},{x:820,y:280,l:'Postgres',h:64},{x:380,y:500,l:'Hold',h:16,d:1}];
 var cons=$('#cons'),con=$('#con'),blk=$('#blk'),pks=$('#pks');
 var CL=[[0,470,980,-20],[0,90,980,580],[380,0,380,640],[0,310,660,640],[100,640,980,200]];
