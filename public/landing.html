@@ -409,9 +409,14 @@ body {
     msg.textContent = 'DISPATCHING TO ' + destName + ' …';
     banner.classList.add('show');
 
+    var targetUrl = url;
+    if ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && url === '/blueprint/') {
+      targetUrl = '/blueprint.html';
+    }
+
     // Immediate snappy redirect
     setTimeout(function() {
-      window.location.href = url;
+      window.location.href = targetUrl;
     }, 90);
   };
 

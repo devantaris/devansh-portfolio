@@ -4,7 +4,13 @@ export default function Home() {
       <meta httpEquiv="refresh" content="0; url=/landing/" />
       <script
         dangerouslySetInnerHTML={{
-          __html: `window.location.replace('/landing/');`,
+          __html: `
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+              window.location.replace('/landing.html');
+            } else {
+              window.location.replace('/landing/');
+            }
+          `,
         }}
       />
       <noscript>
