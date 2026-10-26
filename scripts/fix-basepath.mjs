@@ -1,22 +1,27 @@
 /**
- * Post-build fix for GitHub Pages static export.
+ * Post-build fix for static export.
  *
- * Next.js (turbopack) emits bootstrap <script>/<link> tags in the exported
- * HTML without the `assetPrefix` basePath, so on a project site
- * (username.github.io/<repo>/) every chunk 404s and the page never hydrates.
- * This script rewrites /_next/ references in the exported HTML/RSC files to
- * include the basePath. No-op when not building for GitHub Pages.
+ * 1. Ensures out/index.html is a direct copy of public/blueprint.html so the root
+ *    URL directly serves the Blueprint single-page experience.
+ * 2. Rewrites /_next/ references if building with a sub-path basePath.
  */
-import { readdirSync, readFileSync, writeFileSync, statSync } from 'node:fs';
+import { readdirSync, readFileSync, writeFileSync, statSync, copyFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+
+const outDir = join(process.cwd(), 'out');
+const blueprintSrc = join(process.cwd(), 'public', 'blueprint.html');
+
+if (existsSync(blueprintSrc) && existsSync(outDir)) {
+    copyFileSync(blueprintSrc, join(outDir, 'index.html'));
+    console.log('fix-basepath: copied blueprint.html -> out/index.html');
+}
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 if (!basePath) {
-    console.log('fix-basepath: no basePath set, skipping');
+    console.log('fix-basepath: no basePath set, skipping assetPrefix rewrite');
     process.exit(0);
 }
 
-const outDir = join(process.cwd(), 'out');
 let filesFixed = 0;
 
 function walk(dir) {

@@ -1,16 +1,52 @@
 {
   "cleanUrls": true,
   "trailingSlash": true,
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/blueprint.html"
+    }
+  ],
   "redirects": [
     {
-      "source": "/landing.html",
-      "destination": "/landing/",
-      "permanent": false
+      "source": "/landing",
+      "destination": "/",
+      "permanent": true
     },
     {
-      "source": "/blueprint.html",
-      "destination": "/blueprint/",
-      "permanent": false
+      "source": "/landing/:path*",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/universe",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/universe/:path*",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/stderr",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/stderr/:path*",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/blueprint",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/blueprint/:path*",
+      "destination": "/",
+      "permanent": true
     }
   ]
 }

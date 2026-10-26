@@ -1,21 +1,15 @@
 export default function Home() {
   return (
     <>
-      <meta httpEquiv="refresh" content="0; url=/landing/" />
+      <meta httpEquiv="refresh" content="0; url=/blueprint.html" />
       <script
         dangerouslySetInnerHTML={{
-          __html: `
-            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-              window.location.replace('/landing.html');
-            } else {
-              window.location.replace('/landing/');
-            }
-          `,
+          __html: `window.location.replace('/blueprint.html');`,
         }}
       />
       <noscript>
-        <meta httpEquiv="refresh" content="0; url=/landing/" />
-        <a href="/landing/">Enter terminal</a>
+        <meta httpEquiv="refresh" content="0; url=/blueprint.html" />
+        <a href="/blueprint.html">Enter Blueprint</a>
       </noscript>
     </>
   );
