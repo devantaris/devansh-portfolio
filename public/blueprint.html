@@ -82,7 +82,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--blue);outline-offse
 .tb{position:relative;border:1.5px solid var(--ink);background:var(--bg);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;min-width:min(100%,360px)}
 .tb div{display:flex;border-bottom:1px solid var(--l2)}.tb div:last-child{border:0}
 .tb b{flex:0 0 98px;padding:5px 8px;border-right:1px solid var(--l2);font-weight:500;color:var(--blue)}.tb span{padding:5px 8px;flex:1;word-break:break-word}
-.tb .stamp{position:absolute;right:-8px;top:-34px;border:3px solid var(--st);color:var(--st);padding:2px 12px;font:800 22px/1.2 Archivo,Impact,sans-serif;font-stretch:75%;letter-spacing:.08em;transform:rotate(-9deg);background:color-mix(in srgb,var(--bg) 70%,transparent);mix-blend-mode:multiply}
+.tb .stamp{position:absolute;right:-8px;top:-28px;z-index:10;border:3px solid var(--st);color:var(--st);padding:3px 14px;font:800 22px/1.2 Archivo,Impact,sans-serif;font-stretch:75%;letter-spacing:.1em;transform:rotate(-9deg);background:var(--bg);box-shadow:0 0 0 2px var(--bg)}
 .cx,.cy{position:fixed;left:0;top:0;z-index:3;pointer-events:none;opacity:0;background:var(--l2)}
 .cx{width:1px;height:100%}.cy{height:1px;width:100%}
 .xy{position:fixed;left:0;top:0;z-index:5;pointer-events:none;opacity:0;font-size:10px;letter-spacing:.1em;background:var(--ink);color:var(--bg);padding:2px 6px}
@@ -95,8 +95,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--blue);outline-offse
 .seal{position:absolute;left:clamp(26px,4vw,56px);top:92px;width:104px;height:104px;z-index:4;color:var(--blue);pointer-events:none}
 .seal svg{width:100%;height:100%;animation:sp 26s linear infinite}.seal b{position:absolute;inset:0;display:grid;place-items:center;font:800 26px Archivo,Impact,sans-serif;font-stretch:70%;color:var(--ink)}
 @keyframes sp{to{transform:rotate(360deg)}}
-.cue{position:absolute;left:50%;bottom:6px;z-index:4;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);animation:cu 1.8s ease-in-out infinite}
-@keyframes cu{50%{transform:translateY(5px)}}
+
 .rail{position:fixed;right:16px;top:50%;transform:translateY(-50%);height:140px;width:1px;background:var(--l2);z-index:6}
 .rail i{position:absolute;inset:0;background:var(--ink);transform-origin:top;transform:scaleY(0)}
 .rail span{position:absolute;right:9px;top:0;writing-mode:vertical-rl;font-size:10px;letter-spacing:.2em;color:var(--blue);white-space:nowrap}
@@ -153,18 +152,18 @@ mark{background:linear-gradient(var(--hi),var(--hi)) no-repeat 0 88%/100% 62%;co
 .skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:clamp(12px,2vw,20px);margin-top:24px}
 .skill-group b{display:block;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);margin-bottom:8px}
 .skill-group .tg{margin-top:0}
-@media(max-width:760px){.seal,.rail,.cue{display:none}.rw{grid-template-columns:50px 1fr}.rw b{font-size:36px}.ps{grid-column:2;justify-self:start}.tlw:before,.tlp{left:12px}.ti,.ti:nth-child(even){width:100%;margin:0;padding:0 0 44px 44px;text-align:left}.ti:after,.ti:nth-child(even):after{left:5px;right:auto}.tpb{margin:0 -10vw}.about-layout{grid-template-columns:1fr}.values{grid-template-columns:1fr}.pub-item{grid-template-columns:36px 1fr}}
-@media(prefers-reduced-motion:reduce){.cube,.seal svg,.cue,.tpb div,.mp.fl{animation:none}}
+@media(max-width:760px){.seal,.rail{display:none}.rw{grid-template-columns:50px 1fr}.rw b{font-size:36px}.ps{grid-column:2;justify-self:start}.tlw:before,.tlp{left:12px}.ti,.ti:nth-child(even){width:100%;margin:0;padding:0 0 44px 44px;text-align:left}.ti:after,.ti:nth-child(even):after{left:5px;right:auto}.tpb{margin:0 -10vw}.about-layout{grid-template-columns:1fr}.values{grid-template-columns:1fr}.pub-item{grid-template-columns:36px 1fr}}
+@media(prefers-reduced-motion:reduce){.cube,.seal svg,.tpb div,.mp.fl{animation:none}}
 </style>
 </head>
 <body>
 <div class="grid"></div><div class="frame"></div><div class="zt" id="zt"></div><div class="zl" id="zl"></div>
 <div class="cx" id="cx"></div><div class="cy" id="cy"></div><div class="xy" id="xy"></div>
 <div class="rail" aria-hidden="true"><i id="rl"></i><span id="rt">01 / 06</span></div>
-<section class="hero" id="hero"><div class="seal" aria-hidden="true"><svg viewBox="0 0 120 120"><defs><path id="spp" d="M60 60m-47 0a47 47 0 1 1 94 0a47 47 0 1 1-94 0"/></defs><circle cx="60" cy="60" r="57" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="60" cy="60" r="34" fill="none" stroke="currentColor" stroke-dasharray="2 4"/><text fill="currentColor" style="font:500 9.5px 'DM Mono',monospace;letter-spacing:.2em;text-transform:uppercase"><textPath href="#spp">Vantaris · Systems Drawing · 2026 ·</textPath></text></svg><b>DK</b></div><div class="cue" aria-hidden="true">scroll ↓</div>
+<section class="hero" id="hero"><div class="seal" aria-hidden="true"><svg viewBox="0 0 120 120"><defs><path id="spp" d="M60 60m-47 0a47 47 0 1 1 94 0a47 47 0 1 1-94 0"/></defs><circle cx="60" cy="60" r="57" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="60" cy="60" r="34" fill="none" stroke="currentColor" stroke-dasharray="2 4"/><text fill="currentColor" style="font:500 9.5px 'DM Mono',monospace;letter-spacing:.2em;text-transform:uppercase"><textPath href="#spp">Vantaris · Systems Drawing · 2026 ·</textPath></text></svg><b>DK</b></div>
 <div class="sc"><svg id="svg" viewBox="0 0 980 640" aria-hidden="true"><g id="cons"></g><g id="con"></g><g id="blk"></g><g id="pks"></g></svg></div>
 <div class="ui">
-<header class="top"><span><i class="cube"><u></u><u></u><u></u><u></u><u></u><u></u></i><b>Sheet 01</b> / Vantaris</span><span><span id="tm">Scale 1:1</span><a href="/resume.pdf" target="_blank" class="top-btn">Resume ↗</a><button id="btn-contact" type="button" class="top-btn pri" onclick="openContactModal()">Contact</button></span></header>
+<header class="top"><span><i class="cube"><u></u><u></u><u></u><u></u><u></u><u></u></i><b>Sheet 01</b> / Vantaris</span><span><span id="tm">Scale 1:1</span><a href="https://devantaris.github.io" target="_blank" class="top-btn">Resume ↗</a><button id="btn-contact" type="button" class="top-btn pri" onclick="openContactModal()">Contact</button></span></header>
 <div class="bot">
 <div>
 <div class="nm"><div class="dim" id="dim"><span>08 sheets · 1 engineer · rev 2026.D</span></div>
@@ -265,8 +264,9 @@ tl.from('.grid',{opacity:0,duration:1.2},0).from([RG,RG2],{opacity:0,duration:1.
 .from('#dim',{scaleX:0,duration:1.1,ease:'expo.inOut'},3.1).from('#dim span',{opacity:0,duration:.6},3.7)
 .fromTo('.l2>span',{backgroundSize:'0% 62%'},{backgroundSize:'100% 62%',duration:.8,ease:'power3.inOut'},3.9).to('.l2>span',{color:'#14213d',duration:.3},4.1)
 .from('#sub',{opacity:0,y:16,duration:.8},4.1).from('#nav a',{opacity:0,y:20,duration:.7,stagger:.12},4.3)
-.from('.tb>div',{opacity:0,x:30,duration:.5,stagger:.1},3.8)
-.fromTo('#stamp',{scale:3.4,rotation:-32,opacity:0},{scale:1,rotation:-9,opacity:1,duration:.32,ease:'power4.in'},4.9)
+.from('#tb',{opacity:0,y:20,duration:.6,ease:'power2.out'},3.6)
+.from('.tb>div',{opacity:0,x:20,duration:.4,stagger:.08,ease:'power2.out'},3.8)
+.fromTo('#stamp',{scale:3.4,rotation:-32,opacity:0},{scale:1,rotation:-9,opacity:1,duration:.32,ease:'power4.in'},4.8)
 .to('.ui',{x:6,duration:.04,yoyo:true,repeat:5,ease:'none'},5.2).set('.ui',{x:0},5.5)
 .eventCallback('onComplete',fin);
 tl.call(function(){run=true},null,5.1);
