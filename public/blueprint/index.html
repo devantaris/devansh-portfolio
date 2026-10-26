@@ -55,9 +55,9 @@ nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;bord
 nav a:first-child{background:var(--ink);color:var(--bg)}
 nav a:hover{background:var(--hi);color:#14213d;border-color:#14213d}
 a:focus-visible,button:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
-.tb{position:relative;border:1.5px solid var(--ink);background:var(--bg);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;min-width:min(100%,330px)}
+.tb{position:relative;border:1.5px solid var(--ink);background:var(--bg);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;min-width:min(100%,340px)}
 .tb div{display:flex;border-bottom:1px solid var(--l2)}.tb div:last-child{border:0}
-.tb b{flex:0 0 92px;padding:5px 8px;border-right:1px solid var(--l2);font-weight:500;color:var(--blue)}.tb span{padding:5px 8px}
+.tb b{flex:0 0 84px;padding:5px 8px;border-right:1px solid var(--l2);font-weight:500;color:var(--blue)}.tb span{padding:5px 8px;flex:1;word-break:break-word}
 .tb .stamp{position:absolute;right:-8px;top:-34px;border:3px solid var(--st);color:var(--st);padding:2px 12px;font:800 22px/1.2 Archivo,Impact,sans-serif;font-stretch:75%;letter-spacing:.08em;transform:rotate(-9deg);background:color-mix(in srgb,var(--bg) 70%,transparent);mix-blend-mode:multiply}
 .cx,.cy{position:fixed;left:0;top:0;z-index:3;pointer-events:none;opacity:0;background:var(--l2)}
 .cx{width:1px;height:100%}.cy{height:1px;width:100%}
@@ -84,10 +84,10 @@ main{position:relative;z-index:3}
 mark{background:linear-gradient(var(--hi),var(--hi)) no-repeat 0 88%/100% 62%;color:#14213d;padding:0 .08em}
 .sh i{display:block;height:1px;background:var(--ink);transform-origin:left}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr));gap:clamp(18px,3vw,36px)}
-.card{border:1.5px solid var(--ink);background:var(--bg);padding:20px;display:flex;flex-direction:column;gap:14px;transition:transform .3s,box-shadow .3s}
+.card{border:1.5px solid var(--ink);background:var(--bg);padding:20px;display:flex;flex-direction:column;gap:14px;transition:transform .3s,box-shadow .3s;overflow:hidden;min-width:0}
 .card:hover{transform:translate(-6px,-6px)!important;box-shadow:9px 9px 0 var(--ink)}
 .ch{display:flex;justify-content:space-between;gap:10px;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);border-bottom:1px solid var(--l2);padding-bottom:8px}
-.card h3{font-size:clamp(36px,5vw,64px);line-height:.84}.card p{font-size:13px;line-height:1.65}
+.card h3{font-size:clamp(28px,4.2vw,56px);line-height:.88;word-break:break-word;overflow-wrap:anywhere;hyphens:manual}.card p{font-size:13px;line-height:1.65}
 .mini{width:100%;height:auto;overflow:visible;color:var(--ink)}.mp{stroke-width:2}.mp.fl{stroke-dasharray:4 4!important;animation:fl 1s linear infinite}@keyframes fl{to{stroke-dashoffset:-16}}
 .ms{display:flex;gap:28px}.ms b{display:block;font-size:40px;line-height:1;font-stretch:75%}.ms span,.sts span{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue)}
 .tg{display:flex;flex-wrap:wrap;gap:6px}.tg i{font-style:normal;font-size:10.5px;border:1px solid var(--l2);padding:2px 8px}
@@ -111,9 +111,9 @@ mark{background:linear-gradient(var(--hi),var(--hi)) no-repeat 0 88%/100% 62%;co
 .tpb div{display:inline-flex;width:max-content;animation:tp 34s linear infinite}.tpb.b div{animation-direction:reverse}.tpb span{padding-right:1em}@keyframes tp{to{transform:translateX(-50%)}}
 .ft{margin-top:90px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);border-top:1px solid var(--l2);padding-top:14px}
 /* About section */
-.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,56px);margin-top:32px}
-.about-bio{font-size:14px;line-height:1.75;max-width:52ch}
-.values{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:32px}
+.about-layout{display:grid;grid-template-columns:1fr;gap:clamp(24px,4vw,56px);margin-top:32px;max-width:72ch}
+.about-bio{font-size:14px;line-height:1.85;color:var(--ink)}
+.values{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:32px}
 .val-item{border:1px solid var(--l2);padding:16px;background:var(--bg)}
 .val-item b{display:block;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);margin-bottom:6px}
 .val-item p{font-size:12px;line-height:1.6}
@@ -129,7 +129,7 @@ mark{background:linear-gradient(var(--hi),var(--hi)) no-repeat 0 88%/100% 62%;co
 .skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:clamp(12px,2vw,20px);margin-top:24px}
 .skill-group b{display:block;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);margin-bottom:8px}
 .skill-group .tg{margin-top:0}
-@media(max-width:760px){.seal,.rail,.cue{display:none}.rw{grid-template-columns:50px 1fr}.rw b{font-size:36px}.ps{grid-column:2;justify-self:start}.tlw:before,.tlp{left:12px}.ti,.ti:nth-child(even){width:100%;margin:0;padding:0 0 44px 44px;text-align:left}.ti:after,.ti:nth-child(even):after{left:5px;right:auto}.tpb{margin:0 -10vw}.about-grid{grid-template-columns:1fr}.values{grid-template-columns:1fr}.pub-item{grid-template-columns:36px 1fr}}
+@media(max-width:760px){.seal,.rail,.cue{display:none}.rw{grid-template-columns:50px 1fr}.rw b{font-size:36px}.ps{grid-column:2;justify-self:start}.tlw:before,.tlp{left:12px}.ti,.ti:nth-child(even){width:100%;margin:0;padding:0 0 44px 44px;text-align:left}.ti:after,.ti:nth-child(even):after{left:5px;right:auto}.tpb{margin:0 -10vw}.about-layout{grid-template-columns:1fr}.values{grid-template-columns:1fr}.pub-item{grid-template-columns:36px 1fr}}
 @media(prefers-reduced-motion:reduce){.cube,.seal svg,.cue,.tpb div,.mp.fl{animation:none}}
 </style>
 </head>
@@ -149,13 +149,12 @@ mark{background:linear-gradient(var(--hi),var(--hi)) no-repeat 0 88%/100% 62%;co
 <nav id="nav"><a href="https://github.com/devantaris">Work ↗</a><a href="mailto:work.devanshkumar@gmail.com">Write to me</a><a href="https://linkedin.com/in/devansh-kumar-3b3701217">LinkedIn ↗</a></nav>
 </div>
 <div class="tb" id="tb">
-  <div class="stampw"><b>Title</b><span>Knowing when not to decide</span></div>
-  <div><b>Drawn by</b><span>D. Kumar · Backend / ML</span></div>
-  <div><b>Published</b><span>IEEE InterSys 2026 · InterSys26</span></div>
-  <div><b>Targeting</b><span>IEEE TDSC · First Author</span></div>
-  <div><b>Metrics</b><span>AUC 0.9851 · 284,807 Txns</span></div>
-  <div><b>Uncertainty</b><span><svg viewBox="0 0 156 22" width="156" height="22" aria-hidden="true"><line x1="0" x2="156" y1="7.4" y2="7.4" stroke="var(--st)" stroke-dasharray="3 3"/><polyline id="pl" fill="none" stroke="var(--blue)" stroke-width="1.5"/></svg></span></div>
-  <div><b>IEEE BU</b><span>Chairperson · 100+ members</span></div>
+  <div class="stampw"><b>Role</b><span>Backend Engineer · Applied ML</span></div>
+  <div><b>Drawn by</b><span>D. Kumar · Bennett University</span></div>
+  <div><b>Stack</b><span>FastAPI · PostgreSQL · Python · Flutter</span></div>
+  <div><b>CGPA</b><span>8.75 / 10.0 · B.Tech CSE · 2028</span></div>
+  <div><b>Built</b><span>284K+ txns · 7/7 attacks blocked · SIH</span></div>
+  <div><b>Led</b><span>IEEE BU Chair · 100+ members · ₹1.48L+</span></div>
   <div><b>Status</b><span>Open to opportunities · 2026</span></div>
 <span class="stamp" id="stamp">Approved</span></div>
 </div>
@@ -163,7 +162,7 @@ mark{background:linear-gradient(var(--hi),var(--hi)) no-repeat 0 88%/100% 62%;co
 </section>
 <main>
 <section class="sheet" id="work"><header class="sh"><small>Sheet 02 / 06 — Selected work</small><h2>Built, <mark>tested</mark>, shipped.</h2><i></i></header><div class="cards" id="cards"></div></section>
-<section class="sheet" id="research"><header class="sh"><small>Sheet 03 / 06 — Research &amp; Publications</small><h2>Revisions <mark>issued.</mark></h2><i></i></header><div id="rows"></div><div class="sts" id="sts"></div></section>
+<section class="sheet" id="research"><header class="sh"><small>Sheet 03 / 06 — Research &amp; Publications</small><h2>Revisions <mark>issued.</mark></h2><i></i></header><div id="rows"></div></section>
 <section class="sheet" id="about"><header class="sh"><small>Sheet 04 / 06 — About</small><h2>Architecture <mark>before</mark> code.</h2><i></i></header>
   <p class="about-bio" id="aboutBio"></p>
   <div class="values" id="values"></div>
@@ -214,8 +213,8 @@ else if(to==4){q.w=1.6;ab.textContent='abstain · u='+(.58+Math.random()*.3).toF
 else{q.w=.2;continue}
 q.i++;pi=q.seq[q.i]}
 var pt=P[pi].getPointAtLength(Math.min(q.d,L[pi]));q.c.setAttribute('cx',pt.x);q.c.setAttribute('cy',pt.y)}}
-var sv=[],plEl=$('#pl'),fc=0;for(var q=0;q<40;q++)sv.push(.5);
-function spk(){if(++fc%3)return;var T=performance.now()/1000,u=.5+.5*Math.sin(T*.8)*Math.sin(T*.37)+(Math.random()-.5)*.08;sv.push(u);sv.shift();plEl.setAttribute('points',sv.map(function(v,i){return (i*4)+','+(20-v*18).toFixed(1)}).join(' '));plEl.style.stroke=u>.7?'var(--st)':'var(--blue)'}
+var sv=[],plEl=document.createElement('span'),fc=0;for(var q=0;q<40;q++)sv.push(.5);
+function spk(){}
 var rx=0,ry=0;
 function loop(n){var dt=Math.min(.05,(n-last)/1000||.016);last=n;
 sx+=(mx-sx)*.07;sy+=(my-sy)*.07;document.body.style.setProperty('--gx',((sx-W/2)*-.02).toFixed(1));document.body.style.setProperty('--gy',((sy-H/2)*-.02).toFixed(1));
@@ -283,13 +282,14 @@ var RS=[
 ];
 
 var TL=[
-['Mar 2026 — Now','Software Developer Intern · BuildIt','Lead-gen automation and REST integrations processing 500+ leads/week, SQL dashboards with Python/PostgreSQL, client-facing web applications across agile sprints.'],
-['Sep 2025 — May 2026','Chairperson · IEEE Student Branch, Bennett University','Led 100+ member branch. Secured ₹1.48L+ in sponsorships. Organised Global AI Summit 2.0 (3,000–4,000+ attendees) and Triverse 3.0 (600+ participants). 3rd place IEEE UP Best Emerging Branch 2025.'],
+['Mar 2026 — Jun 2026','Software Developer Intern · BuildIt','Lead-gen automation and REST integrations processing 500+ leads/week, SQL dashboards with Python/PostgreSQL, client-facing web applications across agile sprints.'],
+['Sep 2025 — Aug 2026','Chairperson · IEEE Student Branch, Bennett University','Led 100+ member branch. Secured ₹1.48L+ in sponsorships. Organised Global AI Summit 2.0 (3,000–4,000+ attendees) and Triverse 3.0 (600+ participants). 3rd place IEEE UP Best Emerging Branch 2025.'],
 ['Oct 2025 — Mar 2026','Application Developer · Raahi','Cross-platform Flutter app with BLoC state management, secure auth, and SQLite persistence. Shipped 4+ sprint releases. 60fps on 120Hz displays via RepaintBoundary isolation.'],
 ['2024 — 2028','B.Tech CSE · Bennett University','CGPA 8.75 / 10.0. IBM ML Professional Certificate (Feb 2026). FastAPI & Backend Development Specialization. Core: DSA, DBMS, OS, Computer Networks.']
 ];
 
 var SS=[['0.9851','ROC-AUC'],['284K+','Transactions'],['7/7','Attacks blocked'],['100+','Members led']];
+
 
 var LK=[
 ['Email','mailto:work.devanshkumar@gmail.com'],
@@ -315,8 +315,6 @@ $('#cards').innerHTML=PJ.map(function(p){return '<article class="card"><div clas
 $$('.mini').forEach(function(sv,k){var L=PJ[k].st,n=L.length,w=64,gp=(320-n*w)/(n-1);L.forEach(function(t,i){var x=i*(w+gp);E('rect',{x:x,y:12,width:w,height:36,fill:'var(--bg)',stroke:'currentColor','stroke-width':1.4,'stroke-dasharray':(k==0&&i==n-1)?'4 3':'none'},sv);var tx=E('text',{x:x+w/2,y:34,'text-anchor':'middle',class:'t'},sv);tx.textContent=t;tx.style.fontSize='9px';if(i<n-1)E('path',{d:'M'+(x+w)+' 30H'+(x+w+gp),class:'cn mp',fill:'none'},sv)})});
 
 $('#rows').innerHTML=RS.map(function(r){return '<div class="rw"><b>'+r[0]+'</b><div><h4><span>'+r[1]+'</span></h4><small>'+r[2]+'</small></div><em class="ps '+(r[3]==='Published'?'pb':'ur')+'">'+r[3]+'</em></div>'}).join('');
-
-$('#sts').innerHTML=SS.map(function(x){return '<div><b data-c="'+x[0]+'">'+x[0]+'</b><span>'+x[1]+'</span></div>'}).join('');
 
 $('#aboutBio').textContent='B.Tech Computer Science student at Bennett University (CGPA 8.75/10.0). I architect high-throughput backend services, cryptographic pipelines, and uncertainty-aware ML frameworks. As outgoing Chairperson of the IEEE Student Branch (2025–26), I led a 100+ member vertical structure to construct software products, secure ₹1.48L+ in sponsorships, and spearhead the Global AI Summit 2.0 (3,000–4,000+ attendees). First-author of a research manuscript on staged uncertainty-aware fraud decisioning targeting IEEE TDSC.';
 
