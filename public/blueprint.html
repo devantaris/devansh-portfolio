@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Devansh Kumar — Systems Drawing</title>
+<title>Devansh Kumar</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Backend engineer and applied-ML researcher. Architecture before implementation.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,10 +35,34 @@ body{background:var(--bg);color:var(--ink);font:400 13px/1.5 'DM Mono',ui-monosp
 .top{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--blue)}
 .top b{color:var(--ink);font-weight:500}
 .top>span:last-child{display:flex;align-items:center;gap:14px}
-#sk{min-height:44px;padding:0 14px;background:var(--bg);border:1px solid var(--l2);color:var(--ink);font:inherit;font-size:11px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;transition:.2s}
-#sk:hover{background:var(--ink);color:var(--bg)}
-#thm{min-height:44px;padding:0 14px;background:var(--bg);border:1px solid var(--l2);color:var(--ink);font:inherit;font-size:11px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;transition:.2s}
-#thm:hover{background:var(--ink);color:var(--bg)}
+.top-btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:0 16px;background:var(--bg);border:1.5px solid var(--ink);color:var(--ink);font:inherit;font-size:11px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:.2s;font-family:'DM Mono',monospace}
+.top-btn:hover{background:var(--ink);color:var(--bg)}
+.top-btn.pri{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.top-btn.pri:hover{background:var(--hi);color:#14213d;border-color:#14213d}
+.modal-overlay{position:fixed;inset:0;z-index:999;background:rgba(11,42,115,.75);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal-card{width:min(540px,100%);background:var(--bg);border:2px solid var(--ink);box-shadow:8px 8px 0 var(--blue);color:var(--ink);font-family:'DM Mono',monospace;animation:mdlIn .2s cubic-bezier(.2,0,0,1)}
+@keyframes mdlIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.modal-header{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1.5px solid var(--ink);background:color-mix(in srgb,var(--bg) 90%,var(--ink) 10%);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--blue)}
+.modal-title{flex:1;font-weight:500}
+.modal-close{background:none;border:none;color:var(--ink);font:inherit;font-size:14px;cursor:pointer;padding:2px 6px;line-height:1;transition:color .15s}
+.modal-close:hover{color:var(--st)}
+.modal-body{padding:22px 24px}
+.modal-sub{font-size:12px;line-height:1.5;color:var(--dim);margin-bottom:18px}
+.modal-sub b{color:var(--ink)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:540px){.form-row{grid-template-columns:1fr}}
+.form-group{margin-bottom:14px;display:flex;flex-direction:column;gap:5px}
+.form-group label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);font-weight:500}
+.form-group input,.form-group textarea{width:100%;padding:9px 12px;background:var(--bg);border:1.5px solid var(--l2);color:var(--ink);font:inherit;font-size:12px;outline:none;transition:border-color .2s,box-shadow .2s;box-sizing:border-box}
+.form-group input:focus,.form-group textarea:focus{border-color:var(--ink);box-shadow:3px 3px 0 var(--blue)}
+.form-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:6px}
+.modal-submit{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 20px;background:var(--ink);color:var(--bg);border:1.5px solid var(--ink);font:inherit;font-size:11px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;font-weight:500;transition:all .2s}
+.modal-submit:hover{background:var(--hi);color:#14213d;border-color:#14213d}
+.modal-alt-link{font-size:11px;color:var(--blue);text-decoration:none;border-bottom:1px solid transparent;transition:.15s}
+.modal-alt-link:hover{color:var(--ink);border-bottom-color:var(--ink)}
+.form-status{margin-top:14px;padding:10px 12px;font-size:11.5px;line-height:1.4;letter-spacing:.04em;border:1px solid var(--green);color:var(--green);background:color-mix(in srgb,var(--green) 10%,var(--bg))}
+.form-status.err{border-color:var(--st);color:var(--st);background:color-mix(in srgb,var(--st) 10%,var(--bg))}
 .bot{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
 .dim{position:relative;height:18px;margin-bottom:8px;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;text-align:center;color:var(--blue);transform-origin:left}
 .dim:before{content:"";position:absolute;left:0;right:0;top:9px;height:1px;background:var(--blue)}
@@ -140,13 +164,13 @@ mark{background:linear-gradient(var(--hi),var(--hi)) no-repeat 0 88%/100% 62%;co
 <section class="hero" id="hero"><div class="seal" aria-hidden="true"><svg viewBox="0 0 120 120"><defs><path id="spp" d="M60 60m-47 0a47 47 0 1 1 94 0a47 47 0 1 1-94 0"/></defs><circle cx="60" cy="60" r="57" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="60" cy="60" r="34" fill="none" stroke="currentColor" stroke-dasharray="2 4"/><text fill="currentColor" style="font:500 9.5px 'DM Mono',monospace;letter-spacing:.2em;text-transform:uppercase"><textPath href="#spp">Vantaris · Systems Drawing · 2026 ·</textPath></text></svg><b>DK</b></div><div class="cue" aria-hidden="true">scroll ↓</div>
 <div class="sc"><svg id="svg" viewBox="0 0 980 640" aria-hidden="true"><g id="cons"></g><g id="con"></g><g id="blk"></g><g id="pks"></g></svg></div>
 <div class="ui">
-<header class="top"><span><i class="cube"><u></u><u></u><u></u><u></u><u></u><u></u></i><b>Sheet 01</b> / Vantaris</span><span><span id="tm">Scale 1:1</span><button id="thm" type="button">◐ Theme</button><button id="sk" type="button">Skip ›</button></span></header>
+<header class="top"><span><i class="cube"><u></u><u></u><u></u><u></u><u></u><u></u></i><b>Sheet 01</b> / Vantaris</span><span><span id="tm">Scale 1:1</span><a href="/resume.pdf" target="_blank" class="top-btn">Resume ↗</a><button id="btn-contact" type="button" class="top-btn pri" onclick="openContactModal()">Contact</button></span></header>
 <div class="bot">
 <div>
 <div class="nm"><div class="dim" id="dim"><span>08 sheets · 1 engineer · rev 2026.D</span></div>
 <h1 id="h1"><span class="nl"><span>Devansh</span></span><span class="nl l2"><span>Kumar</span></span></h1></div>
 <p class="sub" id="sub">Backend engineer and applied-ML researcher. I design systems that know when not to decide, and hold under pressure.</p>
-<nav id="nav"><a href="https://github.com/devantaris">Work ↗</a><a href="mailto:work.devanshkumar@gmail.com">Write to me</a><a href="https://linkedin.com/in/devansh-kumar-3b3701217">LinkedIn ↗</a></nav>
+<nav id="nav"><a href="https://github.com/devantaris">Work ↗</a><a href="#contact" onclick="openContactModal();return false;">Write to me</a><a href="https://linkedin.com/in/devansh-kumar-3b3701217">LinkedIn ↗</a></nav>
 </div>
 <div class="tb" id="tb">
   <div class="stampw"><b>Role</b><span>Backend Engineer · Applied ML</span></div>
@@ -183,10 +207,10 @@ var W=innerWidth,H=innerHeight,mx=W/2,my=H/2,sx=mx,sy=my,run=false,done=false,la
 function el(n,a,p){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e}
 $('#zt').innerHTML='123456'.split('').map(function(c){return '<span>'+c+'</span>'}).join('');$('#zl').innerHTML='ABCDEF'.split('').map(function(c){return '<span>'+c+'</span>'}).join('');
 $$('.nl>span').forEach(function(s){s.innerHTML=s.textContent.split('').map(function(c){return '<span class="g">'+c+'</span>'}).join('')});
-// Theme toggle with localStorage persistence
-var thm=$('#thm');
+// Theme persistence
 (function(){var saved=localStorage.getItem('dk-theme');if(saved)document.documentElement.dataset.theme=saved;})();
-thm.addEventListener('click',function(){var r=document.documentElement;if(r.dataset.theme==='dark'){r.removeAttribute('data-theme');localStorage.removeItem('dk-theme')}else{r.dataset.theme='dark';localStorage.setItem('dk-theme','dark')}});
+var thm=$('#thm');
+if(thm){thm.addEventListener('click',function(){var r=document.documentElement;if(r.dataset.theme==='dark'){r.removeAttribute('data-theme');localStorage.removeItem('dk-theme')}else{r.dataset.theme='dark';localStorage.setItem('dk-theme','dark')}});}
 var s=64,B=[{x:160,y:390,l:'FastAPI',h:46},{x:380,y:280,l:'Celery',h:46},{x:600,y:390,l:'Redis',h:46},{x:820,y:280,l:'Postgres',h:64},{x:380,y:500,l:'Hold',h:16,d:1}];
 var cons=$('#cons'),con=$('#con'),blk=$('#blk'),pks=$('#pks');
 var CL=[[0,470,980,-20],[0,90,980,580],[380,0,380,640],[0,310,660,640],[100,640,980,200]];
@@ -226,9 +250,9 @@ addEventListener('pointermove',function(e){mx=e.clientX;my=e.clientY;if(hov&&e.p
 $('#xy').textContent='X '+String(mx|0).padStart(4,'0')+' · Y '+String(my|0).padStart(4,'0')+' · ∠ '+(Math.atan2(H/2-my,mx-W/2)*57.3|0)+'°';
 $$('nav a,.bt').forEach(function(a){var r=a.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2;a.style.transform=Math.hypot(dx,dy)<80?'translate('+dx*.2+'px,'+dy*.25+'px)':''})}});
 function clock(){$('#tm').textContent=new Date().toLocaleTimeString('en-GB',{timeZone:'Asia/Kolkata'})+' IST · Scale 1:1'}clock();setInterval(clock,1000);
-function fin(){done=true;run=true;sk.textContent='Replay ↻';$('#stamp').style.opacity=1}
+function fin(){done=true;run=true;if(sk)sk.textContent='Replay ↻';$('#stamp').style.opacity=1}
 var go=function(){requestAnimationFrame(loop)};
-if(rm||!window.gsap){fin();sk.style.display='none';if(!rm)go();else{for(var k=0;k<3;k++){spawn()}step(0)}return}
+if(rm||!window.gsap){fin();if(sk)sk.style.display='none';if(!rm)go();else{for(var k=0;k<3;k++){spawn()}step(0)}return}
 $$('.dr').concat(P).forEach(function(e){var l=e.getTotalLength();e.style.strokeDasharray=l;e.dataset.l=l});
 var tl=gsap.timeline({defaults:{ease:'power3.out'}});gsap.to(RG,{rotation:360,svgOrigin:'490 335',duration:140,repeat:-1,ease:'none'});gsap.to(RG2,{rotation:-360,svgOrigin:'490 335',duration:90,repeat:-1,ease:'none'});
 tl.from('.grid',{opacity:0,duration:1.2},0).from([RG,RG2],{opacity:0,duration:1.6},1).from('.seal',{opacity:0,scale:.4,duration:1.2},4.4).from('.frame',{clipPath:'inset(0 100% 100% 0)',duration:1.3,ease:'power2.inOut'},0)
@@ -246,7 +270,7 @@ tl.from('.grid',{opacity:0,duration:1.2},0).from([RG,RG2],{opacity:0,duration:1.
 .to('.ui',{x:6,duration:.04,yoyo:true,repeat:5,ease:'none'},5.2).set('.ui',{x:0},5.5)
 .eventCallback('onComplete',fin);
 tl.call(function(){run=true},null,5.1);
-sk.addEventListener('click',function(){if(!done){tl.progress(1);fin()}else{done=false;run=false;pk.forEach(function(q){q.c.remove()});pk=[];sk.textContent='Skip ›';tl.restart()}});
+if(sk) sk.addEventListener('click',function(){if(!done){tl.progress(1);fin()}else{done=false;run=false;pk.forEach(function(q){q.c.remove()});pk=[];sk.textContent='Skip ›';tl.restart()}});
 go();
 })();
 </script>
@@ -360,7 +384,118 @@ $$('.ti').forEach(function(t){ST.create({trigger:t,start:'top 62%',toggleClass:{
 g.to('#tlp',{scaleY:1,ease:'none',scrollTrigger:{trigger:'#tlw',start:'top 62%',end:'bottom 62%',scrub:true}});
 g.set('.lks .bt',{opacity:0,y:24});ST.batch('.lks .bt',{start:'top 92%',once:true,onEnter:function(b){g.to(b,{opacity:1,y:0,stagger:.08,duration:.6})}});
 ST.create({onUpdate:function(s){var v=Math.max(-14,Math.min(14,s.getVelocity()/-260));g.to('.tpb',{skewX:v,duration:.5,overwrite:true})}});
+// ── CONTACT MODAL LOGIC ──────────────────────────────────────────────────
+window.openContactModal = function() {
+  var m = document.getElementById('contact-modal');
+  if(m) {
+    m.classList.add('open');
+    m.setAttribute('aria-hidden', 'false');
+    var input = document.getElementById('c-name');
+    if(input) setTimeout(function(){ input.focus(); }, 120);
+  }
+};
+window.closeContactModal = function() {
+  var m = document.getElementById('contact-modal');
+  if(m) {
+    m.classList.remove('open');
+    m.setAttribute('aria-hidden', 'true');
+  }
+};
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') window.closeContactModal();
+});
+var modalEl = document.getElementById('contact-modal');
+if(modalEl) {
+  modalEl.addEventListener('click', function(e) {
+    if(e.target === modalEl) window.closeContactModal();
+  });
+}
+window.submitContactForm = function(e) {
+  e.preventDefault();
+  var btn = document.getElementById('c-submit');
+  var st = document.getElementById('c-status');
+  var name = document.getElementById('c-name').value;
+  var email = document.getElementById('c-email').value;
+  var subject = document.getElementById('c-subject').value;
+  var message = document.getElementById('c-message').value;
+
+  btn.disabled = true;
+  btn.textContent = 'TRANSMITTING …';
+  st.style.display = 'none';
+
+  fetch('https://formsubmit.co/ajax/work.devanshkumar@gmail.com', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify({
+      name: name,
+      email: email,
+      _subject: '[Portfolio Inquiry] ' + subject,
+      message: message
+    })
+  })
+  .then(function(res){ return res.json(); })
+  .then(function(data){
+    btn.disabled = false;
+    btn.textContent = 'TRANSMIT MESSAGE →';
+    st.className = 'form-status';
+    st.textContent = '✓ Message transmitted directly to Devansh (work.devanshkumar@gmail.com). You will hear back shortly.';
+    st.style.display = 'block';
+    document.getElementById('contact-form').reset();
+  })
+  .catch(function(err){
+    btn.disabled = false;
+    btn.textContent = 'TRANSMIT MESSAGE →';
+    st.className = 'form-status err';
+    st.textContent = 'Network notice: Opening your default email client to finish dispatch.';
+    st.style.display = 'block';
+    window.location.href = 'mailto:work.devanshkumar@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent('From: ' + name + ' (' + email + ')\n\n' + message);
+  });
+};
 })();
 </script>
+
+<!-- Contact Pop-up Modal -->
+<div class="modal-overlay" id="contact-modal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-header">
+      <div class="dot r" onclick="closeContactModal()" style="cursor:pointer" title="Close"></div>
+      <div class="dot y"></div>
+      <div class="dot g"></div>
+      <span class="modal-title" id="modal-title">SYS://CONTACT — DIRECT DISPATCH</span>
+      <button class="modal-close" onclick="closeContactModal()" aria-label="Close modal">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-sub">Send a message directly to <b>work.devanshkumar@gmail.com</b>. Every transmission goes straight to my inbox.</p>
+      <form id="contact-form" onsubmit="submitContactForm(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="c-name">YOUR NAME / ORG</label>
+            <input type="text" id="c-name" name="name" required placeholder="Jane Doe" autocomplete="name">
+          </div>
+          <div class="form-group">
+            <label for="c-email">EMAIL ADDRESS</label>
+            <input type="email" id="c-email" name="email" required placeholder="jane@company.com" autocomplete="email">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="c-subject">SUBJECT</label>
+          <input type="text" id="c-subject" name="subject" required placeholder="Engineering Opportunity / Project Inquiry" value="Software Engineering Opportunity">
+        </div>
+        <div class="form-group">
+          <label for="c-message">MESSAGE</label>
+          <textarea id="c-message" name="message" rows="4" required placeholder="Hi Devansh, saw your systems drawing portfolio and would love to discuss..."></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="submit" id="c-submit" class="modal-submit">TRANSMIT MESSAGE →</button>
+          <a href="mailto:work.devanshkumar@gmail.com" class="modal-alt-link">Or open default mail client ↗</a>
+        </div>
+        <div id="c-status" class="form-status" style="display:none"></div>
+      </form>
+    </div>
+  </div>
+</div>
 </body>
 </html>
