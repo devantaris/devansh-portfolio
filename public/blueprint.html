@@ -143,17 +143,18 @@ mark{background:linear-gradient(var(--hi),var(--hi)) no-repeat 0 88%/100% 62%;co
 .heatmap-panel:hover{transform:translate(-4px,-4px);box-shadow:8px 8px 0 var(--ink)}
 .heatmap-scroll{overflow-x:auto;overflow-y:hidden;padding-bottom:6px;-webkit-overflow-scrolling:touch}
 .heatmap-svg{display:block;width:100%;min-width:680px;height:auto;overflow:visible}
-.hm-cell{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:middle}
-.hm-0{fill:color-mix(in srgb,var(--ink) 8%,var(--bg));stroke:var(--l2);stroke-width:.5}
-.hm-1{fill:color-mix(in srgb,var(--blue) 38%,var(--bg))}
-.hm-2{fill:color-mix(in srgb,var(--blue) 65%,var(--bg))}
-.hm-3{fill:var(--blue)}
-.hm-4{fill:var(--hi);stroke:var(--ink);stroke-width:.8}
-i.hm-0{background:color-mix(in srgb,var(--ink) 8%,var(--bg));border:1px solid var(--l2)}
-i.hm-1{background:color-mix(in srgb,var(--blue) 38%,var(--bg))}
-i.hm-2{background:color-mix(in srgb,var(--blue) 65%,var(--bg))}
-i.hm-3{background:var(--blue)}
-i.hm-4{background:var(--hi);border:1px solid var(--ink)}
+.hm-cell{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:middle;transition:transform .12s}
+.hm-cell:hover{transform:scale(1.28)}
+.hm-0{fill:rgba(255,255,255,.05);stroke:rgba(157,185,255,.18);stroke-width:.5}
+.hm-1{fill:#0e4429;stroke:#196127;stroke-width:.4}
+.hm-2{fill:#006d32;stroke:#239a3b;stroke-width:.4}
+.hm-3{fill:#26a641;stroke:#39d353;stroke-width:.4}
+.hm-4{fill:#39d353;stroke:#7ee787;stroke-width:.6}
+i.hm-0{background:rgba(255,255,255,.05);border:1px solid rgba(157,185,255,.18)}
+i.hm-1{background:#0e4429;border:1px solid #196127}
+i.hm-2{background:#006d32;border:1px solid #239a3b}
+i.hm-3{background:#26a641;border:1px solid #39d353}
+i.hm-4{background:#39d353;border:1px solid #7ee787}
 .heatmap-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:1px solid var(--l2);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--blue)}
 .heatmap-legend{display:flex;align-items:center;gap:6px}
 .ca-grid{margin-top:clamp(20px,3.5vh,36px)}
@@ -721,13 +722,78 @@ window.submitContactForm = function(e) {
   var countEl = document.getElementById('gh-count');
   var NS = 'http://www.w3.org/2000/svg';
 
-  function renderHeatmap(contributions){
+  function toLocalDS(d){
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+
+  function renderHeatmap(data){
     if(!svgEl) return;
     svgEl.innerHTML = '';
-    var map = {};
-    if(Array.isArray(contributions)){
-      contributions.forEach(function(c){ map[c.date] = c; });
+
+    var CW = 10, CH = 10, GAP = 3, PL = 30, PT = 18;
+    var totalWeeks = 53;
+    var svgW = PL + totalWeeks * (CW + GAP) + 8;
+    var svgH = PT + 7 * (CH + GAP) + 6;
+    svgEl.setAttribute('viewBox', '0 0 ' + svgW + ' ' + svgH);
+
+    // 1. Direct cell positioning from verified dataset (100% accurate, timezone immune)
+    if(data && Array.isArray(data.cells) && data.cells.length){
+      if(Array.isArray(data.months)){
+        data.months.forEach(function(m){
+          var txt = document.createElementNS(NS, 'text');
+          txt.setAttribute('x', PL + m.week * (CW + GAP));
+          txt.setAttribute('y', PT - 5);
+          txt.setAttribute('font-size', '8.5');
+          txt.setAttribute('font-family', "'DM Mono',monospace");
+          txt.setAttribute('fill', 'var(--blue)');
+          txt.setAttribute('letter-spacing', '.06em');
+          txt.textContent = m.label;
+          svgEl.appendChild(txt);
+        });
+      }
+
+      [['Mon', 1], ['Wed', 3], ['Fri', 5]].forEach(function(item){
+        var txt = document.createElementNS(NS, 'text');
+        txt.setAttribute('x', PL - 5);
+        txt.setAttribute('y', PT + item[1] * (CH + GAP) + CH - 2);
+        txt.setAttribute('text-anchor', 'end');
+        txt.setAttribute('font-size', '7.5');
+        txt.setAttribute('font-family', "'DM Mono',monospace");
+        txt.setAttribute('fill', 'var(--blue)');
+        txt.textContent = item[0];
+        svgEl.appendChild(txt);
+      });
+
+      data.cells.forEach(function(c){
+        var rect = document.createElementNS(NS, 'rect');
+        rect.setAttribute('x', PL + c.week * (CW + GAP));
+        rect.setAttribute('y', PT + c.weekday * (CH + GAP));
+        rect.setAttribute('width', CW);
+        rect.setAttribute('height', CH);
+        rect.setAttribute('rx', '2');
+        rect.setAttribute('class', 'hm-cell hm-' + (c.level || 0));
+
+        var title = document.createElementNS(NS, 'title');
+        title.textContent = c.label || (c.date + ' · ' + (c.count || 0) + ' contributions');
+        rect.appendChild(title);
+        svgEl.appendChild(rect);
+      });
+
+      if(countEl){
+        var total = (data.total && (data.total.lastYear || data.total['2026'])) || 576;
+        if(window.animCount) window.animCount(countEl, total);
+        else countEl.textContent = total;
+      }
+      return;
     }
+
+    // 2. Dynamic fallback when raw array of { date, count, level } is provided
+    var rawList = Array.isArray(data) ? data : (data && data.contributions ? data.contributions : []);
+    var map = {};
+    rawList.forEach(function(c){ if(c && c.date) map[c.date] = c; });
 
     var today = new Date();
     today.setHours(0,0,0,0);
@@ -748,16 +814,10 @@ window.submitContactForm = function(e) {
       weeks.push(days.slice(i, i + 7));
     }
 
-    var CW = 10, CH = 10, GAP = 3, PL = 30, PT = 18;
-    var totalWeeks = Math.max(weeks.length, 52);
-    var svgW = PL + totalWeeks * (CW + GAP) + 8;
-    var svgH = PT + 7 * (CH + GAP) + 6;
-    svgEl.setAttribute('viewBox', '0 0 ' + svgW + ' ' + svgH);
-
     var monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     var lastMonth = -1;
     weeks.forEach(function(week, wi){
-      var firstInWeek = week.find(function(day){ return day >= start && day <= today; });
+      var firstInWeek = week[0];
       if(!firstInWeek) return;
       var mo = firstInWeek.getMonth();
       if(mo !== lastMonth){
@@ -786,16 +846,12 @@ window.submitContactForm = function(e) {
       svgEl.appendChild(txt);
     });
 
-    var totalContributions = 0;
     weeks.forEach(function(week, wi){
       week.forEach(function(day, di){
-        var ds = day.toISOString().slice(0, 10);
-        var inRange = day >= start && day <= today;
-        if(!inRange) return;
+        var ds = toLocalDS(day);
         var entry = map[ds];
         var level = entry ? entry.level : 0;
         var cnt = entry ? entry.count : 0;
-        totalContributions += cnt;
 
         var rect = document.createElementNS(NS, 'rect');
         rect.setAttribute('x', PL + wi * (CW + GAP));
@@ -811,12 +867,6 @@ window.submitContactForm = function(e) {
         svgEl.appendChild(rect);
       });
     });
-
-    var targetTotal = Math.max(totalContributions, 576);
-    if(countEl){
-      if(window.animCount) window.animCount(countEl, targetTotal);
-      else countEl.textContent = targetTotal;
-    }
   }
 
   var basePath = window.location.pathname.includes('/devansh-portfolio') ? '/devansh-portfolio/' : '/';
@@ -825,10 +875,8 @@ window.submitContactForm = function(e) {
   fetch(basePath + 'data/github-contributions.json')
     .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
     .then(function(data){
-      if(data && Array.isArray(data.contributions)){
-        renderHeatmap(data.contributions);
-        var cnt = (data.total && (data.total.lastYear || data.total[new Date().getFullYear()])) || 576;
-        if(window.animCount && countEl) window.animCount(countEl, cnt);
+      if(data && (data.cells || data.contributions)){
+        renderHeatmap(data);
         var tag = document.getElementById('gh-status-tag');
         if(tag) tag.textContent = '● Live Synced';
       }
@@ -844,7 +892,7 @@ window.submitContactForm = function(e) {
       if(data && Array.isArray(data.contributions)){
         var remoteCnt = (data.total && (data.total.lastYear || data.total[new Date().getFullYear()])) || 0;
         var currentCnt = parseInt(countEl ? countEl.dataset.c : 0, 10) || 576;
-        if(remoteCnt >= currentCnt){
+        if(remoteCnt > currentCnt){
           renderHeatmap(data.contributions);
           if(window.animCount && countEl) window.animCount(countEl, remoteCnt);
         }

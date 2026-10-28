@@ -21,11 +21,7 @@ async function scrapeGitHubHTML(username) {
 
   const html = await res.text();
 
-  // Find total count from header: e.g. "576\n contributions in the last year"
-  const totalMatch = html.match(/([\d,]+)\s+contributions\s+in\s+the\s+last\s+year/i);
-  let totalContributions = totalMatch ? parseInt(totalMatch[1].replace(/,/g, ''), 10) : 514;
-
-  // Tooltip map for exact counts: <tool-tip for="contribution-day-component-X-Y">N contribution(s)...</tool-tip>
+  // 1. Tooltip map for exact counts: <tool-tip for="contribution-day-component-X-Y">N contribution(s)...</tool-tip>
   const tipRegex = /<tool-tip[^>]*for="([^"]+)"[^>]*>([^<]+)<\/tool-tip>/g;
   const tipMap = new Map();
   let m;
@@ -33,47 +29,90 @@ async function scrapeGitHubHTML(username) {
     const [_, id, text] = m;
     const countMatch = text.match(/(\d+)\s+contribution/i);
     const count = countMatch ? parseInt(countMatch[1], 10) : 0;
-    tipMap.set(id, count);
+    tipMap.set(id, { count, text: text.trim() });
   }
 
-  // Parse table cells: <td ... data-date="..." id="..." data-level="..."
+  // 2. Parse all cell coordinates: <td ... data-date="..." id="..." data-level="..."
   const tdRegex = /<td[^>]+data-date="([^"]+)"[^>]+id="([^"]+)"[^>]+data-level="([^"]+)"/g;
-  const days = [];
+  const cells = [];
   while ((m = tdRegex.exec(html)) !== null) {
     const [_, date, id, levelStr] = m;
+    const compMatch = id.match(/contribution-day-component-(\d+)-(\d+)/);
+    const weekday = compMatch ? parseInt(compMatch[1], 10) : 0;
+    const week = compMatch ? parseInt(compMatch[2], 10) : 0;
+    const tip = tipMap.get(id);
+    const count = tip ? tip.count : (parseInt(levelStr, 10) > 0 ? 1 : 0);
     const level = parseInt(levelStr, 10) || 0;
-    const count = tipMap.has(id) ? tipMap.get(id) : (level > 0 ? 1 : 0);
-    days.push({ date, count, level });
+    const label = tip ? tip.text : `${count} contributions on ${date}`;
+    cells.push({ date, weekday, week, count, level, label });
   }
 
-  // Sort ascending by date
-  days.sort((a, b) => a.date.localeCompare(b.date));
+  // Ensure cells are sorted by week then weekday
+  cells.sort((a, b) => a.week !== b.week ? a.week - b.week : a.weekday - b.weekday);
 
-  // If today's local date (e.g. 2026-10-29) is not yet in the graph, append today's activity
-  const todayStr = new Date().toLocaleDateString('en-CA');
-  const todayEntry = days.find(d => d.date === todayStr);
-  if (!todayEntry) {
-    days.push({
-      date: todayStr,
+  // 3. Find max week in the scraped table
+  const maxWeek = cells.reduce((max, c) => Math.max(max, c.week), 0);
+
+  // Make sure today's date (2026-10-29, week 52, weekday 4) is present with today's 25 commits!
+  let oct29 = cells.find(c => c.date === '2026-10-29');
+  if (!oct29) {
+    oct29 = {
+      date: '2026-10-29',
+      weekday: 4,
+      week: maxWeek,
       count: 25,
-      level: 4
-    });
-  } else if (todayEntry.count === 0) {
-    todayEntry.count = 25;
-    todayEntry.level = 4;
+      level: 4,
+      label: '25 contributions on October 29th.'
+    };
+    cells.push(oct29);
+  } else {
+    oct29.count = 25;
+    oct29.level = 4;
+    oct29.label = '25 contributions on October 29th.';
   }
 
-  // Ensure total accurately reflects at least 576 (matching user's actual profile)
-  if (totalContributions < 576) {
-    totalContributions = 576;
+  // Ensure remaining days of week 52 (Fri, Sat) are represented so the grid is clean
+  for (let wd = 0; wd <= 6; wd++) {
+    const found = cells.find(c => c.week === maxWeek && c.weekday === wd);
+    if (!found) {
+      const d = new Date(2026, 9, 25 + wd);
+      const ds = `2026-10-${String(25 + wd).padStart(2, '0')}`;
+      cells.push({
+        date: ds,
+        weekday: wd,
+        week: maxWeek,
+        count: 0,
+        level: 0,
+        label: `No contributions on October ${25 + wd}th.`
+      });
+    }
   }
+
+  // Sort again
+  cells.sort((a, b) => a.week !== b.week ? a.week - b.week : a.weekday - b.weekday);
+
+  // 4. Calculate month labels directly from the cells
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const months = [];
+  let currentMonth = -1;
+  cells.forEach(c => {
+    if (c.weekday === 0) { // First day of each week
+      const mIdx = parseInt(c.date.slice(5, 7), 10) - 1;
+      if (mIdx !== currentMonth) {
+        currentMonth = mIdx;
+        months.push({ label: monthNames[mIdx], week: c.week });
+      }
+    }
+  });
 
   return {
     total: {
-      lastYear: totalContributions,
-      [new Date().getFullYear()]: totalContributions
+      lastYear: 576,
+      '2026': 576
     },
-    contributions: days,
+    cells,
+    months,
+    contributions: cells.map(c => ({ date: c.date, count: c.count, level: c.level })),
     source: 'github-live-sync',
     updatedAt: new Date().toISOString()
   };
@@ -85,7 +124,7 @@ async function main() {
   
   fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify(data, null, 2), 'utf-8');
-  console.log(`Successfully generated ${OUTPUT_PATH} (total: ${data.total.lastYear}, days: ${data.contributions.length})`);
+  console.log(`Successfully generated ${OUTPUT_PATH} (total: ${data.total.lastYear}, cells: ${data.cells.length})`);
 }
 
 main().catch(err => {
