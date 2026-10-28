@@ -625,6 +625,17 @@ window.submitContactForm = function(e) {
     if(countEl && totalContributions > 0){ countEl.textContent = totalContributions; }
   }
   renderHeatmap([]);
+  fetch(GH_API)
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if(data && Array.isArray(data.contributions)){
+        renderHeatmap(data.contributions);
+        if(countEl && data.total && (data.total.lastYear || data.total[new Date().getFullYear()])){
+          countEl.textContent = data.total.lastYear || data.total[new Date().getFullYear()];
+        }
+      }
+    })
+    .catch(function(err){ console.warn('GitHub contributions notice:', err); });
 })();
 </script>
 </body>
