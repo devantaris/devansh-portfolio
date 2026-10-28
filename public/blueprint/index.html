@@ -463,6 +463,7 @@ $$('.mp').forEach(function(p){var l=p.getTotalLength();p.style.strokeDasharray=l
 g.set('.card',{opacity:0,y:80});
 ST.batch('.card',{start:'top 88%',once:true,onEnter:function(b){g.to(b,{opacity:1,y:0,duration:1,stagger:.16,ease:'expo.out'});b.forEach(function(c,k){c.querySelectorAll('.mp').forEach(function(p,j){g.to(p,{strokeDashoffset:0,duration:.6,delay:.5+k*.16+j*.25,onComplete:function(){p.classList.add('fl')}})})})}}); 
 g.set('.rw',{opacity:0,x:-60});ST.batch('.rw',{start:'top 90%',once:true,onEnter:function(b){g.to(b,{opacity:1,x:0,stagger:.14,duration:.9,ease:'expo.out'})}});
+g.set('.heatmap-panel',{opacity:0,y:30});ST.create({trigger:'#code-activity',start:'top 74%',once:true,onEnter:function(){g.to('.heatmap-panel',{opacity:1,y:0,duration:1,ease:'expo.out'})}});
 g.set('.sts div',{opacity:0,y:30});ST.batch('.sts div',{start:'top 92%',once:true,onEnter:function(b){g.to(b,{opacity:1,y:0,stagger:.1,duration:.8})}});
 ST.batch('.val-item',{start:'top 92%',once:true,onEnter:function(b){g.to(b,{opacity:1,y:0,stagger:.1,duration:.8})}});
 ST.create({trigger:'#about',start:'top 72%',once:true,onEnter:function(){g.to('.about-bio',{opacity:1,y:0,duration:1})}});
