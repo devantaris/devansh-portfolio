@@ -538,5 +538,16 @@ window.submitContactForm = function(e) {
     </div>
   </div>
 </div>
+
+<script>
+// ── SHEET 03: LIVE ACTIVITY SYNC ──────────────────────────────────────────
+(function(){
+  var GITHUB_USER = 'devantaris';
+  var GH_API = 'https://github-contributions-api.jogruber.de/v4/' + GITHUB_USER + '?y=last';
+  var svgEl = document.getElementById('gh-heatmap-svg');
+  var countEl = document.getElementById('gh-count');
+  var NS = 'http://www.w3.org/2000/svg';
+})();
+</script>
 </body>
 </html>
