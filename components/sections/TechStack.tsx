@@ -280,8 +280,9 @@ export default function TechStack() {
                         })}
                     </div>
 
-                    {/* View Switcher (2x2 Grid vs 4-in-a-Row Panoramic) */}
+                    {/* View Switcher (2x2 Grid vs 4-in-a-Row Panoramic) — hidden on mobile */}
                     <div
+                        className="tech-view-switcher"
                         style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -502,7 +503,7 @@ export default function TechStack() {
                                         <div
                                             style={{
                                                 display: 'grid',
-                                                gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+                                                gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
                                                 gap: '8px',
                                                 margin: 'auto 0',
                                                 paddingTop: '6px',
