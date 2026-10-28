@@ -143,8 +143,8 @@ mark{background:linear-gradient(var(--hi),var(--hi)) no-repeat 0 88%/100% 62%;co
 .heatmap-panel:hover{transform:translate(-4px,-4px);box-shadow:8px 8px 0 var(--ink)}
 .heatmap-scroll{overflow-x:auto;overflow-y:hidden;padding-bottom:6px;-webkit-overflow-scrolling:touch}
 .heatmap-svg{display:block;width:100%;min-width:680px;height:auto;overflow:visible}
-.hm-cell{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:middle;transition:transform .12s,fill .15s;cursor:pointer}
-.hm-cell:hover{transform:scale(1.32);outline:1px solid var(--ink)}
+.hm-cell{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform .14s cubic-bezier(.2,.8,.2,1),filter .14s ease,stroke .14s ease}
+.hm-cell:hover{transform:scale(1.2);stroke:var(--ink);stroke-width:1px;filter:brightness(1.28)}
 /* Light theme defaults (cream #f1ede2 background) */
 .hm-0{fill:rgba(39,72,201,.06);stroke:rgba(39,72,201,.16);stroke-width:.5}
 .hm-1{fill:#9be9a8;stroke:#7bc98a;stroke-width:.4}
