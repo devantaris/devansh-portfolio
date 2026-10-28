@@ -662,6 +662,22 @@ window.submitContactForm = function(e) {
       }
     })
     .catch(function(err){ console.warn('GitHub contributions notice:', err); });
+  // Fetch live LeetCode stats
+  fetch('https://alfa-leetcode-api.onrender.com/vantaris/solved')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d && typeof d.solvedProblem === 'number'){
+        var tot = document.getElementById('lc-total');
+        var ea = document.getElementById('lc-easy');
+        var md = document.getElementById('lc-med');
+        var hd = document.getElementById('lc-hard');
+        if(tot) tot.textContent = d.solvedProblem;
+        if(ea) ea.textContent = d.easySolved;
+        if(md) md.textContent = d.mediumSolved;
+        if(hd) hd.textContent = d.hardSolved;
+      }
+    })
+    .catch(function(){});
 })();
 </script>
 </body>
