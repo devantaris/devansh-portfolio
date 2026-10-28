@@ -54,8 +54,8 @@ export default function Experience() {
                                 style={{
                                     display: 'grid',
                                     gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
-                                    gap: '40px',
-                                    padding: '48px 0',
+                                    gap: 'clamp(16px, 4vw, 40px)',
+                                    padding: 'clamp(28px, 6vw, 48px) 0',
                                     borderBottom: '1px solid var(--border)',
                                     alignItems: 'flex-start',
                                     cursor: 'pointer',
