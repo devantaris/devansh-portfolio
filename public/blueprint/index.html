@@ -176,6 +176,57 @@ i.hm-4{background:var(--hi);border:1px solid var(--ink)}
 .skill-group .tg{margin-top:0}
 @media(max-width:760px){.seal,.rail{display:none}.rw{grid-template-columns:50px 1fr}.rw b{font-size:36px}.ps{grid-column:2;justify-self:start}.tlw:before,.tlp{left:12px}.ti,.ti:nth-child(even){width:100%;margin:0;padding:0 0 44px 44px;text-align:left}.ti:after,.ti:nth-child(even):after{left:5px;right:auto}.tpb{margin:0 -10vw}.pub-item{grid-template-columns:36px 1fr}}
 @media(prefers-reduced-motion:reduce){.cube,.seal svg,.tpb div,.mp.fl{animation:none}}
+/* ── Halftone Wordmark Footer ──────────────────────────────────────── */
+.hwf-root{
+  position:relative;width:100%;height:560px;overflow:hidden;isolation:isolate;
+  background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;
+  z-index:4;border-top:1px solid var(--l2);
+}
+.hwf-root canvas{position:absolute;inset:0;width:100%;height:100%;display:block;max-width:none;pointer-events:none}
+.hwf-top{
+  position:relative;z-index:1;
+  display:grid;grid-template-columns:minmax(0,1.4fr) repeat(4,minmax(0,1fr));
+  gap:20px;
+  padding:clamp(28px,4vw,48px) clamp(26px,5vw,72px) 0;
+  font-family:'DM Mono',ui-monospace,Menlo,monospace;
+  font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;line-height:1.8;
+}
+.hwf-brand strong{display:block;font-weight:500;color:var(--ink)}
+.hwf-brand span{display:block;opacity:.45;color:var(--ink)}
+.hwf-col h3{margin:0;font:inherit;opacity:.4;font-weight:500;margin-bottom:4px;color:var(--blue)}
+.hwf-col ul{list-style:none;margin:0;padding:0}
+.hwf-col a,.hwf-link-btn,.hwf-up{
+  color:var(--ink);text-decoration:none;opacity:.72;
+  background:none;border:0;padding:0;cursor:pointer;
+  font:inherit;font-family:inherit;letter-spacing:inherit;text-transform:inherit;
+  background-image:linear-gradient(var(--blue),var(--blue));
+  background-size:0% 1px;background-repeat:no-repeat;background-position:0 100%;
+  transition:opacity .25s,background-size .3s cubic-bezier(.2,.7,.1,1);
+  display:inline;
+}
+.hwf-col a:hover,.hwf-link-btn:hover,.hwf-up:hover{opacity:1;background-size:100% 1px}
+.hwf-col a:focus-visible,.hwf-link-btn:focus-visible,.hwf-up:focus-visible{
+  outline:1px solid var(--blue);outline-offset:3px;opacity:1;
+}
+.hwf-rule{
+  position:relative;z-index:1;
+  display:flex;justify-content:space-between;align-items:center;
+  margin:clamp(16px,2.2vw,28px) clamp(26px,5vw,72px) 0;
+  padding-top:12px;
+  border-top:0.5px solid var(--l2);
+  font-family:'DM Mono',ui-monospace,Menlo,monospace;
+  font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+}
+.hwf-copy{opacity:.4;color:var(--ink)}
+.hwf-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media(max-width:760px){
+  .hwf-top{grid-template-columns:1fr 1fr;row-gap:18px}
+  .hwf-brand{grid-column:1 / -1}
+  .hwf-root{height:auto;min-height:480px}
+}
+@media(max-width:480px){
+  .hwf-top{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
