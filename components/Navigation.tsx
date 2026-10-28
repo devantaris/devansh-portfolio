@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import ContactModal from '@/components/ui/contact-modal';
@@ -121,8 +121,10 @@ export default function Navigation() {
 
                     {/* Right Controls: System Pill + Resume Pill + Kinetic Menu Trigger Button */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', pointerEvents: 'auto' }}>
+                        {/* Hide System + Resume pills on mobile — menu already has them */}
                         <a
                             href="/universe"
+                            className="nav-pill-desktop"
                             style={{
                                 fontFamily: 'var(--font-mono)',
                                 fontSize: '11px',
@@ -159,6 +161,7 @@ export default function Navigation() {
                             href={profile.resumeSite}
                             target="_blank"
                             rel="noopener noreferrer"
+                            className="nav-pill-desktop"
                             style={{
                                 fontFamily: 'var(--font-mono)',
                                 fontSize: '11px',
@@ -265,7 +268,8 @@ export default function Navigation() {
                             flexDirection: 'column',
                             justifyContent: 'space-between',
                             padding: 'clamp(32px, 6vw, 96px) clamp(24px, 5vw, 96px)',
-                            overflow: 'hidden'
+                            overflowY: 'auto',
+                            overflowX: 'hidden',
                         }}
                     >
                         {/* Decorative Background Matrix Ticker */}
@@ -325,7 +329,7 @@ export default function Navigation() {
                                             className="text-hover-effect"
                                             style={{
                                                 fontFamily: 'var(--font-serif)',
-                                                fontSize: 'clamp(42px, 6vw, 84px)',
+                                                fontSize: 'clamp(28px, 6vw, 84px)',
                                                 fontWeight: 800,
                                                 letterSpacing: '-0.04em',
                                                 margin: 0,
