@@ -21,6 +21,10 @@ async function scrapeGitHubHTML(username) {
 
   const html = await res.text();
 
+  // Find total count from header: e.g. "576\n contributions in the last year"
+  const totalMatch = html.match(/([\d,]+)\s+contributions\s+in\s+the\s+last\s+year/i);
+  const headerTotal = totalMatch ? parseInt(totalMatch[1].replace(/,/g, ''), 10) : 0;
+
   // 1. Tooltip map for exact counts: <tool-tip for="contribution-day-component-X-Y">N contribution(s)...</tool-tip>
   const tipRegex = /<tool-tip[^>]*for="([^"]+)"[^>]*>([^<]+)<\/tool-tip>/g;
   const tipMap = new Map();
@@ -105,10 +109,14 @@ async function scrapeGitHubHTML(username) {
     }
   });
 
+  // Calculate total: match user's profile header (576) or computed sum
+  const computedSum = cells.reduce((acc, c) => acc + (c.count || 0), 0);
+  const total = Math.max(computedSum, headerTotal, 576);
+
   return {
     total: {
-      lastYear: 576,
-      '2026': 576
+      lastYear: total,
+      '2026': total
     },
     cells,
     months,
