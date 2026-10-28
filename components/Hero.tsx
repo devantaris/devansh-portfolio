@@ -64,7 +64,7 @@ export default function Hero() {
                 <div style={{
                     display: 'grid',
                     gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 480px), 1fr))',
-                    gap: '80px',
+                    gap: 'clamp(40px, 8vw, 80px)',
                     alignItems: 'center'
                 }}>
                     
@@ -125,7 +125,7 @@ export default function Hero() {
                         </div>
 
                         {/* CTAs */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', marginTop: '16px' }}>
+                        <div className="hero-cta-grid" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', marginTop: '16px' }}>
                             <a 
                                 href={`mailto:${profile.email}`}
                                 className="glow-btn"
@@ -177,7 +177,7 @@ export default function Hero() {
                             style={{
                                 width: '100%',
                                 maxWidth: '380px',
-                                height: 'clamp(440px, 60vh, 540px)',
+                                height: 'clamp(300px, 55vw, 540px)',
                                 position: 'relative',
                                 border: '1px solid var(--border)',
                                 padding: '12px',
@@ -190,7 +190,7 @@ export default function Hero() {
                             }}
                         >
                             {/* Vertical Frame layout */}
-                            <div style={{ position: 'relative', width: '100%', height: '440px', overflow: 'hidden' }}>
+                            <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '260px', overflow: 'hidden' }}>
                                 <Image
                                     src={withBasePath('/images/devansh-portrait.webp')}
                                     alt="Devansh Kumar Portrait"
