@@ -284,7 +284,7 @@ i.hm-4{background:var(--hi);border:1px solid var(--ink)}
 
 <section class="sheet" id="path"><header class="sh"><small>Sheet 05 / 06 — Path</small><h2>Shipping while <mark>leading.</mark></h2><i></i></header><div class="tlw" id="tlw"><div class="tlp" id="tlp"></div></div></section>
 <section class="sheet" id="contact"><header class="sh"><small>Sheet 06 / 06 — Contact</small><h2>Let's build something that <mark>holds.</mark></h2><i></i></header><div class="lks" id="lks"></div>
-<div class="ft"><span>© 2026 Devansh Kumar</span><span>Greater Noida, India</span><span>Sheet 06 / 06 — end of drawing</span></div></section>
+</section>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
@@ -468,7 +468,7 @@ g.set('.ti',{opacity:0,y:40});ST.batch('.ti',{start:'top 88%',once:true,onEnter:
 $$('.ti').forEach(function(t){ST.create({trigger:t,start:'top 62%',toggleClass:{targets:t,className:'on'}})});
 g.to('#tlp',{scaleY:1,ease:'none',scrollTrigger:{trigger:'#tlw',start:'top 62%',end:'bottom 62%',scrub:true}});
 g.set('.lks .bt',{opacity:0,y:24});ST.batch('.lks .bt',{start:'top 92%',once:true,onEnter:function(b){g.to(b,{opacity:1,y:0,stagger:.08,duration:.6})}});
-ST.create({onUpdate:function(s){var v=Math.max(-14,Math.min(14,s.getVelocity()/-260));g.to('.tpb',{skewX:v,duration:.5,overwrite:true})}});
+
 // ── CONTACT MODAL LOGIC ──────────────────────────────────────────────────
 window.openContactModal = function() {
   var m = document.getElementById('contact-modal');
