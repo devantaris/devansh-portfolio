@@ -5,6 +5,11 @@ import path from 'node:path';
 const USERNAME = 'devantaris';
 const OUTPUT_PATH = path.resolve(process.cwd(), 'public/data/github-contributions.json');
 
+// Private contributions offset: GitHub hides private contributions from anonymous scraping.
+// Unauthenticated HTML gives 514 public contributions, while the user's profile has 603.
+// Adding this offset ensures that when new commits are pushed, the total increases dynamically.
+const PRIVATE_OFFSET = 89;
+
 async function scrapeGitHubHTML(username) {
   const url = `https://github.com/users/${username}/contributions`;
   console.log(`Fetching ${url}...`);
@@ -21,7 +26,7 @@ async function scrapeGitHubHTML(username) {
 
   const html = await res.text();
 
-  // Find total count from header: e.g. "576\n contributions in the last year"
+  // Find total count from header: e.g. "514\n contributions in the last year"
   const totalMatch = html.match(/([\d,]+)\s+contributions\s+in\s+the\s+last\s+year/i);
   const headerTotal = totalMatch ? parseInt(totalMatch[1].replace(/,/g, ''), 10) : 0;
 
@@ -54,64 +59,29 @@ async function scrapeGitHubHTML(username) {
   // Ensure cells are sorted by week then weekday
   cells.sort((a, b) => a.week !== b.week ? a.week - b.week : a.weekday - b.weekday);
 
-  // 3. Find max week in the scraped table
-  const maxWeek = cells.reduce((max, c) => Math.max(max, c.week), 0);
-
-  // Make sure today's date (2026-10-29, week 52, weekday 4) is present with today's 25 commits!
-  let oct29 = cells.find(c => c.date === '2026-10-29');
-  if (!oct29) {
-    oct29 = {
-      date: '2026-10-29',
-      weekday: 4,
-      week: maxWeek,
-      count: 25,
-      level: 4,
-      label: '25 contributions on October 29th.'
-    };
-    cells.push(oct29);
-  } else {
-    oct29.count = 25;
-    oct29.level = 4;
-    oct29.label = '25 contributions on October 29th.';
-  }
-
-  // Ensure remaining days of week 52 (Fri, Sat) are represented so the grid is clean
-  for (let wd = 0; wd <= 6; wd++) {
-    const found = cells.find(c => c.week === maxWeek && c.weekday === wd);
-    if (!found) {
-      const d = new Date(2026, 9, 25 + wd);
-      const ds = `2026-10-${String(25 + wd).padStart(2, '0')}`;
-      cells.push({
-        date: ds,
-        weekday: wd,
-        week: maxWeek,
-        count: 0,
-        level: 0,
-        label: `No contributions on October ${25 + wd}th.`
-      });
-    }
-  }
-
-  // Sort again
-  cells.sort((a, b) => a.week !== b.week ? a.week - b.week : a.weekday - b.weekday);
-
-  // 4. Calculate month labels directly from the cells
+  // 3. Calculate month labels directly from the cells - skip week < 2 to prevent collision (e.g. OctNov)
   const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const months = [];
   let currentMonth = -1;
+  let lastPushedWeek = -10;
   cells.forEach(c => {
     if (c.weekday === 0) { // First day of each week
       const mIdx = parseInt(c.date.slice(5, 7), 10) - 1;
       if (mIdx !== currentMonth) {
         currentMonth = mIdx;
-        months.push({ label: monthNames[mIdx], week: c.week });
+        // Skip week 0 so first month starts cleanly at Nov, exactly like GitHub
+        if (c.week >= 1 && (c.week - lastPushedWeek) >= 3) {
+          lastPushedWeek = c.week;
+          months.push({ label: monthNames[mIdx], week: c.week });
+        }
       }
     }
   });
 
-  // Calculate total: match user's profile header (603) or computed sum
+  // Calculate dynamic total with private contributions offset
   const computedSum = cells.reduce((acc, c) => acc + (c.count || 0), 0);
-  const total = Math.max(computedSum, headerTotal, 603);
+  const publicTotal = Math.max(headerTotal, computedSum);
+  const total = publicTotal + PRIVATE_OFFSET;
 
   return {
     total: {

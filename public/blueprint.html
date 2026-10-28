@@ -183,13 +183,13 @@ i.hm-4{background:#216e39;border:1px solid #144622}
 
 /* Custom Floating Heatmap Tooltip */
 #hm-tip{
-  position:fixed;pointer-events:none;z-index:9999;display:none;
+  position:fixed;pointer-events:none;z-index:99999;display:none;
   background:var(--ink);color:var(--bg);
   font:500 11px 'DM Mono',monospace;letter-spacing:.08em;
   padding:6px 12px;border:1.5px solid var(--blue);
   box-shadow:4px 4px 0 var(--blue);white-space:nowrap;
   transform:translate(-50%,-100%);
-  margin-top:-8px;
+  margin-top:0;
   transition:opacity .1s ease;
 }
 /* Prevent blueprint crosshair HUD from colliding with heatmap cells/tooltips */
@@ -274,6 +274,7 @@ body:has(.heatmap-panel:hover) #xy {
 <body>
 <div class="grid"></div><div class="frame"></div><div class="zt" id="zt"></div><div class="zl" id="zl"></div>
 <div class="cx" id="cx"></div><div class="cy" id="cy"></div><div class="xy" id="xy"></div>
+<div id="hm-tip" role="tooltip" aria-hidden="true"></div>
 <div class="rail" aria-hidden="true"><i id="rl"></i><span id="rt">01 / 06</span></div>
 <section class="hero" id="hero"><div class="seal" aria-hidden="true"><svg viewBox="0 0 120 120"><defs><path id="spp" d="M60 60m-47 0a47 47 0 1 1 94 0a47 47 0 1 1-94 0"/></defs><circle cx="60" cy="60" r="57" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="60" cy="60" r="34" fill="none" stroke="currentColor" stroke-dasharray="2 4"/><text fill="currentColor" style="font:500 9.5px 'DM Mono',monospace;letter-spacing:.2em;text-transform:uppercase"><textPath href="#spp">Vantaris · Systems Drawing · 2026 ·</textPath></text></svg><b>DK</b></div>
 <div class="sc"><svg id="svg" viewBox="0 0 980 640" aria-hidden="true"><g id="cons"></g><g id="con"></g><g id="blk"></g><g id="pks"></g></svg></div>
@@ -313,7 +314,6 @@ body:has(.heatmap-panel:hover) #xy {
     </div>
   </div>
   <div class="heatmap-panel">
-    <div id="hm-tip" role="tooltip" aria-hidden="true"></div>
     <div class="heatmap-scroll" id="gh-heatmap-wrap">
       <svg id="gh-heatmap-svg" class="heatmap-svg" viewBox="0 0 720 114" aria-label="GitHub contribution heatmap"></svg>
     </div>
@@ -593,7 +593,7 @@ function cm(b){return /^([\d.]+)(.*)$/.exec(b.dataset.c)}
 window.animCount = function(b, targetVal) {
   if(!b) return;
   if(targetVal !== undefined && targetVal !== null) b.dataset.c = String(targetVal);
-  if(b._entered === false) return;
+  if(b._scrolledIn === false) return;
   var m = cm(b); if(!m) return;
   var curVal = parseFloat(b.textContent) || 0;
   var target = +m[1];
@@ -610,13 +610,13 @@ window.animCount = function(b, targetVal) {
 $$('[data-c]').forEach(function(b){
   var m=cm(b);if(!m)return;
   b.textContent=(0).toFixed((m[1].split('.')[1]||'').length)+m[2];
-  b._entered = false;
+  b._scrolledIn = false;
   ST.create({
     trigger:b,
     start:'top 94%',
     once:true,
     onEnter:function(){
-      b._entered = true;
+      b._scrolledIn = true;
       window.animCount(b);
     }
   });
@@ -782,6 +782,7 @@ window.submitContactForm = function(e) {
     if(data && Array.isArray(data.cells) && data.cells.length){
       if(Array.isArray(data.months)){
         data.months.forEach(function(m){
+          if(m.week < 1) return; // Skip week 0 to prevent collision (e.g. OctNov)
           var txt = document.createElementNS(NS, 'text');
           txt.setAttribute('x', PL + m.week * (CW + GAP));
           txt.setAttribute('y', PT - 5);
@@ -822,7 +823,7 @@ window.submitContactForm = function(e) {
           tipEl.innerHTML = '<span style="color:var(--hi);font-weight:600">' + (c.count > 0 ? countText : 'No contributions') + '</span> on ' + c.date;
           var b = rect.getBoundingClientRect();
           tipEl.style.left = (b.left + b.width / 2) + 'px';
-          tipEl.style.top = (b.top - 8) + 'px';
+          tipEl.style.top = (b.top - 6) + 'px';
           tipEl.style.display = 'block';
         });
         rect.addEventListener('mouseleave', function(){
@@ -872,15 +873,17 @@ window.submitContactForm = function(e) {
       var mo = firstInWeek.getMonth();
       if(mo !== lastMonth){
         lastMonth = mo;
-        var txt = document.createElementNS(NS, 'text');
-        txt.setAttribute('x', PL + wi * (CW + GAP));
-        txt.setAttribute('y', PT - 5);
-        txt.setAttribute('font-size', '8.5');
-        txt.setAttribute('font-family', "'DM Mono',monospace");
-        txt.setAttribute('fill', 'var(--blue)');
-        txt.setAttribute('letter-spacing', '.06em');
-        txt.textContent = monthNames[mo];
-        svgEl.appendChild(txt);
+        if(wi >= 1){
+          var txt = document.createElementNS(NS, 'text');
+          txt.setAttribute('x', PL + wi * (CW + GAP));
+          txt.setAttribute('y', PT - 5);
+          txt.setAttribute('font-size', '8.5');
+          txt.setAttribute('font-family', "'DM Mono',monospace");
+          txt.setAttribute('fill', 'var(--blue)');
+          txt.setAttribute('letter-spacing', '.06em');
+          txt.textContent = monthNames[mo];
+          svgEl.appendChild(txt);
+        }
       }
     });
 
@@ -918,7 +921,7 @@ window.submitContactForm = function(e) {
           tipEl.innerHTML = '<span style="color:var(--hi);font-weight:600">' + (cnt > 0 ? countText : 'No contributions') + '</span> on ' + ds;
           var b = rect.getBoundingClientRect();
           tipEl.style.left = (b.left + b.width / 2) + 'px';
-          tipEl.style.top = (b.top - 8) + 'px';
+          tipEl.style.top = (b.top - 6) + 'px';
           tipEl.style.display = 'block';
         });
         rect.addEventListener('mouseleave', function(){
@@ -928,11 +931,23 @@ window.submitContactForm = function(e) {
         svgEl.appendChild(rect);
       });
     });
+
+    var wrap = document.getElementById('gh-heatmap-wrap');
+    if(wrap){
+      wrap.addEventListener('mouseleave', function(){
+        var tipEl = document.getElementById('hm-tip');
+        if(tipEl) tipEl.style.display = 'none';
+      });
+    }
+    window.addEventListener('scroll', function(){
+      var tipEl = document.getElementById('hm-tip');
+      if(tipEl) tipEl.style.display = 'none';
+    }, { passive: true });
   }
 
   var basePath = window.location.pathname.includes('/devansh-portfolio') ? '/devansh-portfolio/' : '/';
 
-  // 1. Instant verified load from bundled sync dataset (includes accurate 603 count & green heatmap)
+  // 1. Instant verified load from bundled sync dataset
   fetch(basePath + 'data/github-contributions.json?t=' + Date.now())
     .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
     .then(function(data){
@@ -953,7 +968,8 @@ window.submitContactForm = function(e) {
     .then(function(r){ return r.json(); })
     .then(function(data){
       if(data && Array.isArray(data.contributions)){
-        var remoteCnt = (data.total && (data.total.lastYear || data.total[new Date().getFullYear()])) || 0;
+        var rawPublic = (data.total && (data.total.lastYear || data.total[new Date().getFullYear()])) || 0;
+        var remoteCnt = rawPublic > 0 ? (rawPublic + 89) : 0;
         var currentCnt = parseInt(countEl ? countEl.dataset.c : 0, 10) || 603;
         if(remoteCnt > currentCnt){
           renderHeatmap(data.contributions);
@@ -966,6 +982,29 @@ window.submitContactForm = function(e) {
     .catch(function(err){
       console.warn('GitHub contributions notice:', err);
     });
+
+  // 3. Real-time push events check directly via GitHub API (zero-latency, CORS enabled)
+  fetch('https://api.github.com/users/' + GITHUB_USER + '/events/public')
+    .then(function(r){ return r.json(); })
+    .then(function(events){
+      if(Array.isArray(events)){
+        var today = new Date().toISOString().slice(0, 10);
+        var newCommits = 0;
+        events.forEach(function(ev){
+          if(ev.type === 'PushEvent' && ev.created_at && ev.created_at.startsWith(today)){
+            newCommits += (ev.payload && (ev.payload.size || ev.payload.distinct_size || 1)) || 1;
+          }
+        });
+        if(newCommits > 0){
+          var current = parseInt(countEl ? countEl.dataset.c : 0, 10) || 603;
+          var liveTotal = Math.max(current, 603 + newCommits);
+          if(window.animCount && countEl) window.animCount(countEl, liveTotal);
+          var tag = document.getElementById('gh-status-tag');
+          if(tag) tag.textContent = '● Live Connected';
+        }
+      }
+    })
+    .catch(function(){});
 
   // Fetch live LeetCode stats
   fetch('https://alfa-leetcode-api.onrender.com/vantaris/solved')
