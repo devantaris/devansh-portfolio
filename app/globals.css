@@ -173,6 +173,9 @@ h1, h2, h3, h4 {
   padding: 10px 24px;
   background: transparent;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .glow-btn:hover {
@@ -207,9 +210,42 @@ h1, h2, h3, h4 {
   .glow-btn {
     padding: 12px 20px;
     font-size: 11px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
   .orbit-container {
     height: 420px !important;
+  }
+  /* Hide desktop-only nav pills — only hamburger shown on mobile */
+  .nav-pill-desktop {
+    display: none !important;
+  }
+  /* Hide tech view-switcher on mobile (meaningless on single-column layout) */
+  .tech-view-switcher {
+    display: none !important;
+  }
+  /* Skills grid: allow 2 columns on small phones */
+  .tech-skills-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+  }
+  /* Hero CTA buttons: 2-column grid on mobile */
+  .hero-cta-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+  .hero-cta-grid > * {
+    justify-content: center;
+  }
+}
+
+/* Touch active state for glow-btn — mirrors hover since hover doesn't fire on touch */
+@media (hover: none) {
+  .glow-btn:active {
+    border-color: var(--foreground);
+    transform: translateY(-1px);
   }
 }
 
