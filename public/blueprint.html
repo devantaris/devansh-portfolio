@@ -132,8 +132,6 @@ mark{background:linear-gradient(var(--hi),var(--hi)) no-repeat 0 88%/100% 62%;co
 .tpb.b{transform:rotate(1.8deg);background:var(--ink);color:var(--bg);margin-top:-16px}
 .tpb div{display:inline-flex;width:max-content;animation:tp 34s linear infinite}.tpb.b div{animation-direction:reverse}.tpb span{padding-right:1em}@keyframes tp{to{transform:translateX(-50%)}}
 .ft{margin-top:90px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);border-top:1px solid var(--l2);padding-top:14px}
-
-/* Pub section */
 /* Code Activity section (Sheet 03) */
 .ca-block{margin-bottom:clamp(32px,5vh,52px)}
 .ca-topbar{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:14px}
@@ -162,6 +160,7 @@ i.hm-4{background:var(--hi);border:1px solid var(--ink)}
 .ca-submetrics{display:flex;flex-wrap:wrap;gap:14px 20px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);padding:10px 0;border-block:1px solid var(--l2)}
 .ca-submetrics b{color:var(--ink);font-weight:600}
 .ca-live-tag{color:var(--blue);display:inline-flex;align-items:center;gap:4px;font-size:10px}
+/* Pub section */
 .pub-item{border-bottom:1px solid var(--l2);padding:24px 0;display:grid;grid-template-columns:48px 1fr auto;gap:12px 22px;align-items:start}
 .pub-num{font-size:36px;font-family:Archivo,sans-serif;font-stretch:62%;font-weight:800;color:var(--blue);line-height:1}
 .pub-body h4{font:800 clamp(18px,2.5vw,28px)/1 Archivo,sans-serif;font-stretch:68%;text-transform:uppercase;margin-bottom:6px}
@@ -253,6 +252,39 @@ i.hm-4{background:var(--hi);border:1px solid var(--ink)}
 <span class="stamp" id="stamp">Verified</span></div>
 </div>
 </div>
+</section>
+<main>
+<section class="sheet" id="work"><header class="sh"><small>Sheet 02 / 06 — Selected work</small><h2>Built, <mark>tested</mark>, shipped.</h2><i></i></header><div class="cards" id="cards"></div></section>
+<section class="sheet" id="code-activity">
+<header class="sh"><small>Sheet 03 / 06 — Code Activity</small><h2>Committed, <mark>rated</mark>, ranked.</h2><i></i></header>
+<div class="ca-block">
+  <div class="ca-topbar">
+    <div>
+      <span class="ca-subtag">GITHUB CONTRIBUTION ACTIVITY</span>
+      <h3 class="ca-headline"><span id="gh-count" data-c="514">514</span> commits &amp; contributions <mark>last year</mark></h3>
+    </div>
+    <div class="ca-badges">
+      <a href="https://github.com/devantaris" target="_blank" rel="noopener" class="ca-chip">github.com/devantaris ↗</a>
+    </div>
+  </div>
+  <div class="heatmap-panel">
+    <div class="heatmap-scroll" id="gh-heatmap-wrap">
+      <svg id="gh-heatmap-svg" class="heatmap-svg" viewBox="0 0 720 114" aria-label="GitHub contribution heatmap"></svg>
+    </div>
+    <div class="heatmap-footer">
+      <span class="heatmap-note">Continuous engineering activity · rolling 365 days</span>
+      <div class="heatmap-legend">
+        <span>Less</span>
+        <i class="hm-cell hm-0"></i>
+        <i class="hm-cell hm-1"></i>
+        <i class="hm-cell hm-2"></i>
+        <i class="hm-cell hm-3"></i>
+        <i class="hm-cell hm-4"></i>
+        <span>More</span>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="cards ca-grid">
   <article class="card ca-card">
     <div class="ch"><b>Fig. 01</b><span>LeetCode · Problem Solving</span></div>
@@ -296,41 +328,7 @@ i.hm-4{background:var(--hi);border:1px solid var(--ink)}
   </article>
 </div>
 </section>
-<main>
-<section class="sheet" id="work"><header class="sh"><small>Sheet 02 / 06 — Selected work</small><h2>Built, <mark>tested</mark>, shipped.</h2><i></i></header><div class="cards" id="cards"></div></section>
-<section class="sheet" id="code-activity">
-<header class="sh"><small>Sheet 03 / 06 — Code Activity</small><h2>Committed, <mark>rated</mark>, ranked.</h2><i></i></header>
-<div class="ca-block">
-  <div class="ca-topbar">
-    <div>
-      <span class="ca-subtag">GITHUB CONTRIBUTION ACTIVITY</span>
-      <h3 class="ca-headline"><span id="gh-count" data-c="514">514</span> commits &amp; contributions <mark>last year</mark></h3>
-    </div>
-    <div class="ca-badges">
-      <a href="https://github.com/devantaris" target="_blank" rel="noopener" class="ca-chip">github.com/devantaris ↗</a>
-    </div>
-  </div>
-  <div class="heatmap-panel">
-    <div class="heatmap-scroll" id="gh-heatmap-wrap">
-      <svg id="gh-heatmap-svg" class="heatmap-svg" viewBox="0 0 720 114" aria-label="GitHub contribution heatmap"></svg>
-    </div>
-    <div class="heatmap-footer">
-      <span class="heatmap-note">Continuous engineering activity · rolling 365 days</span>
-      <div class="heatmap-legend">
-        <span>Less</span>
-        <i class="hm-cell hm-0"></i>
-        <i class="hm-cell hm-1"></i>
-        <i class="hm-cell hm-2"></i>
-        <i class="hm-cell hm-3"></i>
-        <i class="hm-cell hm-4"></i>
-        <span>More</span>
-      </div>
-    </div>
-  </div>
-</div>
-</section>
 <section class="sheet" id="research"><header class="sh"><small>Sheet 04 / 06 — Research &amp; Publications</small><h2>Revisions <mark>issued.</mark></h2><i></i></header><div id="rows"></div></section>
-
 <section class="sheet" id="path"><header class="sh"><small>Sheet 05 / 06 — Path</small><h2>Shipping while <mark>leading.</mark></h2><i></i></header><div class="tlw" id="tlw"><div class="tlp" id="tlp"></div></div></section>
 <section class="sheet" id="contact"><header class="sh"><small>Sheet 06 / 06 — Contact</small><h2>Let's build something that <mark>holds.</mark></h2><i></i></header><div class="lks" id="lks"></div>
 </section>
@@ -339,12 +337,16 @@ i.hm-4{background:var(--hi);border:1px solid var(--ink)}
 <footer class="hwf-root" id="hwf-footer" aria-label="Site footer">
   <canvas id="hwf-canvas" aria-hidden="true"></canvas>
   <span class="hwf-sr">devantaris</span>
+
   <div class="hwf-top">
+    <!-- Brand -->
     <div class="hwf-brand">
       <strong>DEVANSH KUMAR</strong>
       <span>Systems Architecture · Applied ML</span>
       <span>B.Tech CSE · Bennett Univ · Rev 2026.D</span>
     </div>
+
+    <!-- Col 1: Work -->
     <nav class="hwf-col" aria-label="Work">
       <h3>Work</h3>
       <ul>
@@ -354,6 +356,8 @@ i.hm-4{background:var(--hi);border:1px solid var(--ink)}
         <li><a href="https://github.com/devantaris/SatyaLabel" target="_blank" rel="noopener">SatyaLabel</a></li>
       </ul>
     </nav>
+
+    <!-- Col 2: Signals -->
     <nav class="hwf-col" aria-label="Signals">
       <h3>Signals</h3>
       <ul>
@@ -363,6 +367,8 @@ i.hm-4{background:var(--hi);border:1px solid var(--ink)}
         <li><a href="https://scholar.google.com/citations?user=K6k6CfcAAAAJ&hl=en" target="_blank" rel="noopener">Scholar</a></li>
       </ul>
     </nav>
+
+    <!-- Col 3: Sheets -->
     <nav class="hwf-col" aria-label="Sheets">
       <h3>Sheets</h3>
       <ul>
@@ -374,6 +380,8 @@ i.hm-4{background:var(--hi);border:1px solid var(--ink)}
         <li><a href="#contact">06 — Contact</a></li>
       </ul>
     </nav>
+
+    <!-- Col 4: Direct -->
     <nav class="hwf-col" aria-label="Direct">
       <h3>Direct</h3>
       <ul>
@@ -385,9 +393,12 @@ i.hm-4{background:var(--hi);border:1px solid var(--ink)}
       </ul>
     </nav>
   </div>
+
   <div class="hwf-rule">
     <span class="hwf-copy">© 2026 Devansh Kumar · Greater Noida, India</span>
-    <button type="button" class="hwf-up" onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to top ↑</button>
+    <button type="button" class="hwf-up" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+      Back to top ↑
+    </button>
   </div>
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -519,8 +530,6 @@ var LK=[
 ['ORCID','https://orcid.org/0009-0008-0687-5963']
 ];
 
-
-
 // ── RENDER ────────────────────────────────────────────────────────────────────
 function E(n,a,p){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e}
 
@@ -530,15 +539,9 @@ $$('.mini').forEach(function(sv,k){var L=PJ[k].st,n=L.length,w=64,gp=(320-n*w)/(
 
 $('#rows').innerHTML=RS.map(function(r){return '<div class="rw"><b>'+r[0]+'</b><div><h4><span>'+r[1]+'</span></h4><small>'+r[2]+'</small></div><em class="ps '+(r[3]==='Published'?'pb':'ur')+'">'+r[3]+'</em></div>'}).join('');
 
-
-
-
-
 $('#tlw').insertAdjacentHTML('beforeend',TL.map(function(t){return '<div class="ti"><small>'+t[0]+'</small><h4>'+t[1]+'</h4><p>'+t[2]+'</p></div>'}).join(''));
 
 $('#lks').innerHTML=LK.map(function(l){return '<a class="bt" href="'+l[1]+'">'+l[0]+' ↗</a>'}).join('');
-
-
 
 // ── CURSOR TRAIL ──────────────────────────────────────────────────────────────
 if(!rm&&matchMedia('(hover:hover)').matches){var tc=document.createElement('canvas');tc.style.cssText='position:fixed;inset:0;width:100%;height:100%;z-index:6;pointer-events:none';tc.setAttribute('aria-hidden','true');document.body.appendChild(tc);var tx=tc.getContext('2d'),pts=[],tw,th,cl='#2748c9',f=0;
@@ -564,15 +567,12 @@ $$('.mp').forEach(function(p){var l=p.getTotalLength();p.style.strokeDasharray=l
 g.set('.card',{opacity:0,y:80});
 ST.batch('.card',{start:'top 88%',once:true,onEnter:function(b){g.to(b,{opacity:1,y:0,duration:1,stagger:.16,ease:'expo.out'});b.forEach(function(c,k){c.querySelectorAll('.mp').forEach(function(p,j){g.to(p,{strokeDashoffset:0,duration:.6,delay:.5+k*.16+j*.25,onComplete:function(){p.classList.add('fl')}})})})}}); 
 g.set('.rw',{opacity:0,x:-60});ST.batch('.rw',{start:'top 90%',once:true,onEnter:function(b){g.to(b,{opacity:1,x:0,stagger:.14,duration:.9,ease:'expo.out'})}});
-g.set('.heatmap-panel',{opacity:0,y:30});ST.create({trigger:'#code-activity',start:'top 74%',once:true,onEnter:function(){g.to('.heatmap-panel',{opacity:1,y:0,duration:1,ease:'expo.out'})}});
 g.set('.sts div',{opacity:0,y:30});ST.batch('.sts div',{start:'top 92%',once:true,onEnter:function(b){g.to(b,{opacity:1,y:0,stagger:.1,duration:.8})}});
-ST.batch('.val-item',{start:'top 92%',once:true,onEnter:function(b){g.to(b,{opacity:1,y:0,stagger:.1,duration:.8})}});
-ST.create({trigger:'#about',start:'top 72%',once:true,onEnter:function(){g.to('.about-bio',{opacity:1,y:0,duration:1})}});
+g.set('.heatmap-panel',{opacity:0,y:30});ST.create({trigger:'#code-activity',start:'top 74%',once:true,onEnter:function(){g.to('.heatmap-panel',{opacity:1,y:0,duration:1,ease:'expo.out'})}});
 g.set('.ti',{opacity:0,y:40});ST.batch('.ti',{start:'top 88%',once:true,onEnter:function(b){g.to(b,{opacity:1,y:0,stagger:.12,duration:.8})}});
 $$('.ti').forEach(function(t){ST.create({trigger:t,start:'top 62%',toggleClass:{targets:t,className:'on'}})});
 g.to('#tlp',{scaleY:1,ease:'none',scrollTrigger:{trigger:'#tlw',start:'top 62%',end:'bottom 62%',scrub:true}});
 g.set('.lks .bt',{opacity:0,y:24});ST.batch('.lks .bt',{start:'top 92%',once:true,onEnter:function(b){g.to(b,{opacity:1,y:0,stagger:.08,duration:.6})}});
-
 // ── CONTACT MODAL LOGIC ──────────────────────────────────────────────────
 window.openContactModal = function() {
   var m = document.getElementById('contact-modal');
@@ -684,7 +684,6 @@ window.submitContactForm = function(e) {
         <div id="c-status" class="form-status" style="display:none"></div>
       </form>
     </div>
-  </div>
 </div>
 
 <script>
@@ -695,6 +694,7 @@ window.submitContactForm = function(e) {
   var svgEl = document.getElementById('gh-heatmap-svg');
   var countEl = document.getElementById('gh-count');
   var NS = 'http://www.w3.org/2000/svg';
+
   function renderHeatmap(contributions){
     if(!svgEl) return;
     svgEl.innerHTML = '';
@@ -702,21 +702,32 @@ window.submitContactForm = function(e) {
     if(Array.isArray(contributions)){
       contributions.forEach(function(c){ map[c.date] = c; });
     }
+
     var today = new Date();
     today.setHours(0,0,0,0);
     var start = new Date(today);
     start.setDate(start.getDate() - 364);
+
     var d = new Date(start);
     d.setDate(d.getDate() - d.getDay());
+
     var days = [];
-    while(d <= today){ days.push(new Date(d)); d.setDate(d.getDate() + 1); }
+    while(d <= today){
+      days.push(new Date(d));
+      d.setDate(d.getDate() + 1);
+    }
+
     var weeks = [];
-    for(var i = 0; i < days.length; i += 7){ weeks.push(days.slice(i, i + 7)); }
+    for(var i = 0; i < days.length; i += 7){
+      weeks.push(days.slice(i, i + 7));
+    }
+
     var CW = 10, CH = 10, GAP = 3, PL = 30, PT = 18;
     var totalWeeks = Math.max(weeks.length, 52);
     var svgW = PL + totalWeeks * (CW + GAP) + 8;
     var svgH = PT + 7 * (CH + GAP) + 6;
     svgEl.setAttribute('viewBox', '0 0 ' + svgW + ' ' + svgH);
+
     var monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     var lastMonth = -1;
     weeks.forEach(function(week, wi){
@@ -736,6 +747,7 @@ window.submitContactForm = function(e) {
         svgEl.appendChild(txt);
       }
     });
+
     [['Mon', 1], ['Wed', 3], ['Fri', 5]].forEach(function(item){
       var txt = document.createElementNS(NS, 'text');
       txt.setAttribute('x', PL - 5);
@@ -747,6 +759,7 @@ window.submitContactForm = function(e) {
       txt.textContent = item[0];
       svgEl.appendChild(txt);
     });
+
     var totalContributions = 0;
     weeks.forEach(function(week, wi){
       week.forEach(function(day, di){
@@ -757,6 +770,7 @@ window.submitContactForm = function(e) {
         var level = entry ? entry.level : 0;
         var cnt = entry ? entry.count : 0;
         totalContributions += cnt;
+
         var rect = document.createElementNS(NS, 'rect');
         rect.setAttribute('x', PL + wi * (CW + GAP));
         rect.setAttribute('y', PT + di * (CH + GAP));
@@ -764,15 +778,23 @@ window.submitContactForm = function(e) {
         rect.setAttribute('height', CH);
         rect.setAttribute('rx', '2');
         rect.setAttribute('class', 'hm-cell hm-' + level);
+
         var title = document.createElementNS(NS, 'title');
         title.textContent = ds + ' · ' + cnt + ' contribution' + (cnt === 1 ? '' : 's');
         rect.appendChild(title);
         svgEl.appendChild(rect);
       });
     });
-    if(countEl && totalContributions > 0){ countEl.textContent = totalContributions; }
+
+    if(countEl && totalContributions > 0){
+      countEl.textContent = totalContributions;
+    }
   }
+
+  // Pre-render immediate grid
   renderHeatmap([]);
+
+  // Fetch live GitHub contributions
   fetch(GH_API)
     .then(function(r){ return r.json(); })
     .then(function(data){
@@ -783,7 +805,10 @@ window.submitContactForm = function(e) {
         }
       }
     })
-    .catch(function(err){ console.warn('GitHub contributions notice:', err); });
+    .catch(function(err){
+      console.warn('GitHub contributions notice:', err);
+    });
+
   // Fetch live LeetCode stats
   fetch('https://alfa-leetcode-api.onrender.com/vantaris/solved')
     .then(function(r){ return r.json(); })
@@ -800,6 +825,7 @@ window.submitContactForm = function(e) {
       }
     })
     .catch(function(){});
+
   fetch('https://alfa-leetcode-api.onrender.com/vantaris/calendar')
     .then(function(r){ return r.json(); })
     .then(function(c){
@@ -809,8 +835,26 @@ window.submitContactForm = function(e) {
       }
     })
     .catch(function(){});
+
+  // Fetch live CodeChef stats
+  fetch('data/codechef.json')
+    .then(function(r){ return r.json(); })
+    .then(function(cc){
+      if(cc && cc.rating){
+        var rt = document.getElementById('cc-rating');
+        var st = document.getElementById('cc-stars');
+        var mx = document.getElementById('cc-max');
+        var dv = document.getElementById('cc-div');
+        if(rt) { rt.textContent = cc.rating; rt.dataset.c = cc.rating; }
+        if(st) { st.textContent = cc.starsStr || '★★'; }
+        if(mx) { mx.textContent = cc.highestRating; mx.dataset.c = cc.highestRating; }
+        if(dv) { dv.textContent = cc.division || 'Div 3'; }
+      }
+    })
+    .catch(function(){});
 })();
 </script>
+
 <script>
 // ── HALFTONE WORDMARK CANVAS FOOTER ──────────────────────────────────────────
 (function(){
