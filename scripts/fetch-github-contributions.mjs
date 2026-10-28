@@ -133,6 +133,18 @@ async function main() {
   fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify(data, null, 2), 'utf-8');
   console.log(`Successfully generated ${OUTPUT_PATH} (total: ${data.total.lastYear}, cells: ${data.cells.length})`);
+
+  const htmlFiles = [
+    path.resolve(process.cwd(), 'public/blueprint.html'),
+    path.resolve(process.cwd(), 'public/blueprint/index.html')
+  ];
+  for (const hf of htmlFiles) {
+    if (fs.existsSync(hf)) {
+      let content = fs.readFileSync(hf, 'utf-8');
+      content = content.replace(/<span id="gh-count" data-c="\d+">\d+<\/span>/g, `<span id="gh-count" data-c="${data.total.lastYear}">${data.total.lastYear}</span>`);
+      fs.writeFileSync(hf, content, 'utf-8');
+    }
+  }
 }
 
 main().catch(err => {

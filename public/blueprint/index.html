@@ -199,8 +199,7 @@ body:has(.heatmap-panel:hover) #xy {
   opacity:0 !important;
   visibility:hidden !important;
 }
-.heatmap-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:1px solid var(--l2);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--blue)}
-.heatmap-legend{display:flex;align-items:center;gap:6px}
+.heatmap-footer{display:flex;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid var(--l2);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--blue)}
 .ca-grid{margin-top:clamp(20px,3.5vh,36px)}
 .ca-submetrics{display:flex;flex-wrap:wrap;gap:14px 20px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);padding:10px 0;border-block:1px solid var(--l2)}
 .ca-submetrics b{color:var(--ink);font-weight:600}
@@ -320,15 +319,6 @@ body:has(.heatmap-panel:hover) #xy {
     </div>
     <div class="heatmap-footer">
       <span class="heatmap-note">Continuous engineering activity · rolling 365 days</span>
-      <div class="heatmap-legend">
-        <span>Less</span>
-        <i class="hm-cell hm-0"></i>
-        <i class="hm-cell hm-1"></i>
-        <i class="hm-cell hm-2"></i>
-        <i class="hm-cell hm-3"></i>
-        <i class="hm-cell hm-4"></i>
-        <span>More</span>
-      </div>
     </div>
   </div>
 </div>
@@ -600,15 +590,15 @@ for(var i=1;i<pts.length;i++){tx.globalAlpha=Math.max(0,1-(n-pts[i][2])/650);tx.
 if(!g||!ST||rm)return;
 g.registerPlugin(ST);
 function cm(b){return /^([\d.]+)(.*)$/.exec(b.dataset.c)}
-var LIVE_IDS = new Set(['gh-count','lc-total','lc-easy','lc-med','lc-hard','cc-rating','cc-max']);
 window.animCount = function(b, targetVal) {
   if(!b) return;
   if(targetVal !== undefined && targetVal !== null) b.dataset.c = String(targetVal);
+  if(b._entered === false) return;
   var m = cm(b); if(!m) return;
   var curVal = parseFloat(b.textContent) || 0;
   var target = +m[1];
   var d = (m[1].split('.')[1] || '').length;
-  if(curVal === target) return;
+  if(curVal === target && b.textContent === (target.toFixed(d) + m[2])) return;
   var o = { v: curVal };
   g.to(o, {
     v: target,
@@ -618,14 +608,15 @@ window.animCount = function(b, targetVal) {
   });
 };
 $$('[data-c]').forEach(function(b){
-  if(LIVE_IDS.has(b.id)) return;
   var m=cm(b);if(!m)return;
   b.textContent=(0).toFixed((m[1].split('.')[1]||'').length)+m[2];
+  b._entered = false;
   ST.create({
     trigger:b,
     start:'top 94%',
     once:true,
     onEnter:function(){
+      b._entered = true;
       window.animCount(b);
     }
   });
@@ -941,12 +932,14 @@ window.submitContactForm = function(e) {
 
   var basePath = window.location.pathname.includes('/devansh-portfolio') ? '/devansh-portfolio/' : '/';
 
-  // 1. Instant verified load from bundled sync dataset (includes accurate 576 count & green heatmap)
-  fetch(basePath + 'data/github-contributions.json')
+  // 1. Instant verified load from bundled sync dataset (includes accurate 603 count & green heatmap)
+  fetch(basePath + 'data/github-contributions.json?t=' + Date.now())
     .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
     .then(function(data){
       if(data && (data.cells || data.contributions)){
         renderHeatmap(data);
+        var total = (data.total && (data.total.lastYear || data.total['2026'])) || 603;
+        if(window.animCount && countEl) window.animCount(countEl, total);
         var tag = document.getElementById('gh-status-tag');
         if(tag) tag.textContent = '● Live Synced';
       }
@@ -961,13 +954,13 @@ window.submitContactForm = function(e) {
     .then(function(data){
       if(data && Array.isArray(data.contributions)){
         var remoteCnt = (data.total && (data.total.lastYear || data.total[new Date().getFullYear()])) || 0;
-        var currentCnt = parseInt(countEl ? countEl.dataset.c : 0, 10) || 576;
+        var currentCnt = parseInt(countEl ? countEl.dataset.c : 0, 10) || 603;
         if(remoteCnt > currentCnt){
           renderHeatmap(data.contributions);
           if(window.animCount && countEl) window.animCount(countEl, remoteCnt);
+          var tag = document.getElementById('gh-status-tag');
+          if(tag) tag.textContent = '● Live Connected';
         }
-        var tag = document.getElementById('gh-status-tag');
-        if(tag) tag.textContent = '● Live Connected';
       }
     })
     .catch(function(err){
@@ -1009,7 +1002,7 @@ window.submitContactForm = function(e) {
     .catch(function(){});
 
   // Fetch live CodeChef stats
-  fetch(basePath + 'data/codechef.json')
+  fetch(basePath + 'data/codechef.json?t=' + Date.now())
     .then(function(r){ return r.json(); })
     .then(function(cc){
       if(cc && cc.rating){

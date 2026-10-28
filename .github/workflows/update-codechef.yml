@@ -32,5 +32,5 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/data/codechef.json public/data/github-contributions.json
+          git add public/data/codechef.json public/data/github-contributions.json public/blueprint.html public/blueprint/index.html
           git diff --quiet && git diff --staged --quiet || (git commit -m "chore(stats): sync live CodeChef rating and GitHub contributions" && git push)
