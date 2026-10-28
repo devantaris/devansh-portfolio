@@ -73,8 +73,7 @@ h1{font:800 clamp(66px,min(20vw,31vh),310px)/.8 Archivo,'Arial Narrow',Impact,sa
 .nl{display:block;padding:.03em 0}.nl>span{display:inline-block}
 .g{display:inline-block;transition:color .2s,transform .25s}.g:hover{color:var(--blue);transform:skewX(-9deg) translateY(-.03em)}
 .l2>span{padding:0 .07em;background:linear-gradient(var(--hi),var(--hi)) no-repeat 0 88%/100% 62%}
-.sub{font-size:13px;letter-spacing:.04em;margin-top:14px;max-width:34em;color:var(--ink)}
-nav{display:flex;gap:8px;margin-top:16px}
+nav{display:flex;gap:8px;margin-top:20px}
 nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border:1.5px solid var(--ink);color:var(--ink);text-decoration:none;font-size:12px;letter-spacing:.12em;text-transform:uppercase;transition:.2s;background:var(--bg)}
 nav a:first-child{background:var(--ink);color:var(--bg)}
 nav a:hover{background:var(--hi);color:#14213d;border-color:#14213d}
@@ -86,7 +85,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--blue);outline-offse
 .cx,.cy{position:fixed;left:0;top:0;z-index:3;pointer-events:none;opacity:0;background:var(--l2)}
 .cx{width:1px;height:100%}.cy{height:1px;width:100%}
 .xy{position:fixed;left:0;top:0;z-index:5;pointer-events:none;opacity:0;font-size:10px;letter-spacing:.1em;background:var(--ink);color:var(--bg);padding:2px 6px}
-@media(max-width:760px){.sc{left:0;right:0;width:100%;top:8%;height:44%}.bot{flex-direction:column;align-items:stretch;gap:14px}.tb div:nth-child(n+5){display:none}.stamp{font-size:16px;top:-26px}.sub{display:none}nav{flex-wrap:wrap}nav a{flex:1 1 auto;justify-content:center;min-width:120px}.dim{display:none}.tb{min-width:0;width:100%}}
+@media(max-width:760px){.sc{left:0;right:0;width:100%;top:8%;height:44%}.bot{flex-direction:column;align-items:stretch;gap:14px}.tb div:nth-child(n+5){display:none}.stamp{font-size:16px;top:-26px}nav{flex-wrap:wrap}nav a{flex:1 1 auto;justify-content:center;min-width:120px}.dim{display:none}.tb{min-width:0;width:100%}}
 
 .cube{position:relative;display:inline-block;width:18px;height:18px;margin-right:16px;transform-style:preserve-3d;animation:cr 9s linear infinite;vertical-align:middle}
 .cube u{position:absolute;inset:0;border:1.5px solid var(--ink);background:color-mix(in srgb,var(--hi) 22%,transparent)}
@@ -239,9 +238,8 @@ i.hm-4{background:var(--hi);border:1px solid var(--ink)}
 <header class="top"><span><i class="cube"><u></u><u></u><u></u><u></u><u></u><u></u></i><b>Sheet 01</b> / Vantaris</span><span><span id="tm">Scale 1:1</span><a href="https://devantaris.github.io" target="_blank" class="top-btn">Resume ↗</a><button id="btn-contact" type="button" class="top-btn pri" onclick="openContactModal()">Contact</button></span></header>
 <div class="bot">
 <div>
-<div class="nm"><div class="dim" id="dim"><span>08 sheets · 1 engineer · rev 2026.D</span></div>
+<div class="nm"><div class="dim" id="dim"><span>06 sheets · 1 engineer · rev 2026.D</span></div>
 <h1 id="h1"><span class="nl"><span>Devansh</span></span><span class="nl l2"><span>Kumar</span></span></h1></div>
-<p class="sub" id="sub">Backend engineer and applied-ML researcher. I design systems that know when not to decide, and hold under pressure.</p>
 <nav id="nav"><a href="https://github.com/devantaris">Work ↗</a><a href="#contact" onclick="openContactModal();return false;">Write to me</a><a href="https://linkedin.com/in/devansh-kumar-3b3701217">LinkedIn ↗</a></nav>
 </div>
 <div class="tb" id="tb">
@@ -460,7 +458,7 @@ tl.from('.grid',{opacity:0,duration:1.2},0).from([RG,RG2],{opacity:0,duration:1.
 .fromTo('.nl>span',{clipPath:'inset(0 100% 0 0)',x:-40},{clipPath:'inset(0 0% 0 0)',x:0,duration:1.2,stagger:.16,ease:'expo.out'},3)
 .from('#dim',{scaleX:0,duration:1.1,ease:'expo.inOut'},3.1).from('#dim span',{opacity:0,duration:.6},3.7)
 .fromTo('.l2>span',{backgroundSize:'0% 62%'},{backgroundSize:'100% 62%',duration:.8,ease:'power3.inOut'},3.9).to('.l2>span',{color:'#14213d',duration:.3},4.1)
-.from('#sub',{opacity:0,y:16,duration:.8},4.1).from('#nav a',{opacity:0,y:20,duration:.7,stagger:.12},4.3)
+.from('#nav a',{opacity:0,y:20,duration:.7,stagger:.12},4.1)
 .from('#tb',{opacity:0,y:20,duration:.6,ease:'power2.out'},3.6)
 .from('.tb>div',{opacity:0,x:20,duration:.4,stagger:.08,ease:'power2.out'},3.8)
 .fromTo('#stamp',{scale:3.4,rotation:-32,opacity:0},{scale:1,rotation:-9,opacity:1,duration:.32,ease:'power4.in'},4.8)
