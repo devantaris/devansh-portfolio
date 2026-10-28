@@ -315,12 +315,7 @@ var LK=[
 ['ORCID','https://orcid.org/0009-0008-0687-5963']
 ];
 
-var VALUES=[
-['SYSTEMS OVER PREDICTIONS','Models fail; structural bounds must insulate against mathematical thresholds.'],
-['ARCHITECTURE BEFORE CODE','Establish strict structural interfaces before allocating computing stacks.'],
-['FAILURE BY DESIGN','Optimize loops exclusively for non-ideal, catastrophic coordinates.'],
-['QUANTIFIED BOUNDARIES','Explicitly balance execution latency thresholds against memory scale bounds.']
-];
+
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
 function E(n,a,p){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e}
@@ -331,9 +326,9 @@ $$('.mini').forEach(function(sv,k){var L=PJ[k].st,n=L.length,w=64,gp=(320-n*w)/(
 
 $('#rows').innerHTML=RS.map(function(r){return '<div class="rw"><b>'+r[0]+'</b><div><h4><span>'+r[1]+'</span></h4><small>'+r[2]+'</small></div><em class="ps '+(r[3]==='Published'?'pb':'ur')+'">'+r[3]+'</em></div>'}).join('');
 
-$('#aboutBio').textContent='B.Tech Computer Science student at Bennett University (CGPA 8.75/10.0). I architect high-throughput backend services, cryptographic pipelines, and uncertainty-aware ML frameworks. As outgoing Chairperson of the IEEE Student Branch (2025–26), I led a 100+ member vertical structure to construct software products, secure ₹1.48L+ in sponsorships, and spearhead the Global AI Summit 2.0 (3,000–4,000+ attendees). First-author of a research manuscript on staged uncertainty-aware fraud decisioning targeting IEEE TDSC.';
 
-$('#values').innerHTML=VALUES.map(function(v){return '<div class="val-item"><b>'+v[0]+'</b><p>'+v[1]+'</p></div>'}).join('');
+
+
 
 $('#tlw').insertAdjacentHTML('beforeend',TL.map(function(t){return '<div class="ti"><small>'+t[0]+'</small><h4>'+t[1]+'</h4><p>'+t[2]+'</p></div>'}).join(''));
 
@@ -368,8 +363,8 @@ g.set('.card',{opacity:0,y:80});
 ST.batch('.card',{start:'top 88%',once:true,onEnter:function(b){g.to(b,{opacity:1,y:0,duration:1,stagger:.16,ease:'expo.out'});b.forEach(function(c,k){c.querySelectorAll('.mp').forEach(function(p,j){g.to(p,{strokeDashoffset:0,duration:.6,delay:.5+k*.16+j*.25,onComplete:function(){p.classList.add('fl')}})})})}}); 
 g.set('.rw',{opacity:0,x:-60});ST.batch('.rw',{start:'top 90%',once:true,onEnter:function(b){g.to(b,{opacity:1,x:0,stagger:.14,duration:.9,ease:'expo.out'})}});
 g.set('.sts div',{opacity:0,y:30});ST.batch('.sts div',{start:'top 92%',once:true,onEnter:function(b){g.to(b,{opacity:1,y:0,stagger:.1,duration:.8})}});
-g.set('.val-item',{opacity:0,y:30});ST.batch('.val-item',{start:'top 92%',once:true,onEnter:function(b){g.to(b,{opacity:1,y:0,stagger:.1,duration:.8})}});
-g.set('.about-bio',{opacity:0,y:20});ST.create({trigger:'#about',start:'top 72%',once:true,onEnter:function(){g.to('.about-bio',{opacity:1,y:0,duration:1})}});
+ST.batch('.val-item',{start:'top 92%',once:true,onEnter:function(b){g.to(b,{opacity:1,y:0,stagger:.1,duration:.8})}});
+ST.create({trigger:'#about',start:'top 72%',once:true,onEnter:function(){g.to('.about-bio',{opacity:1,y:0,duration:1})}});
 g.set('.ti',{opacity:0,y:40});ST.batch('.ti',{start:'top 88%',once:true,onEnter:function(b){g.to(b,{opacity:1,y:0,stagger:.12,duration:.8})}});
 $$('.ti').forEach(function(t){ST.create({trigger:t,start:'top 62%',toggleClass:{targets:t,className:'on'}})});
 g.to('#tlp',{scaleY:1,ease:'none',scrollTrigger:{trigger:'#tlw',start:'top 62%',end:'bottom 62%',scrub:true}});
