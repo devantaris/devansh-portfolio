@@ -328,17 +328,17 @@ function startEngine(
                                 <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.55)', fontWeight: 300, lineHeight: 1.65, margin: 0 }}>{p.tagline}</p>
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                                     {p.tech.slice(0, 5).map((t) => (
-                                        <span key={t} className="mono-tag" style={{ fontSize: '8px', border: '1px solid rgba(255,255,255,0.08)', padding: '3px 8px' }}>{t}</span>
+                                        <span key={t} className="mono-tag" style={{ fontSize: '10px', border: '1px solid rgba(255,255,255,0.08)', padding: '3px 8px' }}>{t}</span>
                                     ))}
                                 </div>
                                 <div style={{ display: 'flex', gap: '12px', marginTop: '4px', flexWrap: 'wrap' }}>
-                                    <Link href="/projects" style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.12em', color: p.color, textDecoration: 'none', border: `1px solid ${p.color}55`, padding: '8px 14px', textTransform: 'uppercase' }}>
+                                    <Link href="/projects" style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.12em', color: p.color, textDecoration: 'none', border: `1px solid ${p.color}55`, padding: '12px 18px', textTransform: 'uppercase', display: 'inline-flex', alignItems: 'center', minHeight: '44px' }}>
                                         Details →
                                     </Link>
                                     {p.demo && (
-                                        <a href={p.demo} target="_blank" rel="noopener noreferrer" className="glow-btn" style={{ padding: '8px 14px' }}>Demo</a>
+                                        <a href={p.demo} target="_blank" rel="noopener noreferrer" className="glow-btn" style={{ padding: '12px 18px', minHeight: '44px', display: 'inline-flex', alignItems: 'center' }}>Demo</a>
                                     )}
-                                    <a href={p.code} target="_blank" rel="noopener noreferrer" className="glow-btn" style={{ padding: '8px 14px' }}>Code</a>
+                                    <a href={p.code} target="_blank" rel="noopener noreferrer" className="glow-btn" style={{ padding: '12px 18px', minHeight: '44px', display: 'inline-flex', alignItems: 'center' }}>Code</a>
                                 </div>
                             </div>
                         ))}
