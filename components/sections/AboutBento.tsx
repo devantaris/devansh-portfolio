@@ -20,7 +20,7 @@ export default function AboutBento() {
                 <div style={{ 
                     display: 'grid', 
                     gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 480px), 1fr))', 
-                    gap: '100px',
+                    gap: 'clamp(48px, 8vw, 100px)',
                     alignItems: 'flex-start'
                 }}>
                     
@@ -41,7 +41,7 @@ export default function AboutBento() {
                             style={{ 
                                 position: 'relative', 
                                 width: '100%', 
-                                height: '360px', 
+                                height: 'clamp(240px, 55vw, 360px)', 
                                 overflow: 'hidden', 
                                 border: '1px solid var(--border)',
                                 background: '#07070b'
