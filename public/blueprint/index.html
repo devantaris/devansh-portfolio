@@ -188,8 +188,16 @@ i.hm-4{background:#216e39;border:1px solid #144622}
   font:500 11px 'DM Mono',monospace;letter-spacing:.08em;
   padding:6px 12px;border:1.5px solid var(--blue);
   box-shadow:4px 4px 0 var(--blue);white-space:nowrap;
-  transform:translate(-50%,-135%);
-  transition:opacity .08s ease;
+  transform:translate(-50%,-100%);
+  margin-top:-8px;
+  transition:opacity .1s ease;
+}
+/* Prevent blueprint crosshair HUD from colliding with heatmap cells/tooltips */
+body:has(.heatmap-panel:hover) #cx,
+body:has(.heatmap-panel:hover) #cy,
+body:has(.heatmap-panel:hover) #xy {
+  opacity:0 !important;
+  visibility:hidden !important;
 }
 .heatmap-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:1px solid var(--l2);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--blue)}
 .heatmap-legend{display:flex;align-items:center;gap:6px}
@@ -298,7 +306,7 @@ i.hm-4{background:#216e39;border:1px solid #144622}
   <div class="ca-topbar">
     <div>
       <span class="ca-subtag">GITHUB CONTRIBUTION ACTIVITY</span>
-      <h3 class="ca-headline"><span id="gh-count" data-c="576">576</span> commits &amp; contributions <mark>last year</mark></h3>
+      <h3 class="ca-headline"><span id="gh-count" data-c="603">603</span> commits &amp; contributions <mark>last year</mark></h3>
     </div>
     <div class="ca-badges">
       <span id="gh-status-tag" class="ca-live-tag" style="margin-right:8px">● Live Synced</span>
@@ -817,19 +825,14 @@ window.submitContactForm = function(e) {
         rect.setAttribute('rx', '2');
         rect.setAttribute('class', 'hm-cell hm-' + (c.level || 0));
 
-        rect.addEventListener('mouseenter', function(e){
+        rect.addEventListener('mouseenter', function(){
           if(!tipEl) return;
           var countText = c.count === 1 ? '1 contribution' : (c.count + ' contributions');
-          tipEl.innerHTML = '<span style="color:var(--hi);font-weight:600">' + (c.count > 0 ? countText : 'No contributions') + '</span> · ' + c.date;
+          tipEl.innerHTML = '<span style="color:var(--hi);font-weight:600">' + (c.count > 0 ? countText : 'No contributions') + '</span> on ' + c.date;
+          var b = rect.getBoundingClientRect();
+          tipEl.style.left = (b.left + b.width / 2) + 'px';
+          tipEl.style.top = (b.top - 8) + 'px';
           tipEl.style.display = 'block';
-          tipEl.style.left = e.clientX + 'px';
-          tipEl.style.top = e.clientY + 'px';
-        });
-        rect.addEventListener('mousemove', function(e){
-          if(tipEl){
-            tipEl.style.left = e.clientX + 'px';
-            tipEl.style.top = e.clientY + 'px';
-          }
         });
         rect.addEventListener('mouseleave', function(){
           if(tipEl) tipEl.style.display = 'none';
@@ -839,7 +842,7 @@ window.submitContactForm = function(e) {
       });
 
       if(countEl){
-        var total = (data.total && (data.total.lastYear || data.total['2026'])) || 576;
+        var total = (data.total && (data.total.lastYear || data.total['2026'])) || 603;
         if(window.animCount) window.animCount(countEl, total);
         else countEl.textContent = total;
       }
@@ -918,19 +921,14 @@ window.submitContactForm = function(e) {
         rect.setAttribute('rx', '2');
         rect.setAttribute('class', 'hm-cell hm-' + level);
 
-        rect.addEventListener('mouseenter', function(e){
+        rect.addEventListener('mouseenter', function(){
           if(!tipEl) return;
           var countText = cnt === 1 ? '1 contribution' : (cnt + ' contributions');
-          tipEl.innerHTML = '<span style="color:var(--hi);font-weight:600">' + (cnt > 0 ? countText : 'No contributions') + '</span> · ' + ds;
+          tipEl.innerHTML = '<span style="color:var(--hi);font-weight:600">' + (cnt > 0 ? countText : 'No contributions') + '</span> on ' + ds;
+          var b = rect.getBoundingClientRect();
+          tipEl.style.left = (b.left + b.width / 2) + 'px';
+          tipEl.style.top = (b.top - 8) + 'px';
           tipEl.style.display = 'block';
-          tipEl.style.left = e.clientX + 'px';
-          tipEl.style.top = e.clientY + 'px';
-        });
-        rect.addEventListener('mousemove', function(e){
-          if(tipEl){
-            tipEl.style.left = e.clientX + 'px';
-            tipEl.style.top = e.clientY + 'px';
-          }
         });
         rect.addEventListener('mouseleave', function(){
           if(tipEl) tipEl.style.display = 'none';
@@ -1295,127 +1293,6 @@ window.submitContactForm = function(e) {
   layout();
   draw(performance.now());
   wake();
-})();
-
-// ── SHEET-SNAP SCROLL ENGINE ──────────────────────────────────────────────
-(function(){
-  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
-
-  var SECTION_SELECTORS = ['#hero','#work','#code-activity','#research','#path','#contact','#hwf-footer'];
-  var SNAP_THRESHOLD = 60;      // Wheel delta px before boundary snap activates
-  var LOCK_MS = 750;            // Cooldown after snap trigger (ms)
-  var BOUNDARY_PADDING = 18;    // px tolerance to consider user at boundary
-
-  var isSnapping = false;
-  var wheelAcc = 0;
-  var touchStartY = 0;
-
-  function getSections(){
-    return SECTION_SELECTORS.map(function(s){ return document.querySelector(s); }).filter(Boolean);
-  }
-
-  function getActiveIndex(sections){
-    var vh = window.innerHeight;
-    var midY = vh * 0.45;
-    for(var i = 0; i < sections.length; i++){
-      var r = sections[i].getBoundingClientRect();
-      if(r.top <= midY && r.bottom > midY) return i;
-    }
-    var closest = 0, minDist = Infinity;
-    for(var j = 0; j < sections.length; j++){
-      var d = Math.abs(sections[j].getBoundingClientRect().top);
-      if(d < minDist){ minDist = d; closest = j; }
-    }
-    return closest;
-  }
-
-  function snapTo(targetEl, alignBottom){
-    if(!targetEl) return;
-    isSnapping = true;
-    var targetTop = targetEl.getBoundingClientRect().top + window.scrollY;
-    var dest = alignBottom
-      ? Math.max(0, targetTop + targetEl.offsetHeight - window.innerHeight)
-      : targetTop;
-
-    window.scrollTo({ top: dest, behavior: 'smooth' });
-
-    setTimeout(function(){
-      isSnapping = false;
-      wheelAcc = 0;
-    }, LOCK_MS);
-  }
-
-  window.addEventListener('wheel', function(e){
-    if(isSnapping){
-      e.preventDefault();
-      return;
-    }
-
-    var sections = getSections();
-    if(sections.length < 2) return;
-
-    var idx = getActiveIndex(sections);
-    var cur = sections[idx];
-    var rect = cur.getBoundingClientRect();
-    var vh = window.innerHeight;
-
-    var atBottom = rect.bottom <= vh + BOUNDARY_PADDING;
-    var atTop = rect.top >= -BOUNDARY_PADDING;
-
-    // Scrolling DOWN at bottom of section → snap to next section top
-    if(e.deltaY > 0 && atBottom && idx < sections.length - 1){
-      wheelAcc += e.deltaY;
-      if(wheelAcc >= SNAP_THRESHOLD){
-        e.preventDefault();
-        snapTo(sections[idx + 1], false);
-        return;
-      }
-    }
-    // Scrolling UP at top of section → snap to previous section bottom
-    else if(e.deltaY < 0 && atTop && idx > 0){
-      wheelAcc += e.deltaY;
-      if(wheelAcc <= -SNAP_THRESHOLD){
-        e.preventDefault();
-        snapTo(sections[idx - 1], true);
-        return;
-      }
-    }
-    else {
-      // Free, natural, controlled scroll within the sheet
-      wheelAcc = 0;
-    }
-  }, { passive: false });
-
-  // Touch device swipe support
-  window.addEventListener('touchstart', function(e){
-    if(e.touches && e.touches[0]){
-      touchStartY = e.touches[0].clientY;
-    }
-  }, { passive: true });
-
-  window.addEventListener('touchend', function(e){
-    if(isSnapping) return;
-    if(!e.changedTouches || !e.changedTouches[0]) return;
-    var dy = touchStartY - e.changedTouches[0].clientY;
-    if(Math.abs(dy) < 45) return;
-
-    var sections = getSections();
-    if(sections.length < 2) return;
-
-    var idx = getActiveIndex(sections);
-    var cur = sections[idx];
-    var rect = cur.getBoundingClientRect();
-    var vh = window.innerHeight;
-
-    var atBottom = rect.bottom <= vh + 24;
-    var atTop = rect.top >= -24;
-
-    if(dy > 0 && atBottom && idx < sections.length - 1){
-      snapTo(sections[idx + 1], false);
-    } else if(dy < 0 && atTop && idx > 0){
-      snapTo(sections[idx - 1], true);
-    }
-  }, { passive: true });
 })();
 </script>
 </body>

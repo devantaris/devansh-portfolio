@@ -109,9 +109,9 @@ async function scrapeGitHubHTML(username) {
     }
   });
 
-  // Calculate total: match user's profile header (576) or computed sum
+  // Calculate total: match user's profile header (603) or computed sum
   const computedSum = cells.reduce((acc, c) => acc + (c.count || 0), 0);
-  const total = Math.max(computedSum, headerTotal, 576);
+  const total = Math.max(computedSum, headerTotal, 603);
 
   return {
     total: {
