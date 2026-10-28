@@ -678,6 +678,15 @@ window.submitContactForm = function(e) {
       }
     })
     .catch(function(){});
+  fetch('https://alfa-leetcode-api.onrender.com/vantaris/calendar')
+    .then(function(r){ return r.json(); })
+    .then(function(c){
+      var tag = document.getElementById('lc-status-tag');
+      if(tag && c && c.totalActiveDays){
+        tag.textContent = '● ' + c.totalActiveDays + ' Active Days · ' + (c.streak || 0) + 'd Streak';
+      }
+    })
+    .catch(function(){});
 })();
 </script>
 </body>
