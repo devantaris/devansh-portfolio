@@ -813,5 +813,266 @@ window.submitContactForm = function(e) {
     .catch(function(){});
 })();
 </script>
+<script>
+// ── HALFTONE WORDMARK CANVAS FOOTER ──────────────────────────────────────────
+(function(){
+  var root = document.getElementById('hwf-footer');
+  var canvas = document.getElementById('hwf-canvas');
+  if(!root || !canvas) return;
+  var ctx = canvas.getContext('2d');
+  if(!ctx) return;
+
+  var rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var w = 0, h = 0, dpr = 1, px = -1e5, py = -1e5;
+  var raf = 0, visible = true, awake = true;
+  var ring = { x: 0, y: 0, t: -1 };
+  var dots = new Float32Array(0), count = 0;
+  var grainTile = null;
+  var inkRGB = [157, 185, 255], warmRGB = [255, 214, 10], bgHex = '#0b2a73';
+
+  function parseColor(str, fallback) {
+    str = (str || '').trim();
+    var mHex = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(str);
+    if (mHex) {
+      var hx = mHex[1].length === 3 ? mHex[1].split('').map(function(c){return c+c}).join('') : mHex[1];
+      return [parseInt(hx.slice(0,2),16), parseInt(hx.slice(2,4),16), parseInt(hx.slice(4,6),16)];
+    }
+    var mRgb = /^rgba?\((\d+),\s*(\d+),\s*(\d+)/i.exec(str);
+    if (mRgb) {
+      return [parseInt(mRgb[1],10), parseInt(mRgb[2],10), parseInt(mRgb[3],10)];
+    }
+    return fallback;
+  }
+
+  function readColors() {
+    var cs = getComputedStyle(document.documentElement);
+    var raw = function(v){ return cs.getPropertyValue(v).trim(); };
+    bgHex = raw('--bg') || '#0b2a73';
+    inkRGB  = parseColor(raw('--blue'), [157, 185, 255]);
+    warmRGB = parseColor(raw('--hi'), [255, 214, 10]);
+  }
+
+  function hwfRadius(coverage, gap) {
+    var c = coverage < 0 ? 0 : coverage > 1 ? 1 : coverage;
+    return Math.sqrt(c) * gap * 0.56;
+  }
+
+  function hwfStep(x, y, vx, vy, hx, hy, px, py, r) {
+    var dx = x - px;
+    var dy = y - py;
+    var d2 = dx * dx + dy * dy;
+    if (r > 0 && d2 < r * r) {
+      var d = Math.sqrt(d2) + 0.001;
+      var f = (1 - d / r) * 2.6;
+      vx += (dx / d) * f;
+      vy += (dy / d) * f;
+    }
+    vx = (vx + (hx - x) * 0.05) * 0.84;
+    vy = (vy + (hy - y) * 0.05) * 0.84;
+    return [x + vx, y + vy, vx, vy];
+  }
+
+  function layout() {
+    readColors();
+    var rect = root.getBoundingClientRect();
+    w = Math.max(1, Math.round(rect.width));
+    h = Math.max(1, Math.round(rect.height));
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width  = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+
+    var mask = document.createElement('canvas');
+    mask.width = w;
+    mask.height = h;
+    var m = mask.getContext('2d', { willReadFrequently: true });
+    if (!m) return;
+
+    var word = 'devantaris';
+    var face = '800 100px Archivo,"Arial Narrow",Impact,sans-serif';
+    m.font = face;
+    var measured = m.measureText(word).width;
+    var fitSize = measured > 0 ? (w * 1.02 / measured) * 100 : 100;
+    m.font = '800 ' + fitSize + 'px Archivo,"Arial Narrow",Impact,sans-serif';
+    var box = m.measureText(word);
+    var cap = box.actualBoundingBoxAscent || fitSize * 0.72;
+    var cropRatio = 0.22;
+    m.fillStyle = '#000';
+    m.textBaseline = 'alphabetic';
+    m.fillText(word, (w - box.width) / 2, h + cap * cropRatio);
+    var img = m.getImageData(0, 0, w, h).data;
+
+    var gap = 6;
+    var cols = Math.ceil(w / gap);
+    var rows = Math.ceil(h / gap);
+    var tmp = [];
+    for (var gy = 0; gy < rows; gy++) {
+      for (var gx = 0; gx < cols; gx++) {
+        var sum = 0;
+        for (var sy = 0; sy < 3; sy++) {
+          for (var sx = 0; sx < 3; sx++) {
+            var px2 = Math.min(w - 1, Math.floor(gx * gap + (sx + 0.5) * gap / 3));
+            var py2 = Math.min(h - 1, Math.floor(gy * gap + (sy + 0.5) * gap / 3));
+            sum += img[(py2 * w + px2) * 4 + 3];
+          }
+        }
+        var cov = sum / (9 * 255);
+        if (cov < 0.06) continue;
+        var hx = gx * gap + gap / 2;
+        var hy = gy * gap + gap / 2;
+        tmp.push(hx, hy, 0, 0, hx, hy, hwfRadius(cov, gap));
+      }
+    }
+    dots  = new Float32Array(tmp);
+    count = tmp.length / 7;
+
+    grainTile = document.createElement('canvas');
+    grainTile.width = grainTile.height = 256;
+    var g = grainTile.getContext('2d');
+    if (g) {
+      var id = g.createImageData(256, 256);
+      for (var i = 0; i < id.data.length; i += 4) {
+        var v = Math.random() * 255;
+        id.data[i] = id.data[i + 1] = id.data[i + 2] = v;
+        id.data[i + 3] = Math.random() < 0.5 ? 0 : 255;
+      }
+      g.putImageData(id, 0, 0);
+    }
+    awake = true;
+  }
+
+  function draw(now) {
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.fillStyle = bgHex;
+    ctx.fillRect(0, 0, w, h);
+
+    var r = rm ? 0 : 80;
+    var ringAge = ring.t < 0 ? 1e9 : now - ring.t;
+    var ringR   = ringAge * 0.9;
+    var moving  = false;
+
+    for (var i = 0; i < count; i++) {
+      var j = i * 7;
+      var x = dots[j], y = dots[j + 1], vx = dots[j + 2], vy = dots[j + 3];
+      var hx = dots[j + 4], hy = dots[j + 5];
+
+      if (!rm) {
+        if (ringAge < 900) {
+          var dx2 = hx - ring.x, dy2 = hy - ring.y;
+          var d2 = Math.sqrt(dx2 * dx2 + dy2 * dy2) + 0.001;
+          var band = 1 - Math.min(1, Math.abs(d2 - ringR) / 26);
+          if (band > 0) {
+            var f = band * 3.2 * (1 - ringAge / 900);
+            vx += (dx2 / d2) * f;
+            vy += (dy2 / d2) * f;
+          }
+        }
+        var s = hwfStep(x, y, vx, vy, hx, hy, px, py, r);
+        x = s[0]; y = s[1]; vx = s[2]; vy = s[3];
+        if (Math.abs(vx) + Math.abs(vy) > 0.02 || Math.abs(x - hx) + Math.abs(y - hy) > 0.05) {
+          moving = true;
+        } else {
+          x = hx; y = hy; vx = 0; vy = 0;
+        }
+        dots[j] = x; dots[j + 1] = y; dots[j + 2] = vx; dots[j + 3] = vy;
+      }
+
+      var k = Math.min(1, Math.hypot(x - hx, y - hy) / 28);
+      if (k > 0.02) {
+        ctx.fillStyle = 'rgb(' +
+          Math.round(inkRGB[0] + (warmRGB[0] - inkRGB[0]) * k) + ',' +
+          Math.round(inkRGB[1] + (warmRGB[1] - inkRGB[1]) * k) + ',' +
+          Math.round(inkRGB[2] + (warmRGB[2] - inkRGB[2]) * k) + ')';
+      } else {
+        ctx.fillStyle = 'rgb(' + inkRGB[0] + ',' + inkRGB[1] + ',' + inkRGB[2] + ')';
+      }
+      ctx.beginPath();
+      ctx.arc(x, y, dots[j + 6], 0, 6.2832);
+      ctx.fill();
+    }
+
+    if (grainTile) {
+      ctx.globalAlpha = 0.07;
+      ctx.globalCompositeOperation = 'overlay';
+      var pat = ctx.createPattern(grainTile, 'repeat');
+      if (pat) {
+        ctx.fillStyle = pat;
+        ctx.fillRect(0, 0, w, h);
+      }
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'source-over';
+    }
+    awake = moving || ringAge < 900 || px > -1e4;
+  }
+
+  function loop(now) {
+    raf = 0;
+    if (!visible) return;
+    draw(now);
+    if (awake) raf = requestAnimationFrame(loop);
+  }
+
+  function wake() {
+    awake = true;
+    if (!raf && visible) raf = requestAnimationFrame(loop);
+  }
+
+  function toLocal(e) {
+    var b = canvas.getBoundingClientRect();
+    return [e.clientX - b.left, e.clientY - b.top];
+  }
+
+  root.addEventListener('pointermove', function(e) {
+    var p = toLocal(e);
+    px = p[0]; py = p[1];
+    wake();
+  });
+
+  root.addEventListener('pointerleave', function() {
+    px = -1e5; py = -1e5;
+    wake();
+  });
+
+  root.addEventListener('pointerdown', function(e) {
+    if (rm) return;
+    if (e.target.closest('a, button')) return;
+    var p = toLocal(e);
+    ring = { x: p[0], y: p[1], t: performance.now() };
+    wake();
+  });
+
+  var ro = new ResizeObserver(function() {
+    layout();
+    wake();
+  });
+  ro.observe(root);
+
+  var io = new IntersectionObserver(function(entries) {
+    visible = entries[0] ? entries[0].isIntersecting : true;
+    if (visible) wake();
+  });
+  io.observe(root);
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function() {
+      layout();
+      wake();
+    });
+  }
+
+  var themeObs = new MutationObserver(function(muts) {
+    muts.forEach(function(m) {
+      if (m.attributeName === 'data-theme') {
+        layout();
+        wake();
+      }
+    });
+  });
+  themeObs.observe(document.documentElement, { attributes: true });
+
+  layout();
+  draw(performance.now());
+  wake();
+})();
+</script>
 </body>
 </html>
