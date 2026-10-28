@@ -547,6 +547,84 @@ window.submitContactForm = function(e) {
   var svgEl = document.getElementById('gh-heatmap-svg');
   var countEl = document.getElementById('gh-count');
   var NS = 'http://www.w3.org/2000/svg';
+  function renderHeatmap(contributions){
+    if(!svgEl) return;
+    svgEl.innerHTML = '';
+    var map = {};
+    if(Array.isArray(contributions)){
+      contributions.forEach(function(c){ map[c.date] = c; });
+    }
+    var today = new Date();
+    today.setHours(0,0,0,0);
+    var start = new Date(today);
+    start.setDate(start.getDate() - 364);
+    var d = new Date(start);
+    d.setDate(d.getDate() - d.getDay());
+    var days = [];
+    while(d <= today){ days.push(new Date(d)); d.setDate(d.getDate() + 1); }
+    var weeks = [];
+    for(var i = 0; i < days.length; i += 7){ weeks.push(days.slice(i, i + 7)); }
+    var CW = 10, CH = 10, GAP = 3, PL = 30, PT = 18;
+    var totalWeeks = Math.max(weeks.length, 52);
+    var svgW = PL + totalWeeks * (CW + GAP) + 8;
+    var svgH = PT + 7 * (CH + GAP) + 6;
+    svgEl.setAttribute('viewBox', '0 0 ' + svgW + ' ' + svgH);
+    var monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var lastMonth = -1;
+    weeks.forEach(function(week, wi){
+      var firstInWeek = week.find(function(day){ return day >= start && day <= today; });
+      if(!firstInWeek) return;
+      var mo = firstInWeek.getMonth();
+      if(mo !== lastMonth){
+        lastMonth = mo;
+        var txt = document.createElementNS(NS, 'text');
+        txt.setAttribute('x', PL + wi * (CW + GAP));
+        txt.setAttribute('y', PT - 5);
+        txt.setAttribute('font-size', '8.5');
+        txt.setAttribute('font-family', "'DM Mono',monospace");
+        txt.setAttribute('fill', 'var(--blue)');
+        txt.setAttribute('letter-spacing', '.06em');
+        txt.textContent = monthNames[mo];
+        svgEl.appendChild(txt);
+      }
+    });
+    [['Mon', 1], ['Wed', 3], ['Fri', 5]].forEach(function(item){
+      var txt = document.createElementNS(NS, 'text');
+      txt.setAttribute('x', PL - 5);
+      txt.setAttribute('y', PT + item[1] * (CH + GAP) + CH - 2);
+      txt.setAttribute('text-anchor', 'end');
+      txt.setAttribute('font-size', '7.5');
+      txt.setAttribute('font-family', "'DM Mono',monospace");
+      txt.setAttribute('fill', 'var(--blue)');
+      txt.textContent = item[0];
+      svgEl.appendChild(txt);
+    });
+    var totalContributions = 0;
+    weeks.forEach(function(week, wi){
+      week.forEach(function(day, di){
+        var ds = day.toISOString().slice(0, 10);
+        var inRange = day >= start && day <= today;
+        if(!inRange) return;
+        var entry = map[ds];
+        var level = entry ? entry.level : 0;
+        var cnt = entry ? entry.count : 0;
+        totalContributions += cnt;
+        var rect = document.createElementNS(NS, 'rect');
+        rect.setAttribute('x', PL + wi * (CW + GAP));
+        rect.setAttribute('y', PT + di * (CH + GAP));
+        rect.setAttribute('width', CW);
+        rect.setAttribute('height', CH);
+        rect.setAttribute('rx', '2');
+        rect.setAttribute('class', 'hm-cell hm-' + level);
+        var title = document.createElementNS(NS, 'title');
+        title.textContent = ds + ' · ' + cnt + ' contribution' + (cnt === 1 ? '' : 's');
+        rect.appendChild(title);
+        svgEl.appendChild(rect);
+      });
+    });
+    if(countEl && totalContributions > 0){ countEl.textContent = totalContributions; }
+  }
+  renderHeatmap([]);
 })();
 </script>
 </body>
