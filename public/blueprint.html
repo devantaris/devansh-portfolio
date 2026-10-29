@@ -387,7 +387,7 @@ body:has(.heatmap-panel:hover) #xy {
   <div class="ca-topbar">
     <div>
       <span class="ca-subtag">GITHUB CONTRIBUTION ACTIVITY</span>
-      <h3 class="ca-headline"><span id="gh-count" data-c="641">641</span> commits &amp; contributions <mark>last year</mark></h3>
+      <h3 class="ca-headline"><span id="gh-count" data-c="643">643</span> commits &amp; contributions <mark>last year</mark></h3>
     </div>
     <div class="ca-badges">
       <span id="gh-status-tag" class="ca-live-tag" style="margin-right:8px">● Live Synced</span>
@@ -1034,7 +1034,8 @@ window.submitContactForm = function(e) {
     .then(function(data){
       if(data && (data.cells || data.contributions)){
         renderHeatmap(data);
-        var total = (data.total && (data.total.lastYear || data.total['2026'])) || 603;
+        var total = (data.total && (data.total.lastYear || data.total['2026'])) || 643;
+        if(countEl) countEl.dataset.c = total;
         if(window.animCount && countEl) window.animCount(countEl, total);
         var tag = document.getElementById('gh-status-tag');
         if(tag) tag.textContent = '● Live Synced';
@@ -1051,9 +1052,10 @@ window.submitContactForm = function(e) {
       if(data && Array.isArray(data.contributions)){
         var rawPublic = (data.total && (data.total.lastYear || data.total[new Date().getFullYear()])) || 0;
         var remoteCnt = rawPublic > 0 ? (rawPublic + 89) : 0;
-        var currentCnt = parseInt(countEl ? countEl.dataset.c : 0, 10) || 603;
+        var currentCnt = parseInt(countEl ? countEl.dataset.c : 0, 10) || 0;
         if(remoteCnt > currentCnt){
           renderHeatmap(data.contributions);
+          if(countEl) countEl.dataset.c = remoteCnt;
           if(window.animCount && countEl) window.animCount(countEl, remoteCnt);
           var tag = document.getElementById('gh-status-tag');
           if(tag) tag.textContent = '● Live Connected';
@@ -1077,8 +1079,9 @@ window.submitContactForm = function(e) {
           }
         });
         if(newCommits > 0){
-          var current = parseInt(countEl ? countEl.dataset.c : 0, 10) || 603;
-          var liveTotal = Math.max(current, 603 + newCommits);
+          var current = parseInt(countEl ? countEl.dataset.c : 0, 10) || 0;
+          var liveTotal = Math.max(current, current + newCommits);
+          if(countEl) countEl.dataset.c = liveTotal;
           if(window.animCount && countEl) window.animCount(countEl, liveTotal);
           var tag = document.getElementById('gh-status-tag');
           if(tag) tag.textContent = '● Live Connected';

@@ -1,8 +1,8 @@
-name: Sync CodeChef Stats
+name: Sync Live Stats (GitHub & CodeChef)
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 */4 * * *'
   workflow_dispatch:
 
 permissions:
