@@ -334,8 +334,8 @@ body:has(.heatmap-panel:hover) #xy {
       <div><b id="lc-hard" data-c="2">2</b><span>Hard</span></div>
     </div>
     <div class="ca-submetrics">
-      <span><b>20</b> Active Days</span>
-      <span><b>7-Day</b> Max Streak</span>
+      <span><b id="lc-active-days">20</b> Active Days</span>
+      <span><b id="lc-streak">7-Day</b> Max Streak</span>
       <span id="lc-status-tag" class="ca-live-tag">● Live Sync</span>
     </div>
     <div class="tg">
@@ -354,9 +354,9 @@ body:has(.heatmap-panel:hover) #xy {
       <div><b id="cc-div">Div 3</b><span>Division</span></div>
     </div>
     <div class="ca-submetrics">
-      <span><b>Rank 1282</b> Starters 261</span>
-      <span><b>Rated</b> Contender</span>
-      <span class="ca-live-tag">● Verified</span>
+      <span><b id="cc-rank">Rank 1641</b> <span id="cc-contest-name">Starters 262</span></span>
+      <span id="cc-status"><b>Rated</b> Contender</span>
+      <span id="cc-status-tag" class="ca-live-tag">● Live Synced</span>
     </div>
     <div class="tg">
       <i>Competitive</i><i>Division 3</i><i>Starters</i><i>Math</i><i>Greedy</i>
@@ -1033,9 +1033,20 @@ window.submitContactForm = function(e) {
   fetch('https://alfa-leetcode-api.onrender.com/vantaris/calendar')
     .then(function(r){ return r.json(); })
     .then(function(c){
-      var tag = document.getElementById('lc-status-tag');
-      if(tag && c && c.totalActiveDays){
-        tag.textContent = '● ' + c.totalActiveDays + ' Active Days · ' + (c.streak || 0) + 'd Streak';
+      if(c){
+        var actDays = document.getElementById('lc-active-days');
+        var strk = document.getElementById('lc-streak');
+        if(actDays && typeof c.totalActiveDays === 'number'){
+          if(window.animCount) window.animCount(actDays, c.totalActiveDays);
+          else actDays.textContent = c.totalActiveDays;
+        }
+        if(strk && typeof c.streak === 'number'){
+          strk.textContent = c.streak + '-Day';
+        }
+        var tag = document.getElementById('lc-status-tag');
+        if(tag && c.totalActiveDays){
+          tag.textContent = '● ' + c.totalActiveDays + ' Active Days · ' + (c.streak || 0) + 'd Streak';
+        }
       }
     })
     .catch(function(){});
@@ -1057,7 +1068,16 @@ window.submitContactForm = function(e) {
           if(mx) { mx.textContent = cc.highestRating; mx.dataset.c = cc.highestRating; }
         }
         if(st) { st.textContent = cc.starsStr || '★★'; }
-        if(dv) { dv.textContent = 'Div ' + (cc.division || 3); }
+        if(dv) { dv.textContent = 'Div ' + (cc.division ? cc.division.replace(/Div\s*/i, '') : 3); }
+
+        if(cc.lastContest){
+          var rankEl = document.getElementById('cc-rank');
+          var nameEl = document.getElementById('cc-contest-name');
+          if(rankEl && cc.lastContest.rank) rankEl.textContent = 'Rank ' + cc.lastContest.rank;
+          if(nameEl && cc.lastContest.name) nameEl.textContent = cc.lastContest.name;
+        }
+        var ccTag = document.getElementById('cc-status-tag');
+        if(ccTag) ccTag.textContent = '● Live Synced';
       }
     })
     .catch(function(err){
