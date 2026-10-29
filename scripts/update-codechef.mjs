@@ -53,6 +53,25 @@ async function fetchStats() {
       globalRank = parseInt(rankMatch[1], 10);
     }
 
+    // Parse latest contest details from all_rating history
+    let lastContest = { name: 'Starters 262', rank: 1641, code: 'START262C' };
+    const contestMatch = html.match(/var all_rating = (\[[\s\S]*?\]);/);
+    if (contestMatch) {
+      try {
+        const list = JSON.parse(contestMatch[1]);
+        if (Array.isArray(list) && list.length > 0) {
+          const latest = list[list.length - 1];
+          lastContest = {
+            name: latest.name ? latest.name.replace(/\s*\(Rated for [^)]+\)/i, '').trim() : 'Starters',
+            rank: parseInt(latest.rank, 10) || globalRank,
+            code: latest.code || ''
+          };
+        }
+      } catch (e) {
+        console.warn('Could not parse contest rating history:', e.message);
+      }
+    }
+
     const data = {
       handle: HANDLE,
       rating,
@@ -61,6 +80,7 @@ async function fetchStats() {
       starsStr: '★'.repeat(stars),
       division: stars <= 2 ? 'Div 3' : 'Div 2',
       globalRank,
+      lastContest,
       updatedAt: new Date().toISOString()
     };
 
