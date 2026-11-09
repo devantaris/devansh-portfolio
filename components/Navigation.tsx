@@ -30,8 +30,7 @@ export default function Navigation() {
         { name: 'CAREER CHRONOLOGY', href: '#experience', number: '03' },
         { name: 'PUBLICATIONS & RESEARCH', href: '#blog', number: '04' },
         { name: 'SYSTEM METRICS', href: '#stats', number: '05' },
-        { name: 'THE SYSTEM ◈', href: '/universe', number: '06', internal: true },
-        { name: 'LIVE RESUME ↗', href: profile.resumeSite, number: '07', external: true },
+        { name: 'LIVE RESUME ↗', href: profile.resumeSite, number: '06', external: true },
     ];
 
     const handleNavigate = (item: { href: string; external?: boolean; internal?: boolean }) => {
