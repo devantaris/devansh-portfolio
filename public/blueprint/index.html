@@ -8,9 +8,20 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,700..900&family=DM+Mono:wght@400;500&display=swap">
+<script>
+(function(){
+  try {
+    var saved = localStorage.getItem('dk-theme');
+    if (saved === 'dark') {
+      document.documentElement.dataset.theme = 'dark';
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+  } catch(e) {}
+})();
+</script>
 <style>
 :root{--bg:#f1ede2;--ink:#14213d;--blue:#2748c9;--ln:rgba(39,72,201,.1);--lm:rgba(39,72,201,.2);--l2:rgba(39,72,201,.5);--top:#fbf9f2;--lf:#d9dff5;--rt:#aebbe8;--hi:#ffd60a;--st:#d7263d;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b2a73;--ink:#f3f6ff;--blue:#9db9ff;--ln:rgba(157,185,255,.1);--lm:rgba(157,185,255,.2);--l2:rgba(157,185,255,.55);--top:#3a5fc9;--lf:#2849a6;--rt:#1a3680;--st:#ff6b7d}}
 :root[data-theme="dark"]{--bg:#0b2a73;--ink:#f3f6ff;--blue:#9db9ff;--ln:rgba(157,185,255,.1);--lm:rgba(157,185,255,.2);--l2:rgba(157,185,255,.55);--top:#3a5fc9;--lf:#2849a6;--rt:#1a3680;--st:#ff6b7d}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{min-height:100%}
@@ -85,7 +96,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--blue);outline-offse
 .cx,.cy{position:fixed;left:0;top:0;z-index:3;pointer-events:none;opacity:0;background:var(--l2)}
 .cx{width:1px;height:100%}.cy{height:1px;width:100%}
 .xy{position:fixed;left:0;top:0;z-index:5;pointer-events:none;opacity:0;font-size:10px;letter-spacing:.1em;background:var(--ink);color:var(--bg);padding:2px 6px}
-@media(max-width:760px){.sc{left:0;right:0;width:100%;top:8%;height:44%}.bot{flex-direction:column;align-items:stretch;gap:14px}.tb div:nth-child(n+5){display:none}.stamp{font-size:16px;top:-26px}#nav{flex-wrap:wrap}#nav a{flex:1 1 auto;justify-content:center;min-width:120px}.dim{display:none}.tb{min-width:0;width:100%}}
+@media(max-width:760px){.sc{left:0;right:0;width:100%;top:8%;height:44%}.bot{flex-direction:column;align-items:stretch;gap:14px}.tb div:nth-child(n+5){display:none}.stamp{font-size:16px;top:-26px}#nav{flex-wrap:wrap}#nav a{flex:1 1 auto;justify-content:center;min-width:120px}.dim{display:none}.tb{min-width:0;width:100%}#tm{display:none}.top{gap:8px}.top>span:last-child{gap:6px}.top-btn{min-height:34px;padding:0 10px;font-size:10px}}
+@media(max-width:440px){.top-btn{padding:0 7px;font-size:9px}.top>span:first-child b{display:none}}
 
 .cube{position:relative;display:inline-block;width:18px;height:18px;margin-right:16px;transform-style:preserve-3d;animation:cr 9s linear infinite;vertical-align:middle}
 .cube u{position:absolute;inset:0;border:1.5px solid var(--ink);background:color-mix(in srgb,var(--hi) 22%,transparent)}
@@ -157,19 +169,7 @@ i.hm-2{background:#40c463;border:1px solid #30a14e}
 i.hm-3{background:#30a14e;border:1px solid #216e39}
 i.hm-4{background:#216e39;border:1px solid #144622}
 
-/* Dark mode and blueprint theme (:root[data-theme="dark"] or prefers-color-scheme: dark) */
-@media(prefers-color-scheme:dark){
-  :root:not([data-theme="light"]) .hm-0{fill:rgba(157,185,255,.06);stroke:rgba(157,185,255,.2);stroke-width:.5}
-  :root:not([data-theme="light"]) .hm-1{fill:#0e4429;stroke:#1b6338;stroke-width:.4}
-  :root:not([data-theme="light"]) .hm-2{fill:#006d32;stroke:#198744;stroke-width:.4}
-  :root:not([data-theme="light"]) .hm-3{fill:#26a641;stroke:#39d353;stroke-width:.4}
-  :root:not([data-theme="light"]) .hm-4{fill:#39d353;stroke:#7ee787;stroke-width:.6}
-  :root:not([data-theme="light"]) i.hm-0{background:rgba(157,185,255,.06);border:1px solid rgba(157,185,255,.2)}
-  :root:not([data-theme="light"]) i.hm-1{background:#0e4429;border:1px solid #1b6338}
-  :root:not([data-theme="light"]) i.hm-2{background:#006d32;border:1px solid #198744}
-  :root:not([data-theme="light"]) i.hm-3{background:#26a641;border:1px solid #39d353}
-  :root:not([data-theme="light"]) i.hm-4{background:#39d353;border:1px solid #7ee787}
-}
+/* Dark mode heatmap theme (:root[data-theme="dark"]) */
 :root[data-theme="dark"] .hm-0{fill:rgba(157,185,255,.06);stroke:rgba(157,185,255,.2);stroke-width:.5}
 :root[data-theme="dark"] .hm-1{fill:#0e4429;stroke:#1b6338;stroke-width:.4}
 :root[data-theme="dark"] .hm-2{fill:#006d32;stroke:#198744;stroke-width:.4}
@@ -360,7 +360,7 @@ body:has(.heatmap-panel:hover) #xy {
 <section class="hero" id="hero"><div class="seal" aria-hidden="true"><svg viewBox="0 0 120 120"><defs><path id="spp" d="M60 60m-47 0a47 47 0 1 1 94 0a47 47 0 1 1-94 0"/></defs><circle cx="60" cy="60" r="57" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="60" cy="60" r="34" fill="none" stroke="currentColor" stroke-dasharray="2 4"/><text fill="currentColor" style="font:500 9.5px 'DM Mono',monospace;letter-spacing:.2em;text-transform:uppercase"><textPath href="#spp">Devantaris · Systems Drawing · 2026 ·</textPath></text></svg><b>DK</b></div>
 <div class="sc"><svg id="svg" viewBox="0 0 980 640" aria-hidden="true"><g id="cons"></g><g id="con"></g><g id="blk"></g><g id="pks"></g></svg></div>
 <div class="ui">
-<header class="top"><span><i class="cube"><u></u><u></u><u></u><u></u><u></u><u></u></i><b>Sheet 01</b> / Devantaris</span><span><span id="tm">Scale 1:1</span><a href="https://devantaris.github.io" target="_blank" class="top-btn">Resume ↗</a><button id="btn-contact" type="button" class="top-btn pri" onclick="openContactModal()">Contact</button></span></header>
+<header class="top"><span><i class="cube"><u></u><u></u><u></u><u></u><u></u><u></u></i><b>Sheet 01</b> / Devantaris</span><span><span id="tm">Scale 1:1</span><button id="thm" type="button" class="top-btn" aria-label="Toggle theme">Dark ◐</button><a href="https://devantaris.github.io" target="_blank" rel="noopener noreferrer" class="top-btn">Resume ↗</a><button id="btn-contact" type="button" class="top-btn pri" onclick="openContactModal()">Contact</button></span></header>
 <div class="bot">
 <div>
 <div class="nm"><div class="dim" id="dim"><span>06 sheets · 1 engineer · rev 2026.D</span></div>
@@ -507,7 +507,8 @@ body:has(.heatmap-panel:hover) #xy {
         <li><a href="mailto:work.devanshkumar@gmail.com">Email</a></li>
         <li><a href="https://linkedin.com/in/devansh-kumar-3b3701217" target="_blank" rel="noopener">LinkedIn</a></li>
         <li><a href="https://orcid.org/0009-0008-0687-5963" target="_blank" rel="noopener">ORCID</a></li>
-        <li><a href="resume.pdf" target="_blank" rel="noopener">Resume PDF</a></li>
+        <li><a href="https://devantaris.github.io" target="_blank" rel="noopener noreferrer">Resume ↗</a></li>
+        <li><button type="button" id="thm-foot" class="hwf-link-btn">Dark mode ◐</button></li>
       </ul>
     </div>
   </div>
@@ -530,10 +531,34 @@ var W=innerWidth,H=innerHeight,mx=W/2,my=H/2,sx=mx,sy=my,run=false,done=false,la
 function el(n,a,p){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e}
 $('#zt').innerHTML='123456'.split('').map(function(c){return '<span>'+c+'</span>'}).join('');$('#zl').innerHTML='ABCDEF'.split('').map(function(c){return '<span>'+c+'</span>'}).join('');
 $$('.nl>span').forEach(function(s){s.innerHTML=s.textContent.split('').map(function(c){return '<span class="g">'+c+'</span>'}).join('')});
-// Theme persistence
-(function(){var saved=localStorage.getItem('dk-theme');if(saved)document.documentElement.dataset.theme=saved;})();
-var thm=$('#thm');
-if(thm){thm.addEventListener('click',function(){var r=document.documentElement;if(r.dataset.theme==='dark'){r.removeAttribute('data-theme');localStorage.removeItem('dk-theme')}else{r.dataset.theme='dark';localStorage.setItem('dk-theme','dark')}});}
+// Theme toggle & persistence (default is Light Mode)
+var thm=$('#thm'),thmFoot=$('#thm-foot');
+function syncThemeUI(){
+  var isDark=document.documentElement.dataset.theme==='dark';
+  if(thm){
+    thm.textContent=isDark?'Light ☼':'Dark ◐';
+    thm.setAttribute('aria-label',isDark?'Switch to light mode':'Switch to dark mode');
+    thm.setAttribute('title',isDark?'Switch to light mode':'Switch to dark mode');
+  }
+  if(thmFoot){
+    thmFoot.textContent=isDark?'Light mode ☼':'Dark mode ◐';
+    thmFoot.setAttribute('title',isDark?'Switch to light mode':'Switch to dark mode');
+  }
+}
+function toggleTheme(){
+  var r=document.documentElement;
+  if(r.dataset.theme==='dark'){
+    r.removeAttribute('data-theme');
+    localStorage.setItem('dk-theme','light');
+  }else{
+    r.dataset.theme='dark';
+    localStorage.setItem('dk-theme','dark');
+  }
+  syncThemeUI();
+}
+if(thm)thm.addEventListener('click',toggleTheme);
+if(thmFoot)thmFoot.addEventListener('click',toggleTheme);
+syncThemeUI();
 var s=64,B=[{x:160,y:390,l:'FastAPI',h:46},{x:380,y:280,l:'Celery',h:46},{x:600,y:390,l:'Redis',h:46},{x:820,y:280,l:'Postgres',h:64},{x:380,y:500,l:'Hold',h:16,d:1}];
 var cons=$('#cons'),con=$('#con'),blk=$('#blk'),pks=$('#pks');
 var CL=[[0,470,980,-20],[0,90,980,580],[380,0,380,640],[0,310,660,640],[100,640,980,200]];
